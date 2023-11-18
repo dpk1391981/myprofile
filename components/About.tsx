@@ -10,6 +10,16 @@ export const metadata: Metadata = {
   description: "Software Engineer | Node Js | React Js | Javascript",
 };
 
+const openContactModal = () => {
+  const myModalElement: HTMLDialogElement | null = document.getElementById("my_modal_1") as HTMLDialogElement | null;
+
+  if (myModalElement) {
+    myModalElement.showModal();
+  } else {
+    console.error("Element with ID 'my_modal_1' not found.");
+  }
+};
+
 const About = () => {
   const diffExprs = currentYrsExp();
   return (
@@ -46,11 +56,7 @@ const About = () => {
                   </p>
                   <div className='flex flex-col-reverse max-w-xs sm:max-w-md m-auto gap-2'>
                     <div className='sm:w-full m-auto'>
-                      <a
-                        className='btn btn-outline btn-primary w-full text-lg sm:mb-0'
-                        onClick={() => {
-                          document.getElementById("my_modal_1").showModal();
-                        }}>
+                      <a className='btn btn-outline btn-primary w-full text-lg sm:mb-0' onClick={openContactModal}>
                         Contact me <IconCirclesRelation />
                       </a>
                     </div>

@@ -52,6 +52,16 @@ const Nav = () => {
     }
   };
 
+  const openContactModal = () => {
+    const myModalElement: HTMLDialogElement | null = document.getElementById("my_modal_1") as HTMLDialogElement | null;
+
+    if (myModalElement) {
+      myModalElement.showModal();
+    } else {
+      console.error("Element with ID 'my_modal_1' not found.");
+    }
+  };
+
   return (
     <header
       className='sticky top-0 z-40 flex-none mx-auto w-full border-b border-gray-10/0 transition-[opacity] ease-in-out bg-blue-50'
@@ -168,9 +178,7 @@ const Nav = () => {
               className='text-muted dark:text-gray-400 hover:bg-gray-100 hover:text-green-600 dark:hover:text-green-400 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 inline-flex items-center'
               aria-label="Let's Connect"
               href='#'
-              onClick={() => {
-                document.getElementById("my_modal_1").showModal();
-              }}>
+              onClick={openContactModal}>
               <IconMessage />
             </a>
           </div>
