@@ -110,7 +110,8 @@ const Nav = () => {
           </span>
 
           <span className=' ml-4 mt-2 text-2xl font-bold' title='Deepak Kumar | dpk1391981@gmail.com'>
-            Deepak Kumar -<p className='text-sm font-medium text-blue-700 text-center'>dpk1391981@gmail.com</p>
+            Deepak Kumar
+            <p className='text-sm font-medium text-blue-700 text-center'>dpk1391981@gmail.com</p>
           </span>
           <div className='flex items-center md:hidden '>
             <button
