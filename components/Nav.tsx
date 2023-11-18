@@ -9,12 +9,16 @@ import {
   IconBallpen,
   IconChartBubble,
   IconHome2,
+  IconX,
+  IconMenu2,
 } from "@tabler/icons-react";
 import Image from "next/image";
 import axios from "axios";
+import Link from "next/link";
 
 const Nav = () => {
   const [showError, setShowError] = useState(false);
+  const [openNav, setOpenNav] = useState(false);
 
   function axiosDownloadFile(url: any, fileName: any) {
     return axios({
@@ -64,7 +68,7 @@ const Nav = () => {
 
   return (
     <header
-      className='sticky top-0 z-40 flex-none mx-auto w-full border-b border-gray-10/0 transition-[opacity] ease-in-out bg-blue-50'
+      className='sticky top-0 z-40   w-full border-b border-gray-10/0 transition-[opacity] ease-in-out bg-blue-50'
       id='header'>
       {showError && (
         <div className='toast '>
@@ -109,56 +113,64 @@ const Nav = () => {
             Deepak Kumar
             <p className='text-sm font-medium text-blue-700 text-center'>dpk1391981@gmail.com</p>
           </span>
-          <div className='flex items-center md:hidden'>
+          <div className='flex items-center md:hidden '>
             <button
               className='flex flex-col h-12 w-12 rounded justify-center items-center cursor-pointer group'
               aria-label='Toggle Menu'
-              data-aw-toggle-menu>
-              <span className='sr-only'>Toggle Menu</span>
-              <span
-                aria-hidden='true'
-                className='h-0.5 w-6 my-1 rounded-full bg-black dark:bg-white transition ease transform duration-200 opacity-80 group-[.expanded]:rotate-45 group-[.expanded]:translate-y-2.5'></span>
-              <span
-                aria-hidden='true'
-                className='h-0.5 w-6 my-1 rounded-full bg-black dark:bg-white transition ease transform duration-200 opacity-80 group-[.expanded]:opacity-0'></span>
-              <span
-                aria-hidden='true'
-                className='h-0.5 w-6 my-1 rounded-full bg-black dark:bg-white transition ease transform duration-200 opacity-80 group-[.expanded]:-rotate-45 group-[.expanded]:-translate-y-2.5'></span>
+              onClick={() => setOpenNav(!openNav)}>
+              {openNav ? <IconX /> : <IconMenu2 className='font-medium' />}
             </button>
           </div>
         </div>
         <nav
-          className='items-center w-full  md:w-auto hidden md:flex  overflow-y-auto overflow-x-hidden md:overflow-y-visible md:overflow-x-auto md:mx-5 '
+          className={`items-center w-full  md:w-auto ${
+            !openNav && `hidden`
+          } md:flex  overflow-y-auto overflow-x-hidden md:overflow-y-visible md:overflow-x-auto md:mx-5`}
           aria-label='Main navigation'>
           <ul className='flex flex-col md:flex-row md:self-center w-full md:w-auto  md:text-[0.9500rem] tracking-[0.01rem] font-medium'>
             <li className='text-lg ' title='Home'>
-              <a className='px-4 py-3 flex' href='/'>
+              <Link className='px-4 py-3 flex' onClick={() => setOpenNav(false)} href='/'>
                 / | <IconHome2 className='m-0' />
-              </a>
+              </Link>
             </li>
             <li className='text-lg ' title='About me'>
-              <a className='px-4 py-3 flex' href='#about'>
+              <Link
+                className='px-4 py-3 flex'
+                onClick={() => setOpenNav(false)}
+                href={`${openNav ? `/about` : "#about"}`}>
                 Me | <IconUserScan className='m-1' />
-              </a>
+              </Link>
             </li>
             <li className='text-lg ' title='My Experience'>
-              <a className='px-4 py-3 flex' href='#experience'>
+              <Link
+                onClick={() => setOpenNav(false)}
+                className='px-4 py-3 flex'
+                href={`${openNav ? `/experience` : "#experience"}`}>
                 Experience | <IconBuildingBank className='m-0' />
-              </a>
+              </Link>
             </li>
             <li className='text-lg ' title='My Education'>
-              <a className='px-4 py-3 flex' href='#education'>
+              <Link
+                onClick={() => setOpenNav(false)}
+                className='px-4 py-3 flex'
+                href={`${openNav ? `/education` : "#education"}`}>
                 Education | <IconBallpen className='m-1' />
-              </a>
+              </Link>
             </li>
             <li className='text-lg ' title='Skills'>
-              <a className='px-4 py-3 flex' href='#skills'>
+              <Link
+                onClick={() => setOpenNav(false)}
+                className='px-4 py-3 flex'
+                href={`${openNav ? `/skills` : "#skills"}`}>
                 Skills | <IconChartBubble />
-              </a>
+              </Link>
             </li>
           </ul>
         </nav>
-        <div className='hidden md:self-center flex md:flex items-center md:mb-0 fixed w-full md:w-auto md:static justify-end left-0 rtl:left-auto rtl:right-0 bottom-0 p-3 md:p-0'>
+        <div
+          className={`${
+            !openNav && `hidden`
+          } md:self-center flex md:flex items-center md:mb-0 fixed w-full md:w-auto md:static justify-end left-0 rtl:left-auto rtl:right-0 bottom-0 p-3 md:p-0`}>
           <div className='items-center flex justify-between w-full md:w-auto'>
             <a
               className='text-muted dark:text-gray-400 hover:bg-gray-100 hover:text-blue-600 dark:hover:text-blue-400 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 inline-flex items-center'

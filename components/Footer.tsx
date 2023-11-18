@@ -10,7 +10,7 @@ const Footer = () => {
   return (
     <>
       <footer className='footer footer-center p-10  text-base-content rounded font-medium text-lg bg-blue-50'>
-        <nav className=' grid grid-flow-col gap-4'>
+        <nav className=' grid md:grid-flow-col md:gap-2'>
           <a className='flex link link-hover' href={`tel:${MOBILE}`} target='tel'>
             <IconPhone /> {MOBILE}
           </a>

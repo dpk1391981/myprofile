@@ -1,4 +1,4 @@
-import { About, Experience, Education, Skills } from "@/components";
+import { Experience } from "@/components";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
