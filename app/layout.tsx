@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     images: "https://myprofiledk.s3.ap-south-1.amazonaws.com/images/profile-pic-removebg-preview.png",
   },
   creator: "Deepak Kumar",
-  authors: [{ name: "Deepak Kumar" }, { name: "Josh", url: "https://imdeepak.in/" }],
+  authors: [{ name: "Deepak Kumar" }, { name: "Deepak Kumar", url: "https://imdeepak.in/" }],
   verification: {
     google: "JX0NG7dsDG67hlED07lGMa2XzCryv4PnDEzzDBwG6eg",
   },
