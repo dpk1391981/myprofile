@@ -4,11 +4,12 @@ import { Footer, Nav, ContactModal } from "@/components";
 // import Provider from "@/components/Provider";
 import Head from "next/head";
 import Script from "next/script";
+import { currentYrsExp } from "../components/utils/date";
 
+const diffExprs = currentYrsExp();
 export const metadata: Metadata = {
-  title: "Experienced JavaScript Software Engineer - Deepak Kumar | 6 Years Expertise",
-  description:
-    "Experienced software engineer with 6 years expertise in JavaScript. Deepak Kumar excels in crafting innovative solutions for seamless software development",
+  title: `Deepak Kumar | ${diffExprs.years()}+ Years Expertise | Experienced JavaScript Software Engineer`,
+  description: `Experienced software engineer with ${diffExprs.years()}+ Years expertise in JavaScript. Deepak Kumar excels in crafting innovative solutions for seamless software development`,
   keywords: "Deepak Kumar, Software Engineer, Node Js ,React Js, Javascript",
 };
 
