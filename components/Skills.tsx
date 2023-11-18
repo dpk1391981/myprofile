@@ -1,28 +1,7 @@
 import React from "react";
+import { skills } from "../components/utils/consts";
 
 const Skills = () => {
-  const skills = [
-    "RESTful APIs",
-    "Next JS",
-    "Nest JS",
-    "Javascript",
-    "Typescript",
-    "Node JS",
-    "Express JS",
-    "React JS",
-    "Redux",
-    "Bootstrap/Material UI/Tailwind CSS",
-    "JQuery",
-    "Microservices",
-    "CI/CD",
-    "AWS Services",
-    "Git Versioning Control",
-    "JIRA",
-    "Build Tools",
-    "HTML/ CSS",
-    "PHP",
-    "GITlab/Bitbucket/GitHub",
-  ];
   return (
     <div>
       <section className='relative not-prose scroll-mt-[72px]' id='skills'>

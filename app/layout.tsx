@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Footer, Nav, ContactModal } from "@/components";
-import Provider from "@/components/Provider";
+// import Provider from "@/components/Provider";
 import Head from "next/head";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "Home | Deepak Kumar",
-  description: "Deepak Kumar | Software Engineer | Node Js | React Js | Javascript ",
+  title: "Experienced JavaScript Software Engineer - Deepak Kumar | 6 Years Expertise",
+  description:
+    "Experienced software engineer with 6 years expertise in JavaScript. Deepak Kumar excels in crafting innovative solutions for seamless software development",
+  keywords: "Deepak Kumar, Software Engineer, Node Js ,React Js, Javascript",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -27,6 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           content='https://myprofiledk.s3.ap-south-1.amazonaws.com/images/profile-pic-removebg-preview.png'
         />
         <meta name='author' content='Deepak Kumar' />
+        <meta name='google-site-verification' content='JX0NG7dsDG67hlED07lGMa2XzCryv4PnDEzzDBwG6eg' />
         <link rel='shortcut icon' href='favicon.ico' />
       </Head>
 
@@ -42,12 +45,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </Script>
 
       <body className='antialiased text-default bg-page tracking-tight'>
-        <Provider>
-          <ContactModal />
-          <Nav />
-          {children}
-          <Footer />
-        </Provider>
+        {/* <Provider> */}
+        <ContactModal />
+        <Nav />
+        {children}
+        <Footer />
+        {/* </Provider> */}
       </body>
     </html>
   );
