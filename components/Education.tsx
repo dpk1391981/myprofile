@@ -110,7 +110,7 @@ const Education = () => {
                     <div>
                       <div className='flex items-center justify-center'>
                         <Image
-                          src='/assets/projects/aws.png'
+                          src='/assets/projects/aws1.png'
                           alt='alt'
                           decoding='async'
                           loading='lazy'
