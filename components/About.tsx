@@ -45,7 +45,7 @@ const About = () => {
                     development.
                   </p>
                   <div className='flex flex-col-reverse max-w-xs sm:max-w-md m-auto gap-2'>
-                    <div className='sm:w-80 m-auto'>
+                    <div className='sm:w-full m-auto'>
                       <a
                         className='btn btn-outline btn-primary w-full text-lg sm:mb-0'
                         onClick={() => {

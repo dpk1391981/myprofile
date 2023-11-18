@@ -6,6 +6,7 @@ import {
   IconBrandSkype,
   IconBrandBitbucket,
   IconBrandZoom,
+  IconBrandGithub,
 } from "@tabler/icons-react";
 
 const socialLinks = [
@@ -32,6 +33,13 @@ const socialLinks = [
     label: "Skype",
     icon: <IconBrandSkype />,
     url: "https://join.skype.com/invite/j5UHRguIGhYq/",
+  },
+
+  {
+    title: "Deepak Github",
+    label: "Github",
+    icon: <IconBrandGithub />,
+    url: "https://github.com/dpk1391981/",
   },
   {
     title: "Deepak Bitbucket",
