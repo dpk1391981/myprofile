@@ -28,12 +28,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <meta name='author' content='Deepak Kumar' />
       </Head>
-      <Script>
-        {`window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
 
-  gtag('config', 'G-YXZRZVFV9F');`}
+      <Script async src='https://www.googletagmanager.com/gtag/js?id=G-YXZRZVFV9F' />
+      <Script id='google-analytics'>
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+ 
+          gtag('config', 'G-YXZRZVFV9F');
+        `}
       </Script>
 
       <body className='antialiased text-default bg-page tracking-tight'>
