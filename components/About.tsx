@@ -6,8 +6,9 @@ import { currentYrsExp } from "./utils/date";
 import { IconCirclesRelation } from "@tabler/icons-react";
 
 export const metadata: Metadata = {
-  title: "About",
-  description: "Software Engineer | Node Js | React Js | Javascript",
+  title: "Deepak Kumar | About",
+  description: "Deepak Kumar | Software Engineer | Node Js | React Js | Javascript",
+  keywords: "JAVASCRIPT | FULL STACK | NODE JS | REACT JS | MYSQL | NOSQL",
 };
 
 const openContactModal = () => {

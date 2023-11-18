@@ -1,39 +1,50 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Footer, Nav, ContactModal } from "@/components";
 // import Provider from "@/components/Provider";
 import Head from "next/head";
 import Script from "next/script";
 import { currentYrsExp } from "../components/utils/date";
-
 const diffExprs = currentYrsExp();
+
+/**
+ * Meta keywords for SEO
+ */
 export const metadata: Metadata = {
-  title: `Deepak Kumar | ${diffExprs.years()}+ Years Expertise | Experienced JavaScript Software Engineer`,
+  title: `Deepak Kumar | ${diffExprs.years()}+ Years Expertise | Experienced Software Engineer`,
+  applicationName: "Deepak Kumar | portfolio",
   description: `Experienced software engineer with ${diffExprs.years()}+ Years expertise in JavaScript. Deepak Kumar excels in crafting innovative solutions for seamless software development`,
-  keywords: "Deepak Kumar, Software Engineer, Node Js ,React Js, Javascript",
+  keywords: ["Deepak Kumar, Software Engineer, Node Js ,React Js, Javascript"],
+  openGraph: {
+    url: "https://imdeepak.in/",
+    images: "https://myprofiledk.s3.ap-south-1.amazonaws.com/images/profile-pic-removebg-preview.png",
+  },
+  creator: "Deepak Kumar",
+  authors: [{ name: "Deepak Kumar" }, { name: "Josh", url: "https://imdeepak.in/" }],
+  verification: {
+    google: "JX0NG7dsDG67hlED07lGMa2XzCryv4PnDEzzDBwG6eg",
+  },
+  alternates: {
+    canonical: "https://imdeepak.in/",
+    languages: {
+      "en-US": "/en-US",
+    },
+  },
+  metadataBase: new URL("https://imdeepak.in/"),
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang='en'>
       <Head>
-        <meta http-equiv='X-UA-Compatible' content='IE=edge' />
-        <meta name='viewport' content='width=device-width, initial-scale=1.0' />
-        <meta
-          name='description'
-          content='Deepak Kumar | Portfolio | Software Engineer'
-          key='JavaScript | Full Stack | Node js | React js | MySql | NoSql'
-        />
-        <meta property='og:url' content='https://imdeepak.in/' />
-        <meta
-          property='og:image'
-          content='https://myprofiledk.s3.ap-south-1.amazonaws.com/images/profile-pic-removebg-preview.png'
-        />
-        <meta name='author' content='Deepak Kumar' />
-        <meta name='google-site-verification' content='JX0NG7dsDG67hlED07lGMa2XzCryv4PnDEzzDBwG6eg' />
         <link rel='shortcut icon' href='favicon.ico' />
       </Head>
-
       <Script async src='https://www.googletagmanager.com/gtag/js?id=G-YXZRZVFV9F' />
       <Script id='google-analytics'>
         {`

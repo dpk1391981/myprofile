@@ -1,5 +1,11 @@
 import React from "react";
 import { skills } from "../components/utils/consts";
+import type { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Deepak Kumar | Skills",
+  description: "Deepak Kumar | Software Engineer | Node Js | React Js | Javascript",
+  keywords: skills.join(","),
+};
 
 const Skills = () => {
   return (

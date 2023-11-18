@@ -1,5 +1,12 @@
 import React from "react";
 import Image from "next/image";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Deepak Kumar | Education Qualification",
+  description: "Deepak Kumar | Education Qualification",
+  keywords: "JAVASCRIPT | FULL STACK | NODE JS | REACT JS | MYSQL | NOSQL",
+};
 
 const Education = () => {
   return (

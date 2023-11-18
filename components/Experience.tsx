@@ -2,6 +2,13 @@ import React from "react";
 import Image from "next/image";
 import { currentYrsExp } from "./utils/date";
 import { IconLink } from "@tabler/icons-react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Deepak Kumar | Experience",
+  description: "Deepak Kumar | Experience | Software Engineer | Node Js | React Js | Javascript",
+  keywords: "Instant system inc, node js, deepak kumar, ceekr, synqy",
+};
 
 const Experience = () => {
   const diffExprs = currentYrsExp();
