@@ -27,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           content='https://myprofiledk.s3.ap-south-1.amazonaws.com/images/profile-pic-removebg-preview.png'
         />
         <meta name='author' content='Deepak Kumar' />
+        <link rel='shortcut icon' href='favicon.ico' />
       </Head>
 
       <Script async src='https://www.googletagmanager.com/gtag/js?id=G-YXZRZVFV9F' />

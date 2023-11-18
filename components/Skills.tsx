@@ -3,6 +3,8 @@ import React from "react";
 const Skills = () => {
   const skills = [
     "RESTful APIs",
+    "Next JS",
+    "Nest JS",
     "Javascript",
     "Typescript",
     "Node JS",
