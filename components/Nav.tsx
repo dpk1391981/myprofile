@@ -66,6 +66,39 @@ const Nav = () => {
     }
   };
 
+  const RightTopBlock = ({ pName, cName }: any) => {
+    return (
+      <div className={pName}>
+        <div className={cName}>
+          <a
+            className='text-muted dark:text-gray-400 hover:bg-gray-100 hover:text-blue-600 dark:hover:text-blue-400 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 inline-flex items-center'
+            aria-label='LinkedIn Profile'
+            href='https://www.linkedin.com/in/dpk1391981/'
+            title='linkedin profile'
+            target='_linkedin'>
+            <IconBrandLinkedin />
+          </a>
+          <a
+            className='text-muted dark:text-gray-400 hover:bg-gray-100 hover:text-indigo-600 dark:hover:text-indigo-400 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 inline-flex items-center'
+            aria-label='Download CV Summary'
+            href='#'
+            title='Download Resume'
+            onClick={onButtonClick}>
+            <IconFileDownload />
+          </a>
+          <a
+            className='text-muted dark:text-gray-400 hover:bg-gray-100 hover:text-green-600 dark:hover:text-green-400 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 inline-flex items-center'
+            aria-label="Let's Connect"
+            href='#'
+            title='connect me'
+            onClick={openContactModal}>
+            <IconMessage />
+          </a>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <header
       className='sticky top-0 z-40   w-full border-b border-gray-10/0 transition-[opacity] ease-in-out bg-blue-50'
@@ -109,10 +142,15 @@ const Nav = () => {
             </div>
           </span>
 
-          <span className=' ml-4 mt-2 text-2xl font-bold' title='Deepak Kumar | dpk1391981@gmail.com'>
+          <div className=' ml-4 mt-2 text-2xl font-bold' title='Deepak Kumar | dpk1391981@gmail.com'>
             Deepak Kumar
             <p className='text-sm font-medium text-blue-700 text-center'>dpk1391981@gmail.com</p>
-          </span>
+            <RightTopBlock
+              cName={`md:hidden mx:hidden items-center flex justify-between w-full md:w-auto`}
+              pName={`md:self-center flex md:flex items-center  md:static justify-end`}
+            />
+          </div>
+
           <div className='flex items-center md:hidden '>
             <button
               className='flex flex-col h-12 w-12 rounded justify-center items-center cursor-pointer group'
@@ -125,8 +163,9 @@ const Nav = () => {
         <nav
           className={`items-center w-full  md:w-auto ${
             !openNav && `hidden`
-          } md:flex  overflow-y-auto overflow-x-hidden md:overflow-y-visible md:overflow-x-auto md:mx-5`}
+          } md:flex  overflow-y-auto overflow-x-hidden md:overflow-y-visible md:overflow-x-auto md:mx-7`}
           aria-label='Main navigation'>
+          <div className='divider'></div>
           <ul className='flex flex-col md:flex-row md:self-center w-full md:w-auto  md:text-[0.9500rem] tracking-[0.01rem] font-medium'>
             <li className='text-lg ' title='Home'>
               <Link className='px-4 py-3 flex' onClick={() => setOpenNav(false)} href='/'>
@@ -167,37 +206,10 @@ const Nav = () => {
             </li>
           </ul>
         </nav>
-        <div
-          className={`${
-            !openNav && `hidden`
-          } md:self-center flex md:flex items-center md:mb-0 fixed w-full md:w-auto md:static justify-end left-0 rtl:left-auto rtl:right-0 bottom-0 p-3 md:p-0`}>
-          <div className='items-center flex justify-between w-full md:w-auto'>
-            <a
-              className='text-muted dark:text-gray-400 hover:bg-gray-100 hover:text-blue-600 dark:hover:text-blue-400 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 inline-flex items-center'
-              aria-label='LinkedIn Profile'
-              href='https://www.linkedin.com/in/dpk1391981/'
-              title='linkedin profile'
-              target='_linkedin'>
-              <IconBrandLinkedin />
-            </a>
-            <a
-              className='text-muted dark:text-gray-400 hover:bg-gray-100 hover:text-indigo-600 dark:hover:text-indigo-400 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 inline-flex items-center'
-              aria-label='Download CV Summary'
-              href='#'
-              title='Download Resume'
-              onClick={onButtonClick}>
-              <IconFileDownload />
-            </a>
-            <a
-              className='text-muted dark:text-gray-400 hover:bg-gray-100 hover:text-green-600 dark:hover:text-green-400 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 inline-flex items-center'
-              aria-label="Let's Connect"
-              href='#'
-              title='connect me'
-              onClick={openContactModal}>
-              <IconMessage />
-            </a>
-          </div>
-        </div>
+        <RightTopBlock
+          cName={`md:self-center flex md:flex items-center md:mb-0 fixed w-full md:w-auto md:static justify-end left-0 rtl:left-auto rtl:right-0 bottom-0 p-3 md:p-0`}
+          pName={`hidden md:flex items-center  justify-between w-full md:w-auto`}
+        />
       </div>
     </header>
   );
