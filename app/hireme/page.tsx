@@ -38,14 +38,22 @@ const page = () => {
         const result = await response.json();
         console.log(result.data);
         if (result.data) {
-          setLoading(false);
           router.push("/success");
+          setLoading(false);
+          setFormData({
+            organisation: "",
+            email: "",
+            subject: "",
+            message: "",
+          });
         }
       } else {
         console.error("Form submission failed");
+        setLoading(false);
       }
     } catch (error) {
       console.error("Error submitting form:", error);
+      setLoading(false);
     }
   };
 

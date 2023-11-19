@@ -2,7 +2,6 @@ import Enquery from "@/models/hire";
 import { connectToDB } from "@/utils/database";
 
 import { NextApiRequest, NextApiResponse } from "next";
-
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     await connectToDB();
