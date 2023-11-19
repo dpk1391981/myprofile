@@ -68,7 +68,9 @@ const page = () => {
         </p>
         <div className='md:hidden text-center'>
           <div className='sm:w-full m-auto'>
-            <a className='btn btn-outline btn-primary w-50 text-lg mb-10' onClick={() => router.push("/")}>
+            <a
+              className='btn btn-outline bg-blue-700 hover:bg-blue-700 text-white w-50 text-lg mb-10'
+              onClick={() => router.push("/")}>
               Go back
               <IconArrowBackUp />
             </a>

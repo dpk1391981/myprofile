@@ -49,7 +49,7 @@ const About = () => {
                 <div className='max-w-3xl mx-auto'>
                   <p className='text-xl text-muted mb-6 dark:text-slate-300 font-normal'>
                     Experienced Software Engineer with
-                    <span className='text-blue-700 font-bold tracking-wide mb-4'>{diffExprs.years()}+ years </span> of
+                    <span className='text-blue-700 font-bold tracking-wide mb-4'> {diffExprs.years()}+ years </span> of
                     hands-on expertise, showcasing a unique combination of leadership skills, technical proficiency, and
                     strategic vision. Possesses a decade-long track record of successfully leading and developing
                     technology teams. Adept at delivering impactful solutions in the dynamic landscape of software
