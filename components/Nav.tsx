@@ -11,12 +11,15 @@ import {
   IconHome2,
   IconX,
   IconMenu2,
+  IconMoodDollar,
 } from "@tabler/icons-react";
 import Image from "next/image";
 import axios from "axios";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const Nav = () => {
+  let router = useRouter();
   const [showError, setShowError] = useState(false);
   const [openNav, setOpenNav] = useState(false);
 
@@ -88,11 +91,19 @@ const Nav = () => {
           </a>
           <a
             className='text-muted dark:text-gray-400 hover:bg-gray-100 hover:text-green-600 dark:hover:text-green-400 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 inline-flex items-center'
-            aria-label="Let's Connect"
+            aria-label='connect me'
             href='#'
             title='connect me'
             onClick={openContactModal}>
             <IconMessage />
+          </a>
+          <a
+            className='text-muted dark:text-gray-400 hover:bg-gray-100 hover:text-white-600 dark:hover:text-green-400 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 inline-flex items-center'
+            aria-label='hire me'
+            href='#'
+            title='hire me'
+            onClick={() => router.push("/hireme")}>
+            <IconMoodDollar />
           </a>
         </div>
       </div>
@@ -143,11 +154,13 @@ const Nav = () => {
             </div>
           </span>
 
-          <div className=' ml-4 mt-2 text-2xl font-bold' title='Deepak Kumar | dpk1391981@gmail.com'>
-            Deepak Kumar
-            <p className='text-sm font-medium text-blue-700 text-center'>dpk1391981@gmail.com</p>
+          <div className='flex flex-col'>
+            <div className='ml-4 mt-2 text-2xl font-bold' title='Deepak Kumar | dpk1391981@gmail.com'>
+              Deepak Kumar
+              <p className='text-sm font-medium text-blue-700 text-center sm: mr-10'>dpk1391981@gmail.com</p>
+            </div>
             <RightTopBlock
-              cName={`md:hidden mx:hidden items-center flex justify-between w-full md:w-auto`}
+              cName={`md:hidden mx:hidden items-center flex justify-between w-full md:w-auto sm: mr-2`}
               pName={`md:self-center flex md:flex items-center  md:static justify-end`}
             />
           </div>
