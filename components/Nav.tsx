@@ -12,6 +12,7 @@ import {
   IconX,
   IconMenu2,
   IconMoodDollar,
+  IconDiscountCheckFilled,
 } from "@tabler/icons-react";
 import Image from "next/image";
 import axios from "axios";
@@ -156,7 +157,9 @@ const Nav = () => {
 
           <div className='flex flex-col'>
             <div className='ml-4 mt-2 text-2xl font-bold' title='Deepak Kumar | dpk1391981@gmail.com'>
-              Deepak Kumar
+              <div className='flex '>
+                <span>Deepak Kumar</span> <IconDiscountCheckFilled className='ml-1 mt-1 text-blue-600' />
+              </div>
               <p className='text-sm font-medium text-blue-700 text-center sm: mr-10'>dpk1391981@gmail.com</p>
             </div>
             <RightTopBlock

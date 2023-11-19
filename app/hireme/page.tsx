@@ -61,10 +61,10 @@ const page = () => {
     <section className='bg-white dark:bg-gray-900'>
       <div className='py-8 lg:py-16 px-4 mx-auto max-w-screen-md'>
         <h2 className='mb-4 text-4xl tracking-tight font-extrabold text-center text-blue-700 dark:text-white'>
-          Hire me !
+          Join with me !
         </h2>
         <p className='mb-8 lg:mb-16 font-light text-center text-blue-500 dark:text-gray-400 sm:text-xl'>
-          Innovative Software Developer Ready to Elevate Your Tech Vision
+          To Elevate Your Tech Vision
         </p>
         <div className='md:hidden text-center'>
           <div className='sm:w-full m-auto'>
