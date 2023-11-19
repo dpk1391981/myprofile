@@ -104,10 +104,11 @@ const Nav = () => {
       className='sticky top-0 z-40   w-full border-b border-gray-10/0 transition-[opacity] ease-in-out bg-blue-50'
       id='header'>
       {showError && (
-        <div className='toast '>
+        <div className='toast'>
           <div className='alert alert-warning'>
             <span>
-              Error in download!. in mean while please contact to
+              Error in download!
+              <p>Please send query to</p>
               <a className='font-bold' href='mailto:dpk1391981@gmail.com'>
                 &nbsp; dpk1391981@gmail.com
               </a>
