@@ -41,7 +41,7 @@ const Experience = () => {
                         </div>
                         <div className='w-px h-full bg-black/10 dark:bg-slate-400/50'></div>
                       </div>
-                      <div className='w-px h-full bg-black/10 dark:bg-slate-400/50'></div>
+
                       <div className='pt-1 pb-8'>
                         <div className='text-xl font-bold flex'>
                           Instant System Inc
@@ -79,7 +79,7 @@ const Experience = () => {
                               </div>
                               <div className='w-px h-full bg-black/10 dark:bg-slate-400/50'></div>
                             </div>
-                            <div className='w-px h-full bg-black/10 dark:bg-slate-400/50'></div>
+
                             <div className='pt-1 pb-8'>
                               <div className='text-xl font-bold flex'>
                                 Humanize
