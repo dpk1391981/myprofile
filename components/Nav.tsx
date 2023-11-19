@@ -140,7 +140,7 @@ const Nav = () => {
         <div className='flex justify-between'>
           <span className='self-center ml-2 rtl:ml-0 rtl:mr-2 text-2xl md:text-xl font-bold text-gray-900 whitespace-nowrap dark:text-white'>
             <div className='avatar'>
-              <div className='w-20 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2'>
+              <div className='w-20 rounded-full ring ring-blue-700 ring-offset-base-100 ring-offset-2'>
                 <Image
                   src='/assets/images/profile-pic-removebg-preview.png'
                   alt='Thumbnail image of Deepak Kumar'
@@ -158,7 +158,10 @@ const Nav = () => {
           <div className='flex flex-col'>
             <div className='ml-4 mt-2 text-2xl font-bold' title='Deepak Kumar | dpk1391981@gmail.com'>
               <div className='flex '>
-                <span>Deepak Kumar</span> <IconDiscountCheckFilled className='ml-1 mt-1 text-blue-600' />
+                <span>Deepak Kumar</span>
+
+                {/* one day i will un comment this blue tick */}
+                {/* <IconDiscountCheckFilled className='ml-1 mt-1 text-blue-600' /> */}
               </div>
               <p className='text-sm font-medium text-blue-700 text-center sm: mr-10'>dpk1391981@gmail.com</p>
             </div>

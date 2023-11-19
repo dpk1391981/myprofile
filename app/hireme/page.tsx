@@ -158,7 +158,7 @@ const page = () => {
 
             <button
               type='submit'
-              className='px-5 md:text-lg font-medium text-center btn btn-outline btn-primary rounded-lg  sm:w-fit hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800'>
+              className='px-5 md:text-lg font-medium text-center btn btn-outline bg-blue-700 hover:bg-blue-700 text-white rounded-lg  sm:w-fit hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800'>
               Send query
             </button>
           </form>

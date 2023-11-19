@@ -48,7 +48,7 @@ const About = () => {
 
                 <div className='max-w-3xl mx-auto'>
                   <p className='text-xl text-muted mb-6 dark:text-slate-300 font-normal'>
-                    Experienced Software Engineer with{" "}
+                    Experienced Software Engineer with
                     <span className='text-blue-700 font-bold tracking-wide mb-4'>{diffExprs.years()}+ years </span> of
                     hands-on expertise, showcasing a unique combination of leadership skills, technical proficiency, and
                     strategic vision. Possesses a decade-long track record of successfully leading and developing
@@ -57,7 +57,9 @@ const About = () => {
                   </p>
                   <div className='flex flex-col-reverse max-w-xs sm:max-w-md m-auto gap-2'>
                     <div className='sm:w-full m-auto'>
-                      <a className='btn btn-outline btn-primary w-full text-lg sm:mb-0' onClick={openContactModal}>
+                      <a
+                        className='btn bg-blue-700 hover:bg-blue-700 text-white w-full text-lg sm:mb-0'
+                        onClick={openContactModal}>
                         Contact me <IconCirclesRelation />
                       </a>
                     </div>
