@@ -193,34 +193,22 @@ const Nav = () => {
               </Link>
             </li>
             <li className='text-lg ' title='About me'>
-              <Link
-                className='px-4 py-3 flex'
-                onClick={() => setOpenNav(false)}
-                href={`${openNav ? `/about` : "#about"}`}>
+              <Link className='px-4 py-3 flex' onClick={() => setOpenNav(false)} href={`/about`}>
                 Me | <IconUserScan className='m-1' />
               </Link>
             </li>
             <li className='text-lg ' title='My Experience'>
-              <Link
-                onClick={() => setOpenNav(false)}
-                className='px-4 py-3 flex'
-                href={`${openNav ? `/experience` : "#experience"}`}>
+              <Link onClick={() => setOpenNav(false)} className='px-4 py-3 flex' href={`/experience`}>
                 Experience | <IconBuildingBank className='m-0' />
               </Link>
             </li>
             <li className='text-lg ' title='My Education'>
-              <Link
-                onClick={() => setOpenNav(false)}
-                className='px-4 py-3 flex'
-                href={`${openNav ? `/education` : "#education"}`}>
+              <Link onClick={() => setOpenNav(false)} className='px-4 py-3 flex' href={`/education`}>
                 Education | <IconBallpen className='m-1' />
               </Link>
             </li>
             <li className='text-lg ' title='Skills'>
-              <Link
-                onClick={() => setOpenNav(false)}
-                className='px-4 py-3 flex'
-                href={`${openNav ? `/skills` : "#skills"}`}>
+              <Link onClick={() => setOpenNav(false)} className='px-4 py-3 flex' href={`/skills`}>
                 Skills | <IconChartBubble />
               </Link>
             </li>
