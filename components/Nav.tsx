@@ -99,9 +99,11 @@ const Nav = () => {
             <IconMessage />
           </Link>
           <Link
-            className='text-muted dark:text-gray-400 hover:bg-gray-100 hover:text-white-600 dark:hover:text-green-400 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 inline-flex items-center'
+            className={`text-muted dark:text-gray-400 hover:bg-gray-100 hover:text-white-600 dark:hover:text-green-400 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 inline-flex items-center  ${
+              pathname === "/joinme" && `text-blue-700`
+            }`}
             aria-label='join with me'
-            href='/hireme'
+            href='/joinme'
             title='join with me'
             onClick={() => setOpenNav(false)}>
             <IconMoodDollar />
