@@ -138,8 +138,8 @@ const Nav = () => {
 
       <div className='relative text-default py-3 px-3 lg:px-6 mx-auto w-full lg:flex lg:justify-between max-w-7xl'>
         <div className='flex justify-between'>
-          <span className='self-center ml-2 rtl:ml-0 rtl:mr-2 text-2xl lg:text-xl font-bold text-gray-900 whitespace-nowrap dark:text-white'>
-            <div className='avatar'>
+          <div className='self-center ml-2 rtl:ml-0 rtl:mr-2 text-2xl lg:text-xl font-bold text-gray-900 whitespace-nowrap dark:text-white'>
+            <Link href={"/"} className='avatar'>
               <div className='w-20 rounded-full ring ring-blue-700 ring-offset-base-100 ring-offset-2'>
                 <Image
                   src='/assets/images/profile-pic-removebg-preview.png'
@@ -152,18 +152,20 @@ const Nav = () => {
                   decoding='async'
                 />
               </div>
-            </div>
-          </span>
+            </Link>
+          </div>
 
           <div className='flex flex-col'>
             <div className='ml-4 mt-2 text-2xl font-bold' title='Deepak Kumar | dpk1391981@gmail.com'>
               <div className='flex '>
-                <span>Deepak Kumar</span>
+                <Link href={"/"}>Deepak Kumar</Link>
 
                 {/* one day i will un comment this blue tick */}
                 {/* <IconDiscountCheckFilled className='ml-1 mt-1 text-blue-600' /> */}
               </div>
-              <p className='text-sm font-medium text-blue-700 text-center sm: mr-10'>dpk1391981@gmail.com</p>
+              <Link href={"mailto:dpk1391981@gmail.com"}>
+                <p className='text-sm font-medium text-blue-700 text-center sm: mr-10'>dpk1391981@gmail.com</p>
+              </Link>
             </div>
             <RightTopBlock
               cName={`lg:hidden mx:hidden items-center flex justify-between w-full lg:w-auto sm: mr-2`}
