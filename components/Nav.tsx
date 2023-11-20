@@ -158,7 +158,7 @@ const Nav = () => {
           </div>
 
           <div className='flex flex-col'>
-            <div className='ml-4 lg:mt-5 sm: mt-2 text-2xl font-bold' title='Deepak Kumar'>
+            <div className='ml-4 lg:mt-2 sm: mt-2 text-2xl font-bold' title='Deepak Kumar'>
               <div className='flex '>
                 <Link href={"/"}>Deepak Kumar</Link>
 
