@@ -4,9 +4,9 @@ import {
   IconBrandFacebook,
   IconBrandTwitter,
   IconBrandSkype,
-  IconBrandBitbucket,
-  IconBrandZoom,
+  IconBrandInstagram,
   IconBrandGithub,
+  IconBrandUpwork,
 } from "@tabler/icons-react";
 
 const socialLinks = [
@@ -29,6 +29,12 @@ const socialLinks = [
     url: "https://twitter.com/deepakkutniyal/",
   },
   {
+    title: "Deepak instagram",
+    label: "instagram",
+    icon: <IconBrandInstagram />,
+    url: "https://www.instagram.com/deepak_kutniyal/",
+  },
+  {
     title: "Deepak Skype",
     label: "Skype",
     icon: <IconBrandSkype />,
@@ -41,18 +47,13 @@ const socialLinks = [
     icon: <IconBrandGithub />,
     url: "https://github.com/dpk1391981/",
   },
-  {
-    title: "Deepak Bitbucket",
-    label: "Bitbucket",
-    icon: <IconBrandBitbucket />,
-    url: "https://bitbucket.org/dpk1391981/",
-  },
-  {
-    title: "Deepak zoom",
-    label: "zoom",
-    icon: <IconBrandZoom />,
-    url: "https://us04web.zoom.us/j/4191528385?pwd=dENtU1cxYVA3dytVazdKMWZOQmMyQT09/",
-  },
+
+  // {
+  //   title: "Deepak upwork",
+  //   label: "upwork",
+  //   icon: <IconBrandUpwork />,
+  //   url: "https://www.upwork.com/freelancers/~0103c15cba788d8f5b",
+  // },
 ];
 
 const SocailLinks = () => {
