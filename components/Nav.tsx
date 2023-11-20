@@ -17,10 +17,10 @@ import {
 import Image from "next/image";
 import axios from "axios";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 const Nav = () => {
-  let router = useRouter();
+  const pathname = usePathname();
   const [showError, setShowError] = useState(false);
   const [openNav, setOpenNav] = useState(false);
 
@@ -100,9 +100,9 @@ const Nav = () => {
           </Link>
           <Link
             className='text-muted dark:text-gray-400 hover:bg-gray-100 hover:text-white-600 dark:hover:text-green-400 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 inline-flex items-center'
-            aria-label='hire me'
+            aria-label='join with me'
             href='/hireme'
-            title='hire me'
+            title='join with me'
             onClick={() => setOpenNav(false)}>
             <IconMoodDollar />
           </Link>
@@ -189,27 +189,28 @@ const Nav = () => {
           aria-label='Main navigation'>
           <div className='divider'></div>
           <ul className='flex flex-col lg:flex-row lg:self-center w-full lg:w-auto  lg:text-[0.9500rem] tracking-[0.01rem] font-medium'>
-            <li className='text-lg ' title='Home'>
+            <li className={`text-lg  ${pathname === "/" && `active`}`} title='Home'>
               <Link className='px-4 py-3 flex' onClick={() => setOpenNav(false)} href='/'>
                 / | <IconHome2 className='m-0' />
               </Link>
             </li>
-            <li className='text-lg ' title='About me'>
-              <Link className='px-4 py-3 flex' onClick={() => setOpenNav(false)} href={`/about`}>
+            <li className={`text-lg  ${pathname === "/about" && `active`}`} title='About me'>
+              <Link className='px-4 py-3 flex ' onClick={() => setOpenNav(false)} href={`/about`}>
                 Me | <IconUserScan className='m-1' />
               </Link>
             </li>
-            <li className='text-lg ' title='My Experience'>
+            <li className={`text-lg  ${pathname === "/experience" && `active`}`} title='My Experience'>
               <Link onClick={() => setOpenNav(false)} className='px-4 py-3 flex' href={`/experience`}>
                 Experience | <IconBuildingBank className='m-0' />
               </Link>
             </li>
-            <li className='text-lg ' title='My Education'>
+
+            <li className={`text-lg  ${pathname === "/education" && `active`}`} title='My Education'>
               <Link onClick={() => setOpenNav(false)} className='px-4 py-3 flex' href={`/education`}>
                 Education | <IconBallpen className='m-1' />
               </Link>
             </li>
-            <li className='text-lg ' title='Skills'>
+            <li className={`text-lg  ${pathname === "/skills" && `active`}`} title='Skills'>
               <Link onClick={() => setOpenNav(false)} className='px-4 py-3 flex' href={`/skills`}>
                 Skills | <IconChartBubble />
               </Link>
