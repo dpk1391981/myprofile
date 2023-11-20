@@ -16,21 +16,21 @@ export const metadata: Metadata = {
   description: `Experienced software engineer with ${diffExprs.years()}+ Years expertise in JavaScript. Deepak Kumar excels in crafting innovative solutions for seamless software development`,
   keywords: ["Deepak Kumar, Software Engineer, Node Js ,React Js, Javascript, software, saga"],
   openGraph: {
-    url: "https://imdeepak.in/",
+    url: process.env.WEB_SITE,
     images: "https://myprofiledk.s3.ap-south-1.amazonaws.com/images/profile-pic-removebg-preview.png",
   },
   creator: "Deepak Kumar",
-  authors: [{ name: "Deepak Kumar" }, { name: "Deepak Kumar", url: "https://imdeepak.in/" }],
+  authors: [{ name: "Deepak Kumar" }, { name: "Deepak Kumar", url: process.env.WEB_SITE }],
   verification: {
     google: "JX0NG7dsDG67hlED07lGMa2XzCryv4PnDEzzDBwG6eg",
   },
   alternates: {
-    canonical: "https://imdeepak.in/",
+    canonical: process.env.WEB_SITE,
     languages: {
       "en-US": "/en-US",
     },
   },
-  metadataBase: new URL("https://imdeepak.in/"),
+  metadataBase: new URL(`${process.env.WEB_SITE}`),
 };
 
 export const viewport: Viewport = {

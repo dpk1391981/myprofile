@@ -123,8 +123,8 @@ const Nav = () => {
             <span>
               Error in download!
               <p>Please send query to</p>
-              <a className='font-bold' href='mailto:dpk1391981@gmail.com'>
-                &nbsp; dpk1391981@gmail.com
+              <a className='font-bold' href={`mailto:${process.env.EMAIL_ID}`}>
+                &nbsp; {process.env.EMAIL_ID}
               </a>
             </span>
             <span
