@@ -158,19 +158,17 @@ const Nav = () => {
           </div>
 
           <div className='flex flex-col'>
-            <div className='ml-4 mt-2 text-2xl font-bold' title='Deepak Kumar | dpk1391981@gmail.com'>
+            <div className='ml-4 lg:mt-5 sm: mt-2 text-2xl font-bold' title='Deepak Kumar'>
               <div className='flex '>
                 <Link href={"/"}>Deepak Kumar</Link>
 
                 {/* one day i will un comment this blue tick */}
                 {/* <IconDiscountCheckFilled className='ml-1 mt-1 text-blue-600' /> */}
               </div>
-              <Link href={"mailto:dpk1391981@gmail.com"}>
-                <p className='text-sm font-medium text-blue-700 text-center sm: mr-10'>dpk1391981@gmail.com</p>
-              </Link>
+              <p className='text-xs font-medium text-blue-700 text-center sm: mr-2'>My Professional Software Saga</p>
             </div>
             <RightTopBlock
-              cName={`lg:hidden mx:hidden items-center flex justify-between w-full lg:w-auto sm: mr-2`}
+              cName={`lg:hidden mx:hidden items-center flex justify-between w-full lg:w-auto sm: ml-2`}
               pName={`lg:self-center flex lg:flex items-center  lg:static justify-end`}
             />
           </div>

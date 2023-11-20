@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   title: `Deepak Kumar | Experienced Software Engineer | ${diffExprs.years()}+ Years Expertise`,
   applicationName: "Deepak Kumar | Software Engineer",
   description: `Experienced software engineer with ${diffExprs.years()}+ Years expertise in JavaScript. Deepak Kumar excels in crafting innovative solutions for seamless software development`,
-  keywords: ["Deepak Kumar, Software Engineer, Node Js ,React Js, Javascript"],
+  keywords: ["Deepak Kumar, Software Engineer, Node Js ,React Js, Javascript, software, saga"],
   openGraph: {
     url: "https://imdeepak.in/",
     images: "https://myprofiledk.s3.ap-south-1.amazonaws.com/images/profile-pic-removebg-preview.png",

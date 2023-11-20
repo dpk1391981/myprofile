@@ -11,13 +11,7 @@ const Footer = () => {
     <>
       <footer className='footer footer-center p-10  text-base-content rounded font-medium text-lg bg-blue-50'>
         <nav className='sticky bottom-0 grid lg:grid-flow-col lg:gap-2'>
-          <a className='flex link link-hover' href={`tel:${MOBILE}`} target='tel'>
-            <IconPhone /> {MOBILE}
-          </a>
-          |
-          <a className='flex link link-hover' href={`mailto:${EMAIL}`} target='email'>
-            <IconMail /> {EMAIL}
-          </a>
+          <span>Empowering Innovation through Elegant Code | Deepak Kumar - Software Engineer</span>
         </nav>
         <nav>
           <div className='grid grid-flow-col gap-2'>
