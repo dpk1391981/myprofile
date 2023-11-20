@@ -136,9 +136,9 @@ const Nav = () => {
         </div>
       )}
 
-      <div className='relative text-default py-3 px-3 md:px-6 mx-auto w-full md:flex md:justify-between max-w-7xl'>
+      <div className='relative text-default py-3 px-3 lg:px-6 mx-auto w-full lg:flex lg:justify-between max-w-7xl'>
         <div className='flex justify-between'>
-          <span className='self-center ml-2 rtl:ml-0 rtl:mr-2 text-2xl md:text-xl font-bold text-gray-900 whitespace-nowrap dark:text-white'>
+          <span className='self-center ml-2 rtl:ml-0 rtl:mr-2 text-2xl lg:text-xl font-bold text-gray-900 whitespace-nowrap dark:text-white'>
             <div className='avatar'>
               <div className='w-20 rounded-full ring ring-blue-700 ring-offset-base-100 ring-offset-2'>
                 <Image
@@ -166,12 +166,12 @@ const Nav = () => {
               <p className='text-sm font-medium text-blue-700 text-center sm: mr-10'>dpk1391981@gmail.com</p>
             </div>
             <RightTopBlock
-              cName={`md:hidden mx:hidden items-center flex justify-between w-full md:w-auto sm: mr-2`}
-              pName={`md:self-center flex md:flex items-center  md:static justify-end`}
+              cName={`lg:hidden mx:hidden items-center flex justify-between w-full lg:w-auto sm: mr-2`}
+              pName={`lg:self-center flex lg:flex items-center  lg:static justify-end`}
             />
           </div>
 
-          <div className='flex items-center md:hidden '>
+          <div className='flex items-center lg:hidden '>
             <button
               className='flex flex-col h-12 w-12 rounded justify-center items-center cursor-pointer group'
               aria-label='Toggle Menu'
@@ -181,12 +181,12 @@ const Nav = () => {
           </div>
         </div>
         <nav
-          className={`items-center w-full  md:w-auto ${
+          className={`items-center w-full  lg:w-auto ${
             !openNav && `hidden`
-          } md:flex  overflow-y-auto overflow-x-hidden md:overflow-y-visible md:overflow-x-auto md:mx-7`}
+          } lg:flex  overflow-y-auto overflow-x-hidden lg:overflow-y-visible lg:overflow-x-auto lg:mx-7`}
           aria-label='Main navigation'>
           <div className='divider'></div>
-          <ul className='flex flex-col md:flex-row md:self-center w-full md:w-auto  md:text-[0.9500rem] tracking-[0.01rem] font-medium'>
+          <ul className='flex flex-col lg:flex-row lg:self-center w-full lg:w-auto  lg:text-[0.9500rem] tracking-[0.01rem] font-medium'>
             <li className='text-lg ' title='Home'>
               <Link className='px-4 py-3 flex' onClick={() => setOpenNav(false)} href='/'>
                 / | <IconHome2 className='m-0' />
@@ -215,8 +215,8 @@ const Nav = () => {
           </ul>
         </nav>
         <RightTopBlock
-          cName={`md:self-center flex md:flex items-center md:mb-0 fixed w-full md:w-auto md:static justify-end left-0 rtl:left-auto rtl:right-0 bottom-0 p-3 md:p-0`}
-          pName={`hidden md:flex items-center  justify-between w-full md:w-auto`}
+          cName={`lg:self-center flex md:flex items-center md:mb-0 fixed w-full md:w-auto md:static justify-end left-0 rtl:left-auto rtl:right-0 bottom-0 p-3 md:p-0`}
+          pName={`hidden lg:flex items-center  justify-between w-full md:w-auto`}
         />
       </div>
     </header>
