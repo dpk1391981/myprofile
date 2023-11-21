@@ -10,6 +10,7 @@ const diffExprs = currentYrsExp();
 /**
  * Meta keywords for SEO
  */
+console.log(`process.env.WEB_SITE`, process.env.WEB_SITE);
 export const metadata: Metadata = {
   title: `Deepak Kumar | Experienced Software Engineer | ${diffExprs.years()}+ Years Expertise`,
   applicationName: "Deepak Kumar | Software Engineer",

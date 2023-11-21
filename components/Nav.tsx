@@ -15,50 +15,12 @@ import {
   IconDiscountCheckFilled,
 } from "@tabler/icons-react";
 import Image from "next/image";
-import axios from "axios";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const Nav = () => {
   const pathname = usePathname();
-  const [showError, setShowError] = useState(false);
   const [openNav, setOpenNav] = useState(false);
-
-  function axiosDownloadFile(url: any, fileName: any) {
-    return axios({
-      url,
-      method: "GET",
-      responseType: "blob",
-    })
-      .then((response) => {
-        const href = window.URL.createObjectURL(response.data);
-
-        const anchorElement = document.createElement("a");
-
-        anchorElement.href = href;
-        anchorElement.download = fileName;
-
-        document.body.appendChild(anchorElement);
-        anchorElement.click();
-
-        document.body.removeChild(anchorElement);
-        window.URL.revokeObjectURL(href);
-      })
-      .catch((error) => {
-        console.log("error: ", error);
-        setShowError(true);
-      });
-  }
-
-  const onButtonClick = () => {
-    try {
-      const fileURL = "https://myprofiledk.s3.ap-south-1.amazonaws.com/resume.pdf";
-
-      axiosDownloadFile(fileURL, "Deepak-Resume.pdf");
-    } catch (error) {
-      console.log(`Error`, error);
-    }
-  };
 
   const openContactModal = () => {
     const myModalElement: HTMLDialogElement | null = document.getElementById("my_modal_1") as HTMLDialogElement | null;
@@ -85,9 +47,10 @@ const Nav = () => {
           <Link
             className='text-muted dark:text-gray-400 hover:bg-gray-100 hover:text-indigo-600 dark:hover:text-indigo-400 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 inline-flex items-center'
             aria-label='Download CV Summary'
-            href='#'
+            href='/assets/pdf/resume/Deepak-Resume.pdf'
             title='Download Resume'
-            onClick={onButtonClick}>
+            target='_blank'
+            rel='noopener noreferrer'>
             <IconFileDownload />
           </Link>
           <Link
@@ -117,27 +80,6 @@ const Nav = () => {
     <header
       className='sticky top-0 z-40   w-full border-b border-gray-10/0 transition-[opacity] ease-in-out bg-blue-50'
       id='header'>
-      {showError && (
-        <div className='toast'>
-          <div className='alert alert-warning'>
-            <span>
-              Error in download!
-              <p>Please send query to</p>
-              <a className='font-bold' href={`mailto:${process.env.EMAIL_ID}`}>
-                &nbsp; {process.env.EMAIL_ID}
-              </a>
-            </span>
-            <span
-              className='cursor-pointer'
-              onClick={() => {
-                setShowError(false);
-              }}>
-              X
-            </span>
-          </div>
-        </div>
-      )}
-
       <div className='relative text-default py-3 px-3 lg:px-6 mx-auto w-full lg:flex lg:justify-between max-w-7xl'>
         <div className='flex justify-between'>
           <div className='self-center ml-2 rtl:ml-0 rtl:mr-2 text-2xl lg:text-xl font-bold text-gray-900 whitespace-nowrap dark:text-white'>
