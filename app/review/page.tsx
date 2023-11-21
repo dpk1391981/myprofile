@@ -1,7 +1,15 @@
+import type { Metadata } from "next";
 import React from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { IconBrandLinkedin, IconBrandUpwork } from "@tabler/icons-react";
+import { IconBrandLinkedin } from "@tabler/icons-react";
+
+export const metadata: Metadata = {
+  title: "Deepak Kumar | Review",
+  description:
+    "Deepak Kumar | Software Engineer | Node Js | React Js | Javascript | Review | References | Recommendations",
+  keywords: "JAVASCRIPT | FULL STACK | NODE JS | REACT JS | MYSQL | NOSQL",
+};
+
 const page = () => {
   return (
     <div className='relative mx-auto max-w-7xl px-4 md:px-6 py-8 md:py-10 lg:py-12 text-default '>
@@ -11,7 +19,7 @@ const page = () => {
         </div>
         <div className='mb-8 md:mx-auto md:mb-12 text-center max-w-3xl'>
           <h2 className='font-bold leading-tighter tracking-tighter font-heading text-heading text-3xl md:text-4xl'>
-            References & Recommendations
+            Recommendations
           </h2>
         </div>
 
