@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Footer, Nav, ContactModal } from "@/components";
+import { Analytics } from "@vercel/analytics/react";
 // import Provider from "@/components/Provider";
 import Head from "next/head";
 import Script from "next/script";
@@ -63,6 +64,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Nav />
         {children}
         <Footer />
+        <Analytics />
         {/* </Provider> */}
       </body>
     </html>
