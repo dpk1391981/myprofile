@@ -10,7 +10,6 @@ import { NEXT_SEO_DEFAULT } from "@/app/seo_config";
 /**
  * Meta keywords for SEO
  */
-console.log(`process.env.WEB_SITE`, process.env.WEB_SITE);
 export const metadata: Metadata = NEXT_SEO_DEFAULT;
 
 export const viewport: Viewport = {
