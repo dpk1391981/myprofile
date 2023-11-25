@@ -5,7 +5,6 @@ import { Analytics } from "@vercel/analytics/react";
 // import Provider from "@/components/Provider";
 import Head from "next/head";
 import Script from "next/script";
-import { NextSeo } from "next-seo";
 import { NEXT_SEO_DEFAULT } from "@/app/seo_config";
 
 /**
