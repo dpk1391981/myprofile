@@ -23,5 +23,14 @@ export const NEXT_SEO_DEFAULT = {
       "en-US": "/en-US",
     },
   },
+  twitter: {
+    card: "https://myprofiledk.s3.ap-south-1.amazonaws.com/images/profile-pic-removebg-preview.png",
+    title: "Deepak Twitte Handle",
+    description: "Deepak kumar | Deepak kutniyal | twitter | @deepakkutniyal",
+    creator: "@deepakkutniyal",
+    images: ["https://pbs.twimg.com/profile_images/968138851955781632/zfcWlg59_normal.jpg"],
+    site: "https://twitter.com/deepakkutniyal/",
+    handle: "@deepakkutniyal",
+  },
   metadataBase: new URL(`${process.env.NEXT_PUBLIC_WEB_SITE}`),
 };
