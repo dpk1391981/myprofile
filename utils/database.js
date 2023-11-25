@@ -2,13 +2,13 @@ import mongoose from "mongoose";
 let isConnected = false;
 
 export const connectToDB = async () => {
-  console.log(`Connecting with : `, process.env.MONGO_URI);
+  console.log(`Connecting with : `, process.env.NEXT_PUBLIC_MONGO_URI);
   mongoose.set("strictQuery", true);
   if (isConnected) {
     return;
   }
   try {
-    await mongoose.connect(process.env.MONGO_URI, {
+    await mongoose.connect(process.env.NEXT_PUBLIC_MONGO_URI, {
       dbName: "myprofile",
       useNewUrlParser: true,
       useUnifiedTopology: true,

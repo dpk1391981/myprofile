@@ -17,8 +17,8 @@ const ContactModal = () => {
                 <IconPhone />
               </th>
               <td className='pl-2 font-medium'>
-                <a href={`tel:${process.env.MOBILE_NUMBER}`} target='tel'>
-                  {process.env.MOBILE_NUMBER}
+                <a href={`tel:${process.env.NEXT_PUBLIC_MOBILE_NUMBER}`} target='tel'>
+                  {process.env.NEXT_PUBLIC_MOBILE_NUMBER}
                 </a>
               </td>
             </tr>
@@ -28,8 +28,8 @@ const ContactModal = () => {
                 <IconMail />
               </th>
               <td className='pl-4 font-medium'>
-                <a href={`mailto:${process.env.EMAIL_ID}`} target='email'>
-                  {process.env.EMAIL_ID}
+                <a href={`mailto:${process.env.NEXT_PUBLIC_EMAIL_ID}`} target='email'>
+                  {process.env.NEXT_PUBLIC_EMAIL_ID}
                 </a>
               </td>
             </tr>
