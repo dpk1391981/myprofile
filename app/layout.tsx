@@ -5,35 +5,14 @@ import { Analytics } from "@vercel/analytics/react";
 // import Provider from "@/components/Provider";
 import Head from "next/head";
 import Script from "next/script";
-import { currentYrsExp } from "../components/utils/date";
-const diffExprs = currentYrsExp();
+import { NextSeo } from "next-seo";
+import { NEXT_SEO_DEFAULT } from "@/app/seo_config";
 
 /**
  * Meta keywords for SEO
  */
 console.log(`process.env.WEB_SITE`, process.env.WEB_SITE);
-export const metadata: Metadata = {
-  title: `Deepak Kumar | Experienced Software Engineer | ${diffExprs.years()}+ Years Expertise`,
-  applicationName: "Deepak Kumar | Software Engineer",
-  description: `Experienced software engineer with ${diffExprs.years()}+ Years expertise in JavaScript. Deepak Kumar excels in crafting innovative solutions for seamless software development`,
-  keywords: ["Deepak Kumar, Software Engineer, Node Js ,React Js, Javascript, software, saga"],
-  openGraph: {
-    url: process.env.WEB_SITE,
-    images: "https://myprofiledk.s3.ap-south-1.amazonaws.com/images/profile-pic-removebg-preview.png",
-  },
-  creator: "Deepak Kumar",
-  authors: [{ name: "Deepak Kumar" }, { name: "Deepak Kumar", url: process.env.WEB_SITE }],
-  verification: {
-    google: "JX0NG7dsDG67hlED07lGMa2XzCryv4PnDEzzDBwG6eg",
-  },
-  alternates: {
-    canonical: process.env.WEB_SITE,
-    languages: {
-      "en-US": "/en-US",
-    },
-  },
-  metadataBase: new URL(`${process.env.WEB_SITE}`),
-};
+export const metadata: Metadata = NEXT_SEO_DEFAULT;
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -60,6 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
       <body className='antialiased text-default bg-page tracking-tight'>
         {/* <Provider> */}
+
         <ContactModal />
         <Nav />
         {children}

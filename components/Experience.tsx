@@ -3,12 +3,19 @@ import Image from "next/image";
 import { currentYrsExp } from "./utils/date";
 import { IconLink } from "@tabler/icons-react";
 import type { Metadata } from "next";
+import { NEXT_SEO_DEFAULT } from "@/app/seo_config";
 
-export const metadata: Metadata = {
-  title: "Deepak Kumar | Experience",
-  description: "Deepak Kumar | Experience | Software Engineer | Node Js | React Js | Javascript",
-  keywords: "Instant system inc, node js, deepak kumar, ceekr, synqy",
+const ExperienceMeta = {
+  ...NEXT_SEO_DEFAULT,
+  ...{
+    title: "Deepak Kumar | Experience",
+    description: "Deepak Kumar | Experience | Software Engineer | Node Js | React Js | Javascript",
+    keywords:
+      "Instant system inc, node js, deepak kumar, ceekr, synqy, instant system inc, synqy, ceekr, phoenix, galaxy toursim, humanize",
+  },
 };
+
+export const metadata: Metadata = ExperienceMeta;
 
 const Experience = () => {
   const diffExprs = currentYrsExp();

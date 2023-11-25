@@ -1,12 +1,17 @@
 import React from "react";
 import Image from "next/image";
 import type { Metadata } from "next";
+import { NEXT_SEO_DEFAULT } from "@/app/seo_config";
 
-export const metadata: Metadata = {
-  title: "Deepak Kumar | Education Qualification",
-  description: "Deepak Kumar | Education Qualification",
-  keywords: "JAVASCRIPT | FULL STACK | NODE JS | REACT JS | MYSQL | NOSQL",
+const EducationMeta = {
+  ...NEXT_SEO_DEFAULT,
+  ...{
+    title: "Deepak Kumar | Education Qualification",
+    description: "Deepak Kumar | Education Qualification",
+    keywords: "JAVASCRIPT | FULL STACK | NODE JS | REACT JS | MYSQL | NOSQL | JAIN | DELHI UNIVERSITY",
+  },
 };
+export const metadata: Metadata = EducationMeta;
 
 const Education = () => {
   return (

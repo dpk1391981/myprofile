@@ -37,14 +37,6 @@ const Nav = () => {
       <div className={pName}>
         <div className={cName}>
           <Link
-            className='text-muted dark:text-gray-400 hover:bg-gray-100 hover:text-blue-600 dark:hover:text-blue-400 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 inline-flex items-center'
-            aria-label='LinkedIn Profile'
-            href='https://www.linkedin.com/in/dpk1391981/'
-            title='linkedin profile'
-            target='_linkedin'>
-            <IconBrandLinkedin />
-          </Link>
-          <Link
             className='text-muted dark:text-gray-400 hover:bg-gray-100 hover:text-indigo-600 dark:hover:text-indigo-400 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 inline-flex items-center'
             aria-label='Download CV Summary'
             href='/pdf/resume/Deepak-Resume.pdf'

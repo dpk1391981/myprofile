@@ -3,13 +3,18 @@ import type { Metadata } from "next";
 import React from "react";
 import SocailLinks from "./utils/SocailLinks";
 import { currentYrsExp } from "./utils/date";
+import { NEXT_SEO_DEFAULT } from "@/app/seo_config";
 import { IconCirclesRelation } from "@tabler/icons-react";
 
-export const metadata: Metadata = {
-  title: "Deepak Kumar | About",
-  description: "Deepak Kumar | Software Engineer | Node Js | React Js | Javascript",
-  keywords: "JAVASCRIPT | FULL STACK | NODE JS | REACT JS | MYSQL | NOSQL",
+const AboutMeta = {
+  ...NEXT_SEO_DEFAULT,
+  ...{
+    title: "Deepak Kumar | About",
+    description: "Deepak Kumar | Software Engineer | Node Js | React Js | Javascript | Deepak Kutniyal",
+    keywords: "JAVASCRIPT | FULL STACK | NODE JS | REACT JS | MYSQL | NOSQL | Deepak Kutniyal",
+  },
 };
+export const metadata: Metadata = AboutMeta;
 
 const openContactModal = () => {
   const myModalElement: HTMLDialogElement | null = document.getElementById("my_modal_1") as HTMLDialogElement | null;

@@ -1,12 +1,17 @@
 import React from "react";
 import { skills } from "../components/utils/consts";
 import type { Metadata } from "next";
-export const metadata: Metadata = {
-  title: "Deepak Kumar | Skills",
-  description: "Deepak Kumar | Software Engineer | Node Js | React Js | Javascript",
-  keywords: skills.join(","),
+import { NEXT_SEO_DEFAULT } from "@/app/seo_config";
+const SkillsMeta = {
+  ...NEXT_SEO_DEFAULT,
+  ...{
+    title: "Deepak Kumar | Technical Experience",
+    description: "Deepak Kumar | Experience | Software Engineer | Node Js | React Js | Javascript",
+    keywords: skills.join(","),
+  },
 };
 
+export const metadata: Metadata = SkillsMeta;
 const Skills = () => {
   return (
     <div>
