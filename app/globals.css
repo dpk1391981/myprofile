@@ -42,21 +42,6 @@
   padding: 0 5px;
 }
 
-[data-aw-toggle-menu].expanded g > path:first-child {
-  --tw-translate-y: 15px;
-  --tw-translate-x: -3px;
-  --tw-rotate: -45deg;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skew(var(--tw-skew-x))
-    skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-[data-aw-toggle-menu].expanded g > path:last-child {
-  --tw-translate-y: -8px;
-  --tw-translate-x: 14px;
-  --tw-rotate: 45deg;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skew(var(--tw-skew-x))
-    skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
 .active {
   @apply text-center rounded-xl bg-blue-700   text-white;
 }

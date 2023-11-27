@@ -42,8 +42,7 @@ const Skills = () => {
                             {skills.map((skill: any) => (
                               <button
                                 key={skill}
-                                className='tag px-2 py-1 rounded bg-neutral-200 text-neutral-focus text-md hover:bg-gray-300 transition duration-200 ease-in-out '
-                                data-wc-key='ci-cd'>
+                                className='tag px-2 py-1 rounded bg-neutral-200 text-neutral-focus text-md hover:bg-gray-300 transition duration-200 ease-in-out '>
                                 {skill}
                               </button>
                             ))}
