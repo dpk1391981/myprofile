@@ -5,7 +5,7 @@ import { Analytics } from "@vercel/analytics/react";
 // import Provider from "@/components/Provider";
 import Head from "next/head";
 import Script from "next/script";
-import { NEXT_SEO_DEFAULT } from "@/app/seo_config";
+import { NEXT_SEO_DEFAULT, STRUCT_DATA } from "@/app/seo_config";
 
 /**
  * Meta keywords for SEO
@@ -23,6 +23,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang='en'>
       <Head>
         <link rel='shortcut icon' href='favicon.ico' />
+        <script
+          key='profile-struct-1'
+          type='application/ld+json'
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(STRUCT_DATA) }}
+        />
       </Head>
       <Script async src='https://www.googletagmanager.com/gtag/js?id=G-YXZRZVFV9F' />
       <Script id='google-analytics'>

@@ -1,15 +1,18 @@
 import { totalExperianceYears } from "../components/utils/date";
 
+const description = `Experienced software engineer with ${totalExperianceYears()} expertise in JavaScript. Deepak Kumar excels in crafting innovative solutions for seamless software development`;
+const title = `Deepak Kumar | Experienced Software Engineer`;
+const profileImage = "https://myprofiledk.s3.ap-south-1.amazonaws.com/images/profile-pic-removebg-preview.png";
 export const NEXT_SEO_DEFAULT = {
-  title: `Deepak Kumar | Experienced Software Engineer`,
+  title: title,
   applicationName: "Deepak Kumar | Software Engineer",
-  description: `Experienced software engineer with ${totalExperianceYears()} expertise in JavaScript. Deepak Kumar excels in crafting innovative solutions for seamless software development`,
+  description: description,
   keywords: [
     "Deepak Kumar,Deepak kutniyal, Software Engineer, Node Js ,React Js, Javascript, software, saga, kutniyal",
   ],
   openGraph: {
     url: process.env.NEXT_PUBLIC_WEB_SITE,
-    images: "https://myprofiledk.s3.ap-south-1.amazonaws.com/images/profile-pic-removebg-preview.png",
+    images: profileImage,
   },
   creator: "Deepak Kumar",
   authors: [{ name: "Deepak Kumar" }, { name: "Deepak Kumar", url: process.env.NEXT_PUBLIC_WEB_SITE }],
@@ -23,7 +26,7 @@ export const NEXT_SEO_DEFAULT = {
     },
   },
   twitter: {
-    card: "https://myprofiledk.s3.ap-south-1.amazonaws.com/images/profile-pic-removebg-preview.png",
+    card: profileImage,
     title: "Deepak Twitte Handle",
     description: "Deepak kumar | Deepak kutniyal | twitter | @deepakkutniyal",
     creator: "@deepakkutniyal",
@@ -32,4 +35,18 @@ export const NEXT_SEO_DEFAULT = {
     handle: "@deepakkutniyal",
   },
   metadataBase: new URL(`${process.env.NEXT_PUBLIC_WEB_SITE}`),
+};
+
+export const STRUCT_DATA = {
+  "@context": process.env.NEXT_PUBLIC_WEB_SITE,
+  "@type": "Portfolio",
+  headline: title,
+  description: description,
+  image: [profileImage],
+  author: [
+    {
+      "@type": "Person",
+      name: "Deepak Kumar",
+    },
+  ],
 };
