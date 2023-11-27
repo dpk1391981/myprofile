@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { currentYrsExp } from "./utils/date";
+import { totalExperianceYears } from "./utils/date";
 import { IconLink } from "@tabler/icons-react";
 import type { Metadata } from "next";
 import { NEXT_SEO_DEFAULT } from "@/app/seo_config";
@@ -18,7 +18,6 @@ const ExperienceMeta = {
 export const metadata: Metadata = ExperienceMeta;
 
 const Experience = () => {
-  const diffExprs = currentYrsExp();
   return (
     <section className='relative not-prose scroll-mt-[72px]' id='experience'>
       <div className='relative mx-auto max-w-7xl px-4 md:px-6 py-8 md:py-10 lg:py-12 text-default '>
@@ -57,7 +56,9 @@ const Experience = () => {
                           </a>
                         </div>
 
-                        <p className='text-lg font-normal'>Sr Software Engineer ( {`${diffExprs.years()}+ yrs`})</p>
+                        <p className='text-lg font-normal'>
+                          Sr Software Engineer ( {`${totalExperianceYears()}+ yrs`})
+                        </p>
                         <p className='text-sm font-normal'>2017 - current</p>
 
                         <div className='text-muted mt-2'>

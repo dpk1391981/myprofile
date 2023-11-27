@@ -16,10 +16,6 @@ const Skills = () => {
   return (
     <div>
       <section className='relative not-prose scroll-mt-[72px]' id='about'>
-        <div className='absolute inset-0 pointer-events-none -z-[1]' aria-hidden='true'>
-          <div className='absolute inset-0'></div>
-        </div>
-
         <div className='relative mx-auto max-w-7xl px-4 md:px-6 py-8 md:py-10 lg:py-12 text-default '>
           <section className='relative md:-mt-[76px] not-prose ' id='about-hero'>
             <div className='absolute inset-0 pointer-events-none ' aria-hidden='true'></div>

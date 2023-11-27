@@ -6,3 +6,7 @@ export const currentYrsExp = () => {
   var diffDuration = moment.duration(currentYr.diff(currentComanyJoinYr));
   return diffDuration;
 };
+
+export const totalExperianceYears = () => {
+  return currentYrsExp().years();
+};
