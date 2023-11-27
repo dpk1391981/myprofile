@@ -56,9 +56,7 @@ const Experience = () => {
                           </a>
                         </div>
 
-                        <p className='text-lg font-normal'>
-                          Sr Software Engineer ( {`${totalExperianceYears()}+ yrs`})
-                        </p>
+                        <p className='text-lg font-normal'>Sr Software Engineer ( {`${totalExperianceYears()}`})</p>
                         <p className='text-sm font-normal'>2017 - current</p>
 
                         <div className='text-muted mt-2'>

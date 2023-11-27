@@ -3,7 +3,7 @@ import { totalExperianceYears } from "../components/utils/date";
 export const NEXT_SEO_DEFAULT = {
   title: `Deepak Kumar | Experienced Software Engineer`,
   applicationName: "Deepak Kumar | Software Engineer",
-  description: `Experienced software engineer with ${totalExperianceYears()}+ Years expertise in JavaScript. Deepak Kumar excels in crafting innovative solutions for seamless software development`,
+  description: `Experienced software engineer with ${totalExperianceYears()} expertise in JavaScript. Deepak Kumar excels in crafting innovative solutions for seamless software development`,
   keywords: [
     "Deepak Kumar,Deepak kutniyal, Software Engineer, Node Js ,React Js, Javascript, software, saga, kutniyal",
   ],

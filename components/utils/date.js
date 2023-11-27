@@ -8,5 +8,10 @@ export const currentYrsExp = () => {
 };
 
 export const totalExperianceYears = () => {
-  return currentYrsExp().years();
+  const years = currentYrsExp().years();
+  const months = currentYrsExp().months();
+  let defaultString = years + "+ years ";
+
+  if (months > 8) defaultString = years + " years " + months + " months ";
+  return defaultString;
 };
