@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import React from "react";
 import Link from "next/link";
 import { IconBrandLinkedin } from "@tabler/icons-react";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "Deepak Kumar | Review",
@@ -48,10 +49,15 @@ const page = () => {
                     </p>
                   </blockquote>
                   <div className='flex items-center justify-center mt-6 space-x-3'>
-                    <img
-                      className='w-6 h-6 rounded-full'
-                      src='https://media.licdn.com/dms/image/C5603AQH0sdWTWkAZ2Q/profile-displayphoto-shrink_200_200/0/1644824909176?e=1706140800&v=beta&t=syPRPeR5TQq-tsqhYLempTit0NI_aRIK-gAMPQyLZA0'
-                      alt='profile picture'
+                    <Image
+                      src='/assets/images/amit.jpeg'
+                      alt='Thumbnail image of Amit Saraswat'
+                      title='Avatar Amit Saraswat'
+                      className='avatar w-12 rounded-full'
+                      width={50}
+                      height={50}
+                      loading='lazy'
+                      decoding='async'
                     />
                     <div className='flex items-center divide-x-2 divide-gray-500 dark:divide-gray-700'>
                       <div className='pr-3 font-medium text-gray-900 dark:text-white'>Amit Saraswat</div>
@@ -65,7 +71,54 @@ const page = () => {
                   </div>
                 </figure>
                 <div className='absolute flex justify-between transform -translate-y-1/2 left-2 right-2 top-1/2'>
-                  <a href='#slide2' className='btn btn-circle sm:visible invisible'>
+                  <a href='#slide1'>{/* ❮ */}</a>
+                  <a href='#slide2' className='btn btn-circle  sm:visible invisible'>
+                    ❯
+                  </a>
+                </div>
+              </div>
+              <div id='slide2' className='carousel-item relative w-full'>
+                <figure className='max-w-screen-md mx-auto'>
+                  <svg
+                    className='h-12 mx-auto mb-3 text-gray-400 dark:text-gray-600'
+                    viewBox='0 0 24 27'
+                    fill='none'
+                    xmlns='http://www.w3.org/2000/svg'>
+                    <path
+                      d='M14.017 18L14.017 10.609C14.017 4.905 17.748 1.039 23 0L23.995 2.151C21.563 3.068 20 5.789 20 8H24V18H14.017ZM0 18V10.609C0 4.905 3.748 1.038 9 0L9.996 2.151C7.563 3.068 6 5.789 6 8H9.983L9.983 18L0 18Z'
+                      fill='currentColor'></path>
+                  </svg>
+                  <blockquote>
+                    <p className='text-xl font-medium text-gray-900 md:text-3xl dark:text-white'>
+                      "We did a lot together and Deepak is really very talented, he learns new technology quickly and is
+                      very hard working. I felt very good after working with him, he is a person of very good
+                      personality."
+                    </p>
+                  </blockquote>
+                  <div className='flex items-center justify-center mt-6 space-x-3'>
+                    <Image
+                      src='/assets/images/maya.jpeg'
+                      alt='Thumbnail image of Maya Tripathi'
+                      title='Avatar Maya Tripathi'
+                      className='avatar w-12 rounded-full'
+                      width={50}
+                      height={50}
+                      loading='lazy'
+                      decoding='async'
+                    />
+                    <div className='flex items-center divide-x-2 divide-gray-500 dark:divide-gray-700'>
+                      <div className='pr-3 font-medium text-gray-900 dark:text-white'>Maya Tripathi</div>
+                      <div className='pl-3 text-sm font-light text-gray-500 dark:text-gray-400'>
+                        Full-Stack Developer at Teamwork Arts
+                      </div>
+                    </div>
+                    <Link href='https://www.linkedin.com/in/maya-tripathi-34a16b2b/' className='ml-2' target='_blank'>
+                      <IconBrandLinkedin />
+                    </Link>
+                  </div>
+                </figure>
+                <div className='absolute flex justify-between transform -translate-y-1/2 left-2 right-2 top-1/2'>
+                  <a href='#slide1' className='btn btn-circle sm:visible invisible'>
                     ❮
                   </a>
                   {/* <a href='#slide2' className='btn btn-circle  sm:visible invisible'>
