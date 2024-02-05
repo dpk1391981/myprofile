@@ -7,7 +7,8 @@ const EducationMeta = {
   ...NEXT_SEO_DEFAULT,
   ...{
     title: "Deepak Kumar | Education Qualification",
-    description: "Deepak Kumar | Education Qualification",
+    description:
+      "Explore Deepak Kumar's education journey as a seasoned software engineer. Learn about his educational background, technical expertise, and passion for delivering innovative solutions in the dynamic field of software development.",
     keywords: "JAVASCRIPT | FULL STACK | NODE JS | REACT JS | MYSQL | NOSQL | JAIN | DELHI UNIVERSITY",
   },
 };

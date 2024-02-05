@@ -6,7 +6,8 @@ const SkillsMeta = {
   ...NEXT_SEO_DEFAULT,
   ...{
     title: "Deepak Kumar | Technical Experience",
-    description: "Deepak Kumar | Experience | Software Engineer | Node Js | React Js | Javascript",
+    description:
+      "Explore Deepak Kumar's comprehensive skill set as a seasoned software engineer. From programming languages and frameworks to project management and problem-solving, discover the diverse expertise that drives success in software development projects.",
     keywords: skills.join(","),
   },
 };

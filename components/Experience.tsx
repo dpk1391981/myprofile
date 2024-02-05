@@ -9,7 +9,8 @@ const ExperienceMeta = {
   ...NEXT_SEO_DEFAULT,
   ...{
     title: "Deepak Kumar | Experience",
-    description: "Deepak Kumar | Experience | Software Engineer | Node Js | React Js | Javascript",
+    description:
+      "DeExplore Deepak Kumar's professional journey as a seasoned software engineer with a robust educational background and over six years of experience. Dive into his career highlights, technical accomplishments, and dedication to delivering excellence in software development.",
     keywords:
       "Instant system inc, node js, deepak kumar, ceekr, synqy, instant system inc, synqy, ceekr, phoenix, galaxy toursim, humanize",
   },

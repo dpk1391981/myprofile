@@ -10,7 +10,8 @@ const AboutMeta = {
   ...NEXT_SEO_DEFAULT,
   ...{
     title: "Deepak Kumar | About",
-    description: "Deepak Kumar | Software Engineer | Node Js | React Js | Javascript | Deepak Kutniyal",
+    description:
+      "Discover Deepak Kumar, a seasoned software engineer with a wealth of experience spanning over six years. Delve into his journey, where technical expertise meets a passion for innovation, as he continues to drive excellence in software development.",
     keywords: "JAVASCRIPT | FULL STACK | NODE JS | REACT JS | MYSQL | NOSQL | Deepak Kutniyal",
   },
 };
