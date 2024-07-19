@@ -12,7 +12,7 @@ const ExperienceMeta = {
     description:
       "DeExplore Deepak Kumar's professional journey as a seasoned software engineer with a robust educational background and over six years of experience. Dive into his career highlights, technical accomplishments, and dedication to delivering excellence in software development.",
     keywords:
-      "Instant system inc, node js, deepak kumar, ceekr, synqy, instant system inc, synqy, ceekr, phoenix, galaxy toursim, humanize",
+      "Instant system inc,clove, clove dental, dental care, node js, deepak kumar, ceekr, synqy, instant system inc, synqy, ceekr, phoenix, galaxy toursim, humanize",
   },
 };
 
@@ -70,7 +70,63 @@ const Experience = () => {
                             solutions for consumer, enterprise and government markets. We help turn innovative ideas
                             into market-dominating products!
                           </span>
+                          <div className='flex mt-4'>
+                            <div className='flex flex-col items-center mr-4 rtl:mr-0 rtl:ml-4'>
+                              <div className='flex items-center justify-center'>
+                                <Image
+                                  src='/assets/projects/clove.jpeg'
+                                  alt='alt'
+                                  decoding='async'
+                                  loading='lazy'
+                                  className='rounded-full border-slate-200 border-solid border-2'
+                                  width={200}
+                                  height={200}
+                                />
+                              </div>
+                              <div className='w-px h-full bg-black/10 dark:bg-slate-400/50'></div>
+                            </div>
 
+                            <div className='pt-1 pb-8'>
+                              <div className='text-xl font-bold flex'>
+                                Clove Dental
+                                <a href='https://clovedental.in/' className='ml-2' target='_blank'>
+                                  <IconLink />
+                                </a>
+                              </div>
+
+                              <span className='text-lg font-normal'>Sr Software Engineer (Current)</span>
+                              <br />
+                              <span className='text-sm font-normal'>2024 (March) - current</span>
+                              <div className='text-muted mt-2'>
+                                <div className='text-base font-normal'>
+                                Clove Dental operates over 500+ stand-alone clinics throughout the country. Clove team of 1200+ skilled doctors, including general dentists, orthodontists, periodontists, and more, are committed to providing the highest quality dental services while adhering to the most stringent sterilization protocols. Our comprehensive treatments include orthodontics, dental implants, and oral surgery, among others. With over 2 million satisfied patients, we pride ourselves on our ethical and transparent approach to dentistry. For more information, visit our blog on dental health at https://clovedental.in/blog.
+                                  <p className='text-base font-bold mt-2'>
+                                    Tools: Node Js, Angular Js, React Js MySQL, Javascript, GIT, Jira, AWS Services,
+                                    mailgun
+                                  </p>
+                                </div>
+
+                                <ul className='list-disc mt-4 ml-4'>
+                                  <li className='topic-item mt-4 topic-summary topic-tech topic-team'>
+                                    Develop RESTful APIs to support front-end operations, manage data exchange, and ensure secure and efficient communication between client and server.
+                                  </li>
+                                  <li className='topic-item mt-4 topic-summary topic-team topic-lead'>
+                                  Utilize Angular and JavaScript to create dynamic, responsive, and user-friendly interfaces that enhance patient and dental professional experiences. Ensure seamless integration of various UI components, maintaining a consistent and intuitive user interface across devices.
+                                  </li>
+                                  <li className='topic-item mt-4 topic-summary'>
+                                  Conduct thorough testing and debugging to identify and resolve performance bottlenecks.
+                                  </li>
+                                  <li className='topic-item mt-4 topic-summary'>
+                                  Gather and analyze user feedback to continuously improve the usability and accessibility of dental care platforms.
+                                  </li>
+                                  <li className='topic-item mt-4 topic-summary'>
+                                  Integrate microservices architecture to enable modular and maintainable back-end systems.
+                                  </li>
+                                  
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
                           <div className='flex mt-4'>
                             <div className='flex flex-col items-center mr-4 rtl:mr-0 rtl:ml-4'>
                               <div className='flex items-center justify-center'>
@@ -95,9 +151,9 @@ const Experience = () => {
                                 </a>
                               </div>
 
-                              <span className='text-lg font-normal'>Sr Software Engineer (Current)</span>
+                              <span className='text-lg font-normal'>Sr Software Engineer</span>
                               <br />
-                              <span className='text-sm font-normal'>2023 (June) - current</span>
+                              <span className='text-sm font-normal'>2023 (June) - 2024 (March)</span>
                               <div className='text-muted mt-2'>
                                 <div className='text-base font-normal'>
                                   Humanize offers a healthy digital global platform supporting personal development
