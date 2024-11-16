@@ -1,7 +1,7 @@
 import { totalExperianceYears } from "../components/utils/date";
 import crypto from "crypto";
 
-const GLOBAL_EMAIL = 'dpk1391981@gmail.com';
+const GLOBAL_EMAIL = process.env.NEXT_PUBLIC_EMAIL_ID;
 const description = `Experienced React/JavaScript Developer with ${totalExperianceYears()} years of expertise. Deepak Kumar excels in developing high-quality web applications using modern frameworks like React, Node.js, and Next.js for seamless software development.`;
 
 const title = `Deepak Kumar | Expert React & JavaScript Developer`;

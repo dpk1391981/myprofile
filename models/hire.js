@@ -4,7 +4,7 @@ const EnquerySchema = new Schema(
   {
     email: {
       type: "string",
-      unique: [true, "Email already exists!!!"],
+      // unique: [true, "Email already exists!!!"],
       required: [true, "Email is requried!!"],
     },
     organisation: {

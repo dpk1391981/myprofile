@@ -19,3 +19,10 @@ export const connectToDB = async () => {
     console.log(`error`, error);
   }
 };
+
+export const disconnectDB = async () => {
+  if (mongoose.connection.readyState !== 0) {
+    await mongoose.disconnect();
+    console.log(`Disconnected!`)
+  }
+}
