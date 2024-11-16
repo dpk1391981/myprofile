@@ -70,7 +70,7 @@ export const NEXT_SEO_DEFAULT = {
 };
 
 export const STRUCT_DATA = {
-  "@context": process.env.NEXT_PUBLIC_WEB_SITE,
+  "@context": "https://schema.org",
   "@type": "Portfolio",
   headline: title,
   name: "Deepak Kumar",
