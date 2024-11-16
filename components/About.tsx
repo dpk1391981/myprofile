@@ -1,20 +1,8 @@
 "use client";
-import type { Metadata } from "next";
 import React from "react";
 import SocailLinks from "./utils/SocailLinks";
 import { totalExperianceYears } from "./utils/date";
-import { NEXT_SEO_DEFAULT } from "@/app/seo_config";
 import { IconCirclesRelation } from "@tabler/icons-react";
-
-const AboutMeta = {
-  ...NEXT_SEO_DEFAULT,
-  ...{
-    title: "Deepak Kumar | About - Full Stack JavaScript Developer",
-    description:
-      `Deepak Kumar is an experienced Full Stack JavaScript Develope expertise in React, Node.js, and modern web technologies. Passionate about crafting scalable software solutions, Deepak combines technical skills with innovative problem-solving to deliver exceptional results. Learn more about his journey and professional achievements.`,
-  },
-};
-export const metadata: Metadata = AboutMeta;
 
 const openContactModal = () => {
   const myModalElement: HTMLDialogElement | null = document.getElementById("my_modal_1") as HTMLDialogElement | null;

@@ -1,17 +1,6 @@
 import React from "react";
 import { skills } from "../components/utils/consts";
-import type { Metadata } from "next";
-import { NEXT_SEO_DEFAULT } from "@/app/seo_config";
-const SkillsMeta = {
-  ...NEXT_SEO_DEFAULT,
-  ...{
-    title: "Deepak Kumar | Experienced Software Engineer | Technical Expertise in JavaScript, React, Node.js & More",
-    description:
-      "Explore the technical journey of Deepak Kumar, an experienced software engineer expertise in JavaScript, React, Angular, Node.js, and modern web development frameworks. Discover his skills in building scalable applications, optimizing code, and driving innovation across full-stack development, project management, and problem-solving.",
-  },
-};
 
-export const metadata: Metadata = SkillsMeta;
 const Skills = () => {
   return (
     <div>

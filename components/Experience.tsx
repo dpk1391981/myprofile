@@ -2,19 +2,6 @@ import React from "react";
 import Image from "next/image";
 import { totalExperianceYears } from "./utils/date";
 import { IconLink } from "@tabler/icons-react";
-import type { Metadata } from "next";
-import { NEXT_SEO_DEFAULT } from "@/app/seo_config";
-
-const ExperienceMeta = {
-  ...NEXT_SEO_DEFAULT,
-  ...{
-    title: "Deepak Kumar | Professional Experience & Career Journey",
-    description:
-      `Explore the career journey of Deepak Kumar, an accomplished software engineer with over ${totalExperianceYears()} of industry experience. Discover his impactful contributions to companies like Instant System Inc, Clove Dental, Ceekr and Synqy, specializing in Node.js, React, and full stack development. Learn about his achievements in delivering innovative software solutions and driving excellence in technology.`,
-  },
-};
-
-export const metadata: Metadata = ExperienceMeta;
 
 const Experience = () => {
   return (

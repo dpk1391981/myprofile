@@ -1,4 +1,5 @@
 import { About, Experience, Education, Skills } from "@/components";
+import Review from "@/components/Review";
 
 export default function Home() {
   return (
@@ -7,6 +8,7 @@ export default function Home() {
       <Experience />
       <Education />
       <Skills />
+      {/* <Review /> */}
     </>
   );
 }

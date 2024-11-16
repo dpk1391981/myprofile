@@ -1,10 +1,16 @@
 import { Education } from "@/components";
 import type { Metadata } from "next";
+import { NEXT_SEO_DEFAULT } from "../seo_config";
 
-export const metadata: Metadata = {
-  title: "Education",
-  description: "Deepak Kumar | Software Engineer | Node Js | React Js | Javascript | Education ",
+const EducationMeta = {
+  ...NEXT_SEO_DEFAULT,
+  ...{
+    title: "Deepak Kumar | Education & Academic Qualifications",
+    description:
+      "Discover the educational background of Deepak Kumar, an accomplished software engineer with expertise in JavaScript, Full Stack Development, and modern web technologies. Learn how his degrees from Jain University and Delhi University, combined with his passion for continuous learning, have shaped his journey in software engineering and innovation.",
+  },
 };
+export const metadata: Metadata = EducationMeta;
 
 export default function Home() {
   return (
