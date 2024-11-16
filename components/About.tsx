@@ -44,7 +44,7 @@ const About = () => {
                 </h1>
 
                 <p className='text-base  text-blue-700 font-bold tracking-wide uppercase mb-4'>
-                  JavaScript | Full Stack | Node js | React js | MySql | NoSql
+                  JavaScript | Full Stack | Node js | React js | Angular Js | MySql | NoSql
                 </p>
 
                 <div className='max-w-3xl mx-auto'>
