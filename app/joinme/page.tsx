@@ -36,7 +36,6 @@ const page = () => {
 
       if (response.ok) {
         const result = await response.json();
-        console.log(result.data);
         if (result.data) {
           router.push("/success");
           setLoading(false);

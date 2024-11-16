@@ -6,10 +6,9 @@ import { NEXT_SEO_DEFAULT } from "@/app/seo_config";
 const EducationMeta = {
   ...NEXT_SEO_DEFAULT,
   ...{
-    title: "Deepak Kumar | Education Qualification",
+    title: "Deepak Kumar | Education & Academic Qualifications",
     description:
-      "Explore Deepak Kumar's education journey as a seasoned software engineer. Learn about his educational background, technical expertise, and passion for delivering innovative solutions in the dynamic field of software development.",
-    keywords: "JAVASCRIPT | FULL STACK | NODE JS | REACT JS | MYSQL | NOSQL | JAIN | DELHI UNIVERSITY",
+      "Discover the educational background of Deepak Kumar, an accomplished software engineer with expertise in JavaScript, Full Stack Development, and modern web technologies. Learn how his degrees from Jain University and Delhi University, combined with his passion for continuous learning, have shaped his journey in software engineering and innovation.",
   },
 };
 export const metadata: Metadata = EducationMeta;

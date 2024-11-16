@@ -8,11 +8,9 @@ import { NEXT_SEO_DEFAULT } from "@/app/seo_config";
 const ExperienceMeta = {
   ...NEXT_SEO_DEFAULT,
   ...{
-    title: "Deepak Kumar | Experience",
+    title: "Deepak Kumar | Professional Experience & Career Journey",
     description:
-      "DeExplore Deepak Kumar's professional journey as a seasoned software engineer with a robust educational background and over six years of experience. Dive into his career highlights, technical accomplishments, and dedication to delivering excellence in software development.",
-    keywords:
-      "Instant system inc,clove, clove dental, dental care, node js, deepak kumar, ceekr, synqy, instant system inc, synqy, ceekr, phoenix, galaxy toursim, humanize",
+      `Explore the career journey of Deepak Kumar, an accomplished software engineer with over ${totalExperianceYears()} of industry experience. Discover his impactful contributions to companies like Instant System Inc, Clove Dental, Ceekr and Synqy, specializing in Node.js, React, and full stack development. Learn about his achievements in delivering innovative software solutions and driving excellence in technology.`,
   },
 };
 
