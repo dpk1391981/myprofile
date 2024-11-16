@@ -70,8 +70,9 @@ export const NEXT_SEO_DEFAULT = {
 };
 
 export const STRUCT_DATA = {
-  "@context": "https://schema.org",
-  "@type": "Person",
+  "@context": process.env.NEXT_PUBLIC_WEB_SITE,
+  "@type": "Portfolio",
+  headline: title,
   name: "Deepak Kumar",
   jobTitle: "React/JavaScript Developer",
   url: process.env.NEXT_PUBLIC_WEB_SITE,
