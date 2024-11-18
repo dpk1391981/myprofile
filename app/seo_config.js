@@ -9,8 +9,13 @@ const title = `Deepak Kumar | Expert React & JavaScript Developer`;
 
 
 function getGravatarUrl(email, size = 120) {
-  const emailHash = crypto.createHash("md5").update(email.trim().toLowerCase()).digest("hex");
-  return `https://www.gravatar.com/avatar/${emailHash}?s=${size}&d=identicon`;
+  if(email){
+    const emailHash = crypto.createHash("md5").update(email.trim().toLowerCase()).digest("hex");
+    return `https://www.gravatar.com/avatar/${emailHash}?s=${size}&d=identicon`;
+  }
+
+  return '';
+ 
 }
 
 const profileImage = getGravatarUrl(GLOBAL_EMAIL);
