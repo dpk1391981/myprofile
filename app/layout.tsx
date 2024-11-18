@@ -29,7 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{ __html: JSON.stringify(STRUCT_DATA) }}
         />
       </Head>
-      {/* <Script async src='https://www.googletagmanager.com/gtag/js?id=G-YXZRZVFV9F' />
+      <Script async src='https://www.googletagmanager.com/gtag/js?id=G-YXZRZVFV9F' />
       <Script id='google-analytics'>
         {`
           window.dataLayer = window.dataLayer || [];
@@ -38,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
  
           gtag('config', 'G-YXZRZVFV9F');
         `}
-      </Script> */}
+      </Script>
 
       <body className='antialiased text-default bg-page tracking-tight'>
         {/* <Provider> */}
