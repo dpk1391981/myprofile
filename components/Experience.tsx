@@ -85,7 +85,6 @@ const Experience = () => {
                               <div className='text-muted mt-2'>
                                 <div className='text-base font-normal'>
                                 Clove Dental operates more than 500 independent clinics nationwide, delivering exceptional dental care through a team of over 1,200 skilled professionals, including general dentists, orthodontists, periodontists, and other specialists. Committed to the highest standards of quality and stringent sterilization protocols, they offer a wide range of treatments such as orthodontics, dental implants, and oral surgery. With over 2 million happy patients, Clove Dental takes pride in its ethical practices and transparent approach to dentistry.
-                                https://clovedental.in/blog.
                                   <p className='text-base font-bold mt-2'>
                                     Tools: Node Js, Angular Js, React Js MySQL, Javascript, GIT, Jira, AWS Services,
                                     mailgun
