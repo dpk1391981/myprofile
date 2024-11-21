@@ -260,14 +260,9 @@ const Experience = () => {
 
                               <div className='text-muted mt-2'>
                                 <div className='text-base font-normal'>
-                                  At Ceekr, they develop deep into the intricacies of the human choice making mind,
-                                  offering a transformative journey that empowers individuals to master their cognitive
-                                  and emotional faculties and optimise their physiology. Our ground-breaking
-                                  initiatives, rooted in extensive Yoga and Vedanta research and innovative AI
-                                  protocols, are designed to foster a profound understanding of the relationship between
-                                  attention, energy, and cognition.
+                                Ceekr delves deeply into the complexities of human decision-making, offering a transformative journey to help individuals master their cognitive and emotional faculties while optimizing their physical well-being. Drawing on extensive research in Yoga and Vedanta combined with cutting-edge AI innovations, Ceekr's pioneering initiatives are crafted to illuminate the intricate connection between attention, energy, and cognition.
                                   <p className='text-base font-bold mt-2'>
-                                    Tools: React Js , HTML, CSS, PHP, Javascript,JQuery, MySql, GIT, Jira, AWS Services.
+                                    Tools: React Js , HTML, CSS, PHP, Javascript, JQuery, MySql, GIT, Jira, AWS Services.
                                   </p>
                                 </div>
                                 <ul className='list-disc mt-4 ml-4'>
