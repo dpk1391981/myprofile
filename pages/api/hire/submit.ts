@@ -3,6 +3,33 @@ import { connectToDB, disconnectDB } from "@/utils/database";
 import MailChecker from "mailchecker"
 import nodemailer from "nodemailer"; 
 import { NextApiRequest, NextApiResponse } from "next";
+import twilio from 'twilio';
+
+const accountSid = process.env.NEXT_TWILLIO_SID;
+const authToken = process.env.NEXT_TWILLIO_AUTH_TOKEN;
+const client = twilio(accountSid, authToken);
+
+export const sendSMS = async ({ email, organisation, subject, message }: any) => {
+
+  // Check if the email sending is enabled via environment variable
+  if (process.env.NEXT_ENABLE_SMS != '1' || !process.env.NEXT_RECEIVER_NUMBER ||  !process.env.NEXT_FROM_NUMBER) {
+    console.log('SMS sending is disabled. Skipping SMS.');
+    return;
+  }
+  
+  try {
+    const sms = await client.messages.create({
+      body: `From: ${email} (${organisation})\nSubject: ${subject}\nMessage: ${message}`,
+      to: process.env.NEXT_RECEIVER_NUMBER,
+      from: process.env.NEXT_FROM_NUMBER, // Replace with your Twilio phone number
+    });
+    console.log('Message sent:', sms.sid);
+    return sms;
+  } catch (error) {
+    console.error('Error sending message:', error);
+    throw error;
+  }
+};
 
 export async function sendEmail(obj: any) {
 
@@ -153,17 +180,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Step 4: Send the email asynchronously
     const emailPromise = sendEmail({ email, subject, message, organisation });
+    const smsPromise =  sendSMS({ 
+      email, 
+      organisation, 
+      subject, 
+      message 
+    });
 
     // Step 5: Save the form data to MongoDB
     const formData = new Enquery({ email, subject, message, organisation });
     const savePromise = formData.save();
 
     // Step 6: Wait for both operations to complete
-    const [emailResult, saveResult] = await Promise.allSettled([emailPromise, savePromise]);
+    const [emailResult, saveResult, smsResult] = await Promise.allSettled([emailPromise, savePromise, smsPromise]);
 
     // Log the results for debugging
     console.log('Email Result:', emailResult);
     console.log('Save Result:', saveResult);
+    console.log(`SMS Result:`,smsResult)
 
     if (saveResult.status === 'fulfilled') {
       console.log(`Form data saved successfully:`, formData);
