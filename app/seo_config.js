@@ -220,8 +220,8 @@ export const STRUCT_DATA = {
   },
   "worksFor": {
     "@type": "Organization",
-    "name": "Instant system inc.",
-    "url": "https://instantsys.com/"
+    "name": "India Today Group.",
+    "url": "https://www.indiatodaygroup.com/"
   },
   "knowsAbout": [
     "React.js",
