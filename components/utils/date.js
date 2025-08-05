@@ -1,17 +1,31 @@
 import moment from "moment";
 
-export const currentYrsExp = () => {
-  const currentComanyJoinYr = moment(["2017", "09", "27"]);
-  const currentYr = moment();
-  var diffDuration = moment.duration(currentYr.diff(currentComanyJoinYr));
-  return diffDuration;
+export const currentYrsExp = (year = '2017', month = '09', date = '27') => {
+  // Convert to integers and adjust month (0-based index)
+  const currentCompanyJoinDate = moment([parseInt(year), parseInt(month) - 1, parseInt(date)]);
+  const currentDate = moment();
+  return moment.duration(currentDate.diff(currentCompanyJoinDate));
 };
 
-export const totalExperianceYears = () => {
-  const years = currentYrsExp().years();
-  const months = currentYrsExp().months();
-  let defaultString = years + "+ years ";
+export const totalExperianceYears = (year = '2017', month = '09', date = '27') => {
+  const duration = currentYrsExp(year, month, date);
+  const years = duration.years();
+  const months = duration.months();
 
-  if (months > 8) defaultString = years + " years " + months + " months ";
-  return defaultString;
+  let experienceStr = '';
+
+  if (years > 0) {
+    experienceStr += `${years} year${years > 1 ? 's' : ''}`;
+  }
+
+  if (months > 0) {
+    if (experienceStr) experienceStr += ' ';
+    experienceStr += `${months} month${months > 1 ? 's' : ''}`;
+  }
+
+  if (!experienceStr) {
+    experienceStr = 'Less than a month';
+  }
+
+  return experienceStr;
 };
