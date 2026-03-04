@@ -6,4 +6,5 @@ import Education from "./Education";
 import Skills from "./Skills";
 import Footer from "./Footer";
 import ContactModal from "./modals/ContactModal";
-export { Nav, Provider, About, Experience, Education, Skills, Footer, ContactModal };
+import Review from "./Review";
+export { Nav, Provider, About, Experience, Education, Skills, Footer, ContactModal, Review };

@@ -1,24 +1,39 @@
 "use client";
 import React from "react";
-import SocailLinks from "./utils/SocailLinks";
+import SocialLinks from "./utils/SocialLinks";
+import { PERSONAL_INFO, FOOTER } from "./utils/portfolio-data";
 
 const Footer = () => {
   return (
-    <>
-      <footer className='footer footer-center p-10  text-base-content rounded font-medium text-lg bg-blue-50'>
-        <nav className='sticky bottom-0 grid lg:grid-flow-col lg:gap-2'>
-          <span>Empowering Innovation through Elegant Code | Deepak Kumar - Software Engineer</span>
-        </nav>
-        <nav>
-          <div className='grid grid-flow-col gap-2'>
-            <SocailLinks />
+    <footer className="footer-section" role="contentinfo">
+      <div className="max-w-5xl mx-auto px-5 sm:px-8 py-12 text-center">
+        {/* Tagline */}
+        <p
+          className="text-base md:text-lg font-semibold text-slate-700 mb-2"
+          style={{ fontFamily: "var(--font-display)" }}
+        >
+          {FOOTER.tagline}
+        </p>
+        <p className="text-sm text-slate-500 mb-6">
+          {PERSONAL_INFO.fullName} — {PERSONAL_INFO.title}
+        </p>
+
+        {/* Social */}
+        <nav aria-label="Footer social links" className="flex justify-center mb-6">
+          <div className="flex items-center gap-3">
+            <SocialLinks />
           </div>
         </nav>
-        <aside>
-          <p>Copyright © 2023 - All right reserved by @deepak</p>
-        </aside>
-      </footer>
-    </>
+
+        {/* Divider */}
+        <div className="w-16 h-px bg-slate-200 mx-auto mb-5" aria-hidden="true" />
+
+        {/* Copyright */}
+        <p className="text-xs text-slate-400">
+          {FOOTER.copyright}
+        </p>
+      </div>
+    </footer>
   );
 };
 

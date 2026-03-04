@@ -1,128 +1,132 @@
-import React from "react";
+"use client";
+import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { IconBrandLinkedin } from "@tabler/icons-react";
+import { REVIEWS } from "./utils/portfolio-data";
+import { useScrollReveal } from "./utils/useScrollReveal";
+import { IconBrandLinkedin, IconChevronLeft, IconChevronRight, IconQuote } from "@tabler/icons-react";
 
 const Review = () => {
-  return (
-    <div className='relative mx-auto max-w-7xl px-4 md:px-6 py-8 md:py-10 lg:py-12 text-default '>
-    <section className='relative not-prose scroll-mt-[72px]'>
-      <div className='absolute inset-0 pointer-events-none -z-[1]' aria-hidden='true'>
-        <div className='absolute inset-0'></div>
-      </div>
-      <div className='mb-8 md:mx-auto md:mb-12 text-center max-w-3xl'>
-        <h2 className='font-bold leading-tighter tracking-tighter font-heading text-heading text-3xl md:text-4xl'>
-          Recommendations
-        </h2>
-      </div>
+  const [active, setActive] = useState(0);
+  const sectionRef = useScrollReveal<HTMLElement>();
 
-      <section className='bg-gray-50 dark:bg-gray-800 mt-20'>
-        <div className=' px-4 py-8 mx-auto text-center lg:py-10 lg:px-6'>
-          <div className='carousel w-full'>
-            <div id='slide1' className='carousel-item relative w-full'>
-              <figure className='max-w-screen-md mx-auto'>
-                <svg
-                  className='h-12 mx-auto mb-3 text-gray-400 dark:text-gray-600'
-                  viewBox='0 0 24 27'
-                  fill='none'
-                  xmlns='http://www.w3.org/2000/svg'>
-                  <path
-                    d='M14.017 18L14.017 10.609C14.017 4.905 17.748 1.039 23 0L23.995 2.151C21.563 3.068 20 5.789 20 8H24V18H14.017ZM0 18V10.609C0 4.905 3.748 1.038 9 0L9.996 2.151C7.563 3.068 6 5.789 6 8H9.983L9.983 18L0 18Z'
-                    fill='currentColor'></path>
-                </svg>
-                <blockquote>
-                  <p className='text-xl font-medium text-gray-900 md:text-2xl dark:text-white'>
-                    "Hard Working, Intelligent, Committed, Sharp and an Excellent team player are just a couple of
-                    words that can aptly describe Deepak. I worked with him for almost 3 years on the same project. He
-                    is technically very sound , always ready to learn new things, accept new challenges and the best
-                    part about him is that he always have simple solution to the complex problem which makes him stand
-                    out from the crowd. His analytical skills are also great and I wish him all the best for the
-                    future I know he will prove to be an asset for any organization he joins."
-                  </p>
-                </blockquote>
-                <div className='flex items-center justify-center mt-6 space-x-3'>
-                  <Image
-                    src='/assets/images/amit.jpeg'
-                    alt='Thumbnail image of Amit Saraswat'
-                    title='Avatar Amit Saraswat'
-                    className='avatar w-12 rounded-full'
-                    width={50}
-                    height={50}
-                    loading='lazy'
-                    decoding='async'
-                  />
-                  <div className='flex items-center divide-x-2 divide-gray-500 dark:divide-gray-700'>
-                    <div className='pr-3 font-medium text-gray-900 dark:text-white'>Amit Saraswat</div>
-                    <div className='pl-3 text-sm font-light text-gray-500 dark:text-gray-400'>
-                      System Analyst at Instant Systems Inc
-                    </div>
-                  </div>
-                  <Link href='https://www.linkedin.com/in/amitmsaraswat/' className='ml-2' target='_blank'>
-                    <IconBrandLinkedin />
-                  </Link>
-                </div>
-              </figure>
-              <div className='absolute flex justify-between transform -translate-y-1/2 left-2 right-2 top-1/2'>
-                <a href='#slide1'>{/* ❮ */}</a>
-                <a href='#slide2' className='btn btn-circle  sm:visible invisible'>
-                  ❯
-                </a>
-              </div>
-            </div>
-            <div id='slide2' className='carousel-item relative w-full'>
-              <figure className='max-w-screen-md mx-auto'>
-                <svg
-                  className='h-12 mx-auto mb-3 text-gray-400 dark:text-gray-600'
-                  viewBox='0 0 24 27'
-                  fill='none'
-                  xmlns='http://www.w3.org/2000/svg'>
-                  <path
-                    d='M14.017 18L14.017 10.609C14.017 4.905 17.748 1.039 23 0L23.995 2.151C21.563 3.068 20 5.789 20 8H24V18H14.017ZM0 18V10.609C0 4.905 3.748 1.038 9 0L9.996 2.151C7.563 3.068 6 5.789 6 8H9.983L9.983 18L0 18Z'
-                    fill='currentColor'></path>
-                </svg>
-                <blockquote>
-                  <p className='text-xl font-medium text-gray-900 md:text-3xl dark:text-white'>
-                    "We did a lot together and Deepak is really very talented, he learns new technology quickly and is
-                    very hard working. I felt very good after working with him, he is a person of very good
-                    personality."
-                  </p>
-                </blockquote>
-                <div className='flex items-center justify-center mt-6 space-x-3'>
-                  <Image
-                    src='/assets/images/maya.jpeg'
-                    alt='Thumbnail image of Maya Tripathi'
-                    title='Avatar Maya Tripathi'
-                    className='avatar w-12 rounded-full'
-                    width={50}
-                    height={50}
-                    loading='lazy'
-                    decoding='async'
-                  />
-                  <div className='flex items-center divide-x-2 divide-gray-500 dark:divide-gray-700'>
-                    <div className='pr-3 font-medium text-gray-900 dark:text-white'>Maya Tripathi</div>
-                    <div className='pl-3 text-sm font-light text-gray-500 dark:text-gray-400'>
-                      Full-Stack Developer at Teamwork Arts
-                    </div>
-                  </div>
-                  <Link href='https://www.linkedin.com/in/maya-tripathi-34a16b2b/' className='ml-2' target='_blank'>
-                    <IconBrandLinkedin />
-                  </Link>
-                </div>
-              </figure>
-              <div className='absolute flex justify-between transform -translate-y-1/2 left-2 right-2 top-1/2'>
-                <a href='#slide1' className='btn btn-circle sm:visible invisible'>
-                  ❮
-                </a>
-                {/* <a href='#slide2' className='btn btn-circle  sm:visible invisible'>
-                  ❯
-                </a> */}
-              </div>
-            </div>
+  const next = useCallback(() => {
+    setActive((prev) => (prev + 1) % REVIEWS.length);
+  }, []);
+
+  const prev = useCallback(() => {
+    setActive((prev) => (prev - 1 + REVIEWS.length) % REVIEWS.length);
+  }, []);
+
+  // Auto-advance every 8s
+  useEffect(() => {
+    const timer = setInterval(next, 8000);
+    return () => clearInterval(timer);
+  }, [next]);
+
+  if (REVIEWS.length === 0) return null;
+
+  const review = REVIEWS[active];
+
+  return (
+    <section
+      ref={sectionRef}
+      className="animate-on-scroll relative not-prose scroll-mt-[72px] py-16 md:py-24 bg-slate-50/60"
+      id="review"
+      aria-label="Recommendations"
+    >
+      <div className="max-w-4xl mx-auto px-5 sm:px-8">
+        {/* Header */}
+        <header className="section-header section-header-center text-center mb-14">
+          <p className="text-xs font-bold uppercase tracking-widest text-blue-500 mb-2">What Colleagues Say</p>
+          <h2
+            className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            Recommendations
+          </h2>
+        </header>
+
+        {/* Card */}
+        <div className="review-card">
+          {/* Quote icon */}
+          <div className="review-quote-icon" aria-hidden="true">
+            <IconQuote size={32} />
           </div>
+
+          {/* Quote text */}
+          <blockquote className="relative z-10 mb-8">
+            <p className="text-base md:text-lg leading-relaxed text-slate-600 italic">
+              &ldquo;{review.quote}&rdquo;
+            </p>
+          </blockquote>
+
+          {/* Author */}
+          <div className="flex items-center gap-4">
+            <Image
+              src={review.avatar}
+              alt={`Photo of ${review.name}`}
+              title={review.name}
+              width={52}
+              height={52}
+              loading="lazy"
+              className="rounded-full border-2 border-slate-200 object-cover"
+              style={{ width: 52, height: 52 }}
+            />
+            <div className="flex-1 min-w-0">
+              <p className="font-bold text-slate-900 text-base" itemProp="author">{review.name}</p>
+              <p className="text-sm text-slate-500">
+                {review.role} at {review.company}
+              </p>
+            </div>
+            <Link
+              href={review.linkedinUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="review-linkedin-btn"
+              aria-label={`View ${review.name} on LinkedIn`}
+            >
+              <IconBrandLinkedin size={20} />
+            </Link>
+          </div>
+
+          {/* Navigation */}
+          {REVIEWS.length > 1 && (
+            <div className="flex items-center justify-between mt-8 pt-6 border-t border-slate-100">
+              <button
+                onClick={prev}
+                className="review-nav-btn"
+                aria-label="Previous recommendation"
+              >
+                <IconChevronLeft size={18} />
+              </button>
+
+              {/* Dots */}
+              <div className="flex gap-2" role="tablist">
+                {REVIEWS.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setActive(i)}
+                    className={`review-dot ${i === active ? "review-dot--active" : ""}`}
+                    role="tab"
+                    aria-selected={i === active}
+                    aria-label={`Go to recommendation ${i + 1}`}
+                  />
+                ))}
+              </div>
+
+              <button
+                onClick={next}
+                className="review-nav-btn"
+                aria-label="Next recommendation"
+              >
+                <IconChevronRight size={18} />
+              </button>
+            </div>
+          )}
         </div>
-      </section>
+      </div>
     </section>
-  </div>
   );
 };
 

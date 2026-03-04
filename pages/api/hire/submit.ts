@@ -55,7 +55,7 @@ export async function sendEmail(obj: any) {
 
   try {
     const PARAMS = {
-      from: `"Deepak Kumar (imdeepak)" <${process.env.NEXT_PUBLIC_EMAIL_ID}>`,  // sender address
+      from: `"Deepak Kumar (officialdeepak)" <${process.env.NEXT_PUBLIC_EMAIL_ID}>`,  // sender address
       to: process.env.NEXT_PUBLIC_EMAIL_ID,  // recipient address
       subject: subject,  // Subject line
       html: `<!DOCTYPE html>
