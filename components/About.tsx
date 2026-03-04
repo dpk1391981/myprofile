@@ -55,7 +55,7 @@ const About = () => {
               </div>
 
               <h1
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-2 tracking-tight leading-[1.1]"
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-2 tracking-tight leading-[1.1]"
                 style={{ fontFamily: "var(--font-display)" }}
                 title={PERSONAL_INFO.fullName}
               >
@@ -134,7 +134,7 @@ const About = () => {
           ].map((stat, i) => (
             <article key={i} className="stat-card">
               <span className="text-xl mb-0.5 block" aria-hidden="true">{stat.icon}</span>
-              <p className="text-xl md:text-2xl font-extrabold text-slate-900 leading-tight" style={{ fontFamily: "var(--font-display)" }}>
+              <p className="text-xl md:text-2xl font-bold text-slate-900 leading-tight" style={{ fontFamily: "var(--font-display)" }}>
                 {stat.value}
               </p>
               <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mt-0.5">{stat.label}</p>

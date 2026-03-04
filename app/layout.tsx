@@ -7,17 +7,23 @@ import { Analytics } from "@vercel/analytics/react";
 import Script from "next/script";
 import { NEXT_SEO_DEFAULT, STRUCT_DATA } from "@/app/seo_config";
 
-// ---- Fonts ----
+// ---- Fonts — pin specific weights to avoid loading all weights ----
 const outfit = Outfit({
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
   variable: "--font-display",
   display: "swap",
+  adjustFontFallback: true,
+  preload: true,
 });
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-body",
   display: "swap",
+  adjustFontFallback: true,
+  preload: true,
 });
 
 // ---- SEO Metadata ----
@@ -40,7 +46,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{ __html: JSON.stringify(STRUCT_DATA) }}
         />
       </head>
-      
 
       {/* Google Analytics */}
       <Script

@@ -32,7 +32,7 @@ const Review = () => {
     <section
       ref={sectionRef}
       className="animate-on-scroll relative not-prose scroll-mt-[72px] py-16 md:py-24 bg-slate-50/60"
-      id="review"
+      id="reviews"
       aria-label="Recommendations"
     >
       <div className="max-w-4xl mx-auto px-5 sm:px-8">
@@ -40,7 +40,7 @@ const Review = () => {
         <header className="section-header section-header-center text-center mb-14">
           <p className="text-xs font-bold uppercase tracking-widest text-blue-500 mb-2">What Colleagues Say</p>
           <h2
-            className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight"
+            className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight"
             style={{ fontFamily: "var(--font-display)" }}
           >
             Recommendations

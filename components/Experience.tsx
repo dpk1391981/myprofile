@@ -202,7 +202,7 @@ const Experience = () => {
         <header className="section-header mb-12">
           <p className="text-xs font-bold uppercase tracking-widest text-blue-500 mb-2">Career Journey</p>
           <h2
-            className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight"
+            className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight"
             style={{ fontFamily: "var(--font-display)" }}
           >
             Technical Experience

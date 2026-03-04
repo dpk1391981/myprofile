@@ -41,6 +41,10 @@
   background: var(--color-bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-synthesis: none;          /* prevents browser from faking bold/italic */
+  font-optical-sizing: auto;
+  text-rendering: optimizeLegibility;
+  font-weight: 400;              /* explicit default — not browser-bold */
 }
 
 .portfolio-page h1,
@@ -48,6 +52,7 @@
 .portfolio-page h3,
 .portfolio-page h4 {
   font-family: var(--font-display);
+  font-synthesis: none;
 }
 
 /* ---- Scroll animations ---- */
@@ -240,7 +245,7 @@
 
 .hero-highlight-badge-value {
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 700;
   color: #fff;
   line-height: 1.2;
   font-family: var(--font-display);
