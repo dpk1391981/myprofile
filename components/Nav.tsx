@@ -73,7 +73,7 @@ const Nav = () => {
             />
           </div>
           <div className="hidden sm:block">
-            <p className="text-lg font-bold text-slate-900 leading-tight" style={{ fontFamily: "var(--font-display)" }}>
+            <p className="text-lg font-bold text-slate-900 leading-tight font-display">
               {PERSONAL_INFO.fullName}
             </p>
             <p className="text-[11px] font-semibold text-blue-600 tracking-wide">
@@ -176,7 +176,7 @@ const Nav = () => {
               />
             </div>
             <div>
-              <p className="font-bold text-slate-900" style={{ fontFamily: "var(--font-display)" }}>
+              <p className="font-bold text-slate-900 font-display">
                 {PERSONAL_INFO.fullName}
               </p>
               <p className="text-xs text-blue-600 font-medium">{PERSONAL_INFO.title}</p>

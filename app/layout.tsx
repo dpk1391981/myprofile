@@ -7,10 +7,11 @@ import { Analytics } from "@vercel/analytics/react";
 import Script from "next/script";
 import { NEXT_SEO_DEFAULT, STRUCT_DATA } from "@/app/seo_config";
 
-// ---- Fonts — pin specific weights to avoid loading all weights ----
+// ---- Fonts — pin specific weights, force normal style ----
 const outfit = Outfit({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
+  style: "normal",
   variable: "--font-display",
   display: "swap",
   adjustFontFallback: true,
@@ -20,6 +21,7 @@ const outfit = Outfit({
 const dmSans = DM_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+  style: "normal",
   variable: "--font-body",
   display: "swap",
   adjustFontFallback: true,
@@ -62,7 +64,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         `}
       </Script>
 
-      <body className="antialiased text-default bg-page tracking-tight portfolio-page">
+      <body className={`${dmSans.className} antialiased text-default bg-page tracking-tight portfolio-page`}>
         <ContactModal />
         <Nav />
         {children}

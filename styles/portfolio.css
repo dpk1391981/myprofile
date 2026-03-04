@@ -21,8 +21,8 @@
   --color-text-muted: #94a3b8;
   --color-border: #e2e8f0;
   --color-success: #22c55e;
-  --font-display: "Outfit", sans-serif;
-  --font-body: "DM Sans", sans-serif;
+  --font-display: "Outfit", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-lg: 20px;
@@ -41,18 +41,21 @@
   background: var(--color-bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-synthesis: none;          /* prevents browser from faking bold/italic */
+  font-synthesis: none;
   font-optical-sizing: auto;
+  font-style: normal;
   text-rendering: optimizeLegibility;
-  font-weight: 400;              /* explicit default — not browser-bold */
+  font-weight: 400;
 }
 
 .portfolio-page h1,
 .portfolio-page h2,
 .portfolio-page h3,
-.portfolio-page h4 {
+.portfolio-page h4,
+.portfolio-page .font-display {
   font-family: var(--font-display);
   font-synthesis: none;
+  font-style: normal;
 }
 
 /* ---- Scroll animations ---- */

@@ -112,7 +112,7 @@ const ExperienceEntry = ({ exp }: { exp: ExperienceItem }) => {
               <div className="flex items-center gap-2 flex-wrap">
                 <h3
                   className="text-xl md:text-2xl font-bold text-slate-900"
-                  style={{ fontFamily: "var(--font-display)" }}
+                 
                   itemProp="memberOf"
                 >
                   {exp.company}
@@ -203,7 +203,7 @@ const Experience = () => {
           <p className="text-xs font-bold uppercase tracking-widest text-blue-500 mb-2">Career Journey</p>
           <h2
             className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight"
-            style={{ fontFamily: "var(--font-display)" }}
+           
           >
             Technical Experience
           </h2>

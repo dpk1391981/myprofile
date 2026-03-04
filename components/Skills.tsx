@@ -84,7 +84,7 @@ const Skills = () => {
       <div className="max-w-6xl mx-auto px-5 sm:px-8">
         <header className="section-header mb-6">
           <p className="text-xs font-bold uppercase tracking-widest text-blue-500 mb-1">What I Work With</p>
-          <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
+          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">
             Technical Skills
           </h2>
         </header>
@@ -94,7 +94,7 @@ const Skills = () => {
             <div key={cat.category} className="skill-category-row animate-on-scroll" style={{ transitionDelay: `${ci * 0.06}s` }}>
               <div className="skill-category-header">
                 <span className="skill-category-emoji" aria-hidden="true">{cat.icon}</span>
-                <h3 className="skill-category-title">{cat.category}</h3>
+                <h3 className="skill-category-title font-display">{cat.category}</h3>
                 <span className="skill-category-count">{cat.items.length}</span>
               </div>
               <ScrollableRow>

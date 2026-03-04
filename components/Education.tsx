@@ -16,7 +16,7 @@ const Education = () => {
       <div className="relative max-w-6xl mx-auto px-5 sm:px-8" ref={sectionRef}>
         <header className="section-header section-header-center text-center mb-8">
           <p className="text-xs font-bold uppercase tracking-widest text-blue-500 mb-1">Academic Background</p>
-          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
+          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">
             Education &amp; Certifications
           </h2>
         </header>
@@ -27,7 +27,7 @@ const Education = () => {
           <div className="lg:col-span-3">
             <div className="flex items-center gap-2 mb-4">
               <div className="edu-section-icon"><IconSchool size={16} /></div>
-              <h3 className="text-sm font-bold text-slate-700" style={{ fontFamily: "var(--font-display)" }}>Degrees</h3>
+              <h3 className="text-sm font-bold text-slate-700">Degrees</h3>
             </div>
             <div className="space-y-3 stagger-children">
               {degrees.map((edu, i) => (
@@ -49,7 +49,7 @@ const Education = () => {
           <div className="lg:col-span-2">
             <div className="flex items-center gap-2 mb-4">
               <div className="edu-section-icon edu-section-icon--cert"><IconCertificate size={16} /></div>
-              <h3 className="text-sm font-bold text-slate-700" style={{ fontFamily: "var(--font-display)" }}>Certifications</h3>
+              <h3 className="text-sm font-bold text-slate-700">Certifications</h3>
             </div>
             <div className="space-y-3 stagger-children">
               {certs.map((edu, i) => (

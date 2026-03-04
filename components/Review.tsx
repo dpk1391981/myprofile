@@ -41,7 +41,7 @@ const Review = () => {
           <p className="text-xs font-bold uppercase tracking-widest text-blue-500 mb-2">What Colleagues Say</p>
           <h2
             className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight"
-            style={{ fontFamily: "var(--font-display)" }}
+           
           >
             Recommendations
           </h2>

@@ -9,8 +9,8 @@ const Footer = () => {
       <div className="max-w-5xl mx-auto px-5 sm:px-8 py-12 text-center">
         {/* Tagline */}
         <p
-          className="text-base md:text-lg font-semibold text-slate-700 mb-2"
-          style={{ fontFamily: "var(--font-display)" }}
+          className="text-base md:text-lg font-semibold text-slate-700 mb-2 font-display"
+         
         >
           {FOOTER.tagline}
         </p>

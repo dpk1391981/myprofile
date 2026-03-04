@@ -24,15 +24,15 @@ const ContactModal = () => {
         {/* Header */}
         <div className="text-center mb-6">
           <div
-            className="mx-auto mb-3 w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-extrabold text-white"
+            className="mx-auto mb-3 w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-bold text-white"
             style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-accent))" }}
             aria-hidden="true"
           >
             {PERSONAL_INFO.avatarInitials}
           </div>
           <h3
-            className="text-xl font-bold text-slate-900"
-            style={{ fontFamily: "var(--font-display)" }}
+            className="text-xl font-bold text-slate-900 font-display"
+           
           >
             Get in Touch
           </h3>
