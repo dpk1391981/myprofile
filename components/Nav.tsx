@@ -17,6 +17,7 @@ import {
   IconChartBubble,
   IconMessageStar,
   IconChevronRight,
+  IconArticle,
 } from "@tabler/icons-react";
 
 const ICON_MAP: Record<string, React.ReactNode> = {
@@ -26,6 +27,7 @@ const ICON_MAP: Record<string, React.ReactNode> = {
   "/education": <IconBallpen size={20} />,
   "/skills": <IconChartBubble size={20} />,
   "/reviews": <IconMessageStar size={20} />,
+  "/blog": <IconArticle size={20} />,
 };
 
 const openContactModal = () => {
