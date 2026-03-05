@@ -45,7 +45,7 @@ const JoinMePage = () => {
   };
 
   return (
-    <section className="min-h-[80vh] py-12 md:py-20 px-5 sm:px-8">
+    <section className="min-h-[80vh] py-12 md:py-10 px-5 sm:px-8">
       <div className="max-w-2xl mx-auto">
         {/* Back button */}
         <button
@@ -58,9 +58,9 @@ const JoinMePage = () => {
         </button>
 
         {/* Header */}
-        <header className="text-center mb-10">
+        <header className="text-center mb-5">
           <h1
-            className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-3"
+            className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-2"
             style={{ fontFamily: "var(--font-display)" }}
           >
             Join with me!
