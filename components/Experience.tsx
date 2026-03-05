@@ -176,7 +176,7 @@ const ExperienceEntry = ({ exp }: { exp: ExperienceItem }) => {
           {exp.children && exp.children.length > 0 && (
             <div className="mt-6">
               <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">
-                Projects &amp; Clients
+                Products &amp; Clients
               </p>
               <div className="space-y-3">
                 {exp.children.map((child, ci) => (
@@ -196,7 +196,7 @@ const Experience = () => {
   const sectionRef = useScrollRevealChildren<HTMLDivElement>();
 
   return (
-    <section className="relative not-prose scroll-mt-[72px] py-16 md:py-24" id="experience">
+    <section className="relative not-prose scroll-mt-[72px] py-16 md:py-10" id="experience">
       <div className="max-w-4xl mx-auto px-5 sm:px-8">
         {/* Section Header */}
         <header className="section-header mb-12">

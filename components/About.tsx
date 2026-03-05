@@ -161,8 +161,8 @@ const About = () => {
         <div className="grid grid-cols-4 gap-2 sm:gap-3">
           {[
             { icon: "⚡", value: yearsExp, label: "Exp." },
-            { icon: "🚀", value: "15+", label: "Projects" },
-            { icon: "🏢", value: "7+", label: "Companies" },
+            { icon: "🚀", value: "10+", label: "Products" },
+            { icon: "🏢", value: "5+", label: "Companies" },
             { icon: "🛠️", value: "25+", label: "Tech" },
           ].map((stat, i) => (
             <article key={i} className="stat-card">
