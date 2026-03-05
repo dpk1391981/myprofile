@@ -206,7 +206,7 @@ export const NEXT_SEO_DEFAULT = {
   },
 
   twitter: {
-    cardType: "summary_large_image",
+    card: "summary_large_image",
     title: "Deepak Kumar | Sr Software Engineer — React, AI/ML, Full Stack",
     description: `Sr Software Engineer with ${yearsExp} exp. React.js, Node.js, AI/ML, OpenAI, LangChain. Currently at India Today Group. Open to opportunities.`,
     creator: "@deepakkutniyal",
@@ -221,9 +221,9 @@ export const NEXT_SEO_DEFAULT = {
     googleBot: {
       index: true,
       follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
+      maxVideoPreview: -1,
+      maxImagePreview: "large",
+      maxSnippet: -1,
     },
   },
 
