@@ -712,34 +712,6 @@ export default function Chat() {
 <p>The MERN stack is still incredibly productive in 2026. The key evolution: TypeScript everywhere, server-first rendering, AI-native data layer, and lightweight state management.</p>
     `,
   },
-  {
-    slug: "election-dashboard-engineering",
-    title: "Engineering India Today's Election Dashboard: Real-Time Data at Scale",
-    description: "Behind the scenes of building India Today's live election results dashboard — handling 10,000+ constituency results in real-time with WebSockets, React, and Node.js.",
-    date: "2026-01-15",
-    readTime: "8 min read",
-    tags: ["React.js", "WebSocket", "Real-time", "Node.js", "India Today", "Engineering"],
-    coverEmoji: "🗳️",
-    featured: true,
-    content: `
-<p>Election night at <strong>India Today Group</strong> is the Super Bowl of Indian tech media. Millions of concurrent users watching live results. Zero tolerance for downtime. Here's how we engineered it.</p>
-
-<h2>The Challenge</h2>
-<p>Displaying real-time results for <strong>543 Lok Sabha constituencies</strong> + <strong>4000+ state assembly seats</strong> with sub-second updates to millions of concurrent viewers.</p>
-
-<h2>Architecture</h2>
-<pre><code>EC Data Feed → Node.js Ingestion → Redis Pub/Sub → WebSocket Gateway
-  → CDN (static) + SSE/WS (dynamic) → React Dashboard</code></pre>
-
-<h2>Key Decisions</h2>
-<p><strong>Server-Sent Events over WebSockets</strong> — for the public dashboard, SSE is simpler, works through CDN, and handles millions of one-way connections better than bidirectional WebSockets.</p>
-<p><strong>React with Canvas</strong> — the India map visualization renders 543 constituency polygons. DOM would choke at this scale, so we use Canvas with React for the controls.</p>
-<p><strong>Redis for pub/sub</strong> — when a result comes in, it's published to Redis. All WebSocket gateway instances subscribe and push to connected clients within 200ms.</p>
-
-<h2>Results</h2>
-<p>Handled <strong>5 million+ concurrent users</strong> on election night with <strong>99.99% uptime</strong> and <strong>sub-500ms update latency</strong>. The dashboard became one of India Today's most-visited features.</p>
-    `,
-  },
 ];
 
 // Helper: get post by slug
