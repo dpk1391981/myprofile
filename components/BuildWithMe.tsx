@@ -18,7 +18,7 @@ const SERVICES = [
   { icon: <IconCode size={20} />, title: "Full Stack Development", desc: "React, Next.js, Node.js, MongoDB — production-grade web apps" },
   { icon: <IconBrain size={20} />, title: "AI / ML Integration", desc: "OpenAI, LangChain, RAG systems, content automation, voice AI" },
   { icon: <IconServer size={20} />, title: "Architecture & Scalability", desc: "Microservices, real-time systems, 5M+ concurrent user scale" },
-  { icon: <IconRocket size={20} />, title: "Product Engineering", desc: "From idea → MVP → scale. Built 15+ products across 7 companies" },
+  { icon: <IconRocket size={20} />, title: "Product Engineering", desc: "From idea → MVP → scale. Built 10+ products across 5+ companies" },
 ];
 
 const PROOF_POINTS = [
