@@ -55,7 +55,7 @@ const LAYERS = [
 ];
 
 const ArchDiagram = () => {
-  const [activeLayer, setActiveLayer] = useState<string | null>(null);
+  const [activeLayer, setActiveLayer] = useState<string | null>("ai");
 
   return (
     <section className="relative not-prose scroll-mt-[72px] py-2 md:py-5" id="architecture">
