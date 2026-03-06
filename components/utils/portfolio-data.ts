@@ -40,6 +40,14 @@ export const PERSONAL_INFO = {
 // ============================================================
 // EXPERIENCE DATA
 // ============================================================
+export interface ChildProject {
+  title: string;
+  type: string;
+  overview: string;
+  technologies: string[];
+  website?: string;
+}
+
 export interface ExperienceChild {
   company: string;
   logo: string;
@@ -52,6 +60,7 @@ export interface ExperienceChild {
   description: string;
   tools: string[];
   highlights: string[];
+  projects?: ChildProject[];
 }
 
 export interface ExperienceItem {
@@ -68,6 +77,7 @@ export interface ExperienceItem {
   tools: string[];
   highlights: string[];
   children?: ExperienceChild[];
+  projects?: ChildProject[];
 }
 
 export const EXPERIENCES: ExperienceItem[] = [
@@ -90,6 +100,26 @@ export const EXPERIENCES: ExperienceItem[] = [
       "Building reusable and modular components for cross-platform use in editorial tools, election dashboards, and video CMS.",
       "Collaborating with editorial and product teams to deploy AI-powered features that improve content speed, SEO, and user engagement.",
       "Mentoring junior developers and maintaining best practices in performance, accessibility, and secure development.",
+    ],
+    projects: [
+      {
+        title: "AI Podcast Generation Platform",
+        type: "AI Editorial Tool · In-house",
+        overview: "AI-powered platform that converts written news articles into podcast-ready audio using OpenAI embeddings and ElevenLabs voice synthesis, with an editorial dashboard for managing generation.",
+        technologies: ["React.js", "Node.js", "OpenAI", "ElevenLabs", "AI Embeddings", "REST APIs"],
+      },
+      {
+        title: "Election Results Automation",
+        type: "Middleware · In-house",
+        overview: "Middleware services to automate aggregation of election results from multiple sources and publish in real-time to editorial CMS tools across digital platforms.",
+        technologies: ["Node.js", "React.js", "MySQL", "Microservices", "REST APIs"],
+      },
+      {
+        title: "News Publishing Automation",
+        type: "Editorial Workflow · In-house",
+        overview: "Backend services automating news publishing workflows — content processing, CMS API integration, and streamlined editorial pipelines for faster article distribution.",
+        technologies: ["Node.js", "React.js", "MySQL", "CMS APIs"],
+      },
     ],
   },
   {
@@ -116,8 +146,7 @@ export const EXPERIENCES: ExperienceItem[] = [
         startDate: { year: "2024", month: "03", day: "01" },
         endDate: { year: "2025", month: "05", day: "01" },
         dateLabel: "Mar 2024 - May 2025",
-        description:
-          "Clove Dental operates more than 500 independent clinics nationwide, delivering exceptional dental care through a team of over 1,200 skilled professionals. With over 2 million happy patients, Clove Dental takes pride in its ethical practices and transparent approach to dentistry.",
+        description: "Clove Dental operates more than 500 independent clinics nationwide, delivering exceptional dental care through a team of over 1,200 skilled professionals.",
         tools: ["Node.js", "Angular", "React.js", "MySQL", "JavaScript", "GIT", "Jira", "AWS", "Mailgun"],
         highlights: [
           "Develop RESTful APIs to support front-end operations, manage data exchange, and ensure secure and efficient communication between client and server.",
@@ -125,6 +154,9 @@ export const EXPERIENCES: ExperienceItem[] = [
           "Conduct thorough testing and debugging to identify and resolve performance bottlenecks.",
           "Gather and analyze user feedback to continuously improve the usability and accessibility of dental care platforms.",
           "Integrate microservices architecture to enable modular and maintainable back-end systems.",
+        ],
+        projects: [
+          { title: "PRM System", type: "Internal Enterprise Tool", overview: "Worked on Clove Dental's internal Patient Relationship Management system — managing appointments, follow-ups, and clinic-level analytics across 500+ clinics.", technologies: ["Node.js", "Angular", "React.js", "MySQL", "REST APIs", "AWS"] },
         ],
       },
       {
@@ -136,8 +168,7 @@ export const EXPERIENCES: ExperienceItem[] = [
         startDate: { year: "2023", month: "06", day: "01" },
         endDate: { year: "2024", month: "03", day: "01" },
         dateLabel: "Jun 2023 - Mar 2024",
-        description:
-          "Humanize offers a healthy digital global platform supporting personal development through an innovative science-based curriculum and inter-subjective dyadic practices.",
+        description: "Humanize offers a healthy digital global platform supporting personal development through an innovative science-based curriculum and inter-subjective dyadic practices.",
         tools: ["React.js", "Node.js", "NestJS", "MongoDB", "JavaScript", "GIT", "Jira", "AWS", "Mailgun"],
         highlights: [
           "RESTful APIs for seamless communication between the frontend and backend.",
@@ -146,6 +177,9 @@ export const EXPERIENCES: ExperienceItem[] = [
           "Integration with third-party services for extended functionality.",
           "Real-time updates and dynamic content rendering for a lively interface.",
           "Accessibility features to ensure inclusivity and compliance with industry standards.",
+        ],
+        projects: [
+          { title: "Video & Audio Communication Platform", type: "Real-time Communication", overview: "Implemented Zoom-style video and audio calling with real-time communication, screen sharing, and meeting management. Business model has since changed.", technologies: ["WebRTC", "React.js", "Node.js", "Socket.io", "NestJS"], website: "https://humanize.com/" },
         ],
       },
       {
@@ -157,14 +191,16 @@ export const EXPERIENCES: ExperienceItem[] = [
         startDate: { year: "2019", month: "01", day: "01" },
         endDate: { year: "2023", month: "06", day: "01" },
         dateLabel: "2019 - Jun 2023",
-        description:
-          "SYNQY's Enhanced Product Listings are a new type of advertising designed to replace or complement your existing retail media.",
+        description: "SYNQY's Enhanced Product Listings are a new type of advertising designed to replace or complement your existing retail media.",
         tools: ["React.js", "Node.js", "Serverless", "JavaScript", "MySQL", "DynamoDB", "GIT", "Jira", "AWS"],
         highlights: [
           "Develop and maintain RESTful APIs to facilitate seamless communication between the frontend and backend systems.",
           "Implement robust data management strategies, including database design, optimization, and maintenance.",
           "Integrate backend services with third-party APIs to enhance functionality and support additional features.",
           "Collaborate with frontend developers, UX/UI designers, and other team members to ensure seamless end-to-end functionality.",
+        ],
+        projects: [
+          { title: "Analytics & BI Dashboard", type: "In-house Product", overview: "Built analytics dashboards and backend services for business intelligence reporting with interactive data visualization and real-time metrics.", technologies: ["Node.js", "React.js", "D3.js", "DynamoDB", "Analytics APIs"] },
         ],
       },
       {
@@ -176,12 +212,14 @@ export const EXPERIENCES: ExperienceItem[] = [
         startDate: { year: "2017", month: "09", day: "01" },
         endDate: { year: "2019", month: "01", day: "01" },
         dateLabel: "2017 - 2019",
-        description:
-          "Ceekr delves deeply into the complexities of human decision-making, offering a transformative journey combining Yoga, Vedanta research with cutting-edge AI innovations.",
+        description: "Ceekr delves deeply into the complexities of human decision-making, offering a transformative journey combining Yoga, Vedanta research with cutting-edge AI innovations.",
         tools: ["React.js", "HTML", "CSS", "PHP", "JavaScript", "jQuery", "MySQL", "GIT", "Jira", "AWS"],
         highlights: [
           "Develop and maintain server-side logic using PHP, ensuring high performance, responsiveness, and scalability.",
           "Create and maintain robust and scalable APIs to facilitate seamless communication between the frontend and backend components.",
+        ],
+        projects: [
+          { title: "Customer Experience Platform", type: "Marketing Engagement", overview: "Marketing engagement platform delivering personalized digital experiences with campaign management and analytics.", technologies: ["React.js", "PHP", "JavaScript", "MySQL"], website: "https://www.ceekr.com/home" },
         ],
       },
     ],
@@ -196,12 +234,14 @@ export const EXPERIENCES: ExperienceItem[] = [
     endDate: { year: "2017", month: "05", day: "01" },
     isCurrent: false,
     dateLabel: "Dec 2016 - May 2017",
-    description:
-      "Phoenix group is a complete advertising agency offering a full suite of marketing services for progressive businesses globally.",
+    description: "Phoenix group is a complete advertising agency offering a full suite of marketing services for progressive businesses globally.",
     tools: ["PHP", "MySQL", "JavaScript", "HTML", "CSS"],
     highlights: [
       "Explored a wide range of projects and learned from experienced professionals in the field.",
       "Developed an e-commerce platform for a client, learning effective team collaboration and clean code practices.",
+    ],
+    projects: [
+      { title: "MLRS", type: "In-house Product", overview: "Worked on MLRS — an internal marketing and lead management system for Phoenix Media's advertising clients.", technologies: ["PHP", "MySQL", "JavaScript", "HTML", "CSS"] },
     ],
   },
   {
@@ -214,14 +254,34 @@ export const EXPERIENCES: ExperienceItem[] = [
     endDate: { year: "2016", month: "12", day: "01" },
     isCurrent: false,
     dateLabel: "Training — 6 months",
-    description:
-      "Galaxy Tourism is a leading B2B Destination Management Company (DMC) offering hotel reservations, sightseeing and adventure tours for Dubai, Singapore and Malaysia.",
+    description: "Galaxy Tourism is a leading B2B Destination Management Company (DMC) offering hotel reservations, sightseeing and adventure tours for Dubai, Singapore and Malaysia.",
     tools: ["HTML", "CSS", "PHP", "MySQL", "jQuery", "JavaScript"],
     highlights: [
       "PHP server-side development leveraging frameworks such as CodeIgniter and CakePHP.",
       "Database design and management using MySQL with optimization and security.",
       "JavaScript for dynamic and interactive user interfaces.",
       "Modern JavaScript frameworks and libraries for responsive frontend applications.",
+    ],
+    projects: [
+      { title: "Tour & Package Management System", type: "Internal Tool", overview: "Built an internal tool to manage tour packages, hotel reservations, sightseeing itineraries, and booking workflows for Dubai, Singapore, and Malaysia destinations.", technologies: ["PHP", "MySQL", "jQuery", "JavaScript", "HTML", "CSS"] },
+    ],
+  },
+  {
+    company: "Own Products",
+    logo: "/assets/images/profile-pic-removebg-preview.png",
+    logoAlt: "Deepak Kumar - Freelance",
+    url: "https://officialdeepak.in",
+    role: "Full Stack Developer & Product Owner",
+    startDate: { year: "2024", month: "01", day: "01" },
+    endDate: null,
+    isCurrent: true,
+    dateLabel: "2024 - Ongoing",
+    description: "Building and maintaining personal products and freelance projects alongside full-time work.",
+    tools: ["React.js", "Next.js", "Node.js", "MongoDB", "SEO"],
+    highlights: [],
+    projects: [
+      { title: "VTechXHub", type: "Own Product · Live", overview: "Content publishing platform for guest posts, quality articles, and SEO-driven distribution. Owning this product end-to-end — built contributor workflows, SEO optimization, and content management.", technologies: ["React.js", "Node.js", "MongoDB", "SEO Tools", "CMS Architecture"], website: "https://vtechxhub.com/" },
+      { title: "Think4BuySale", type: "Freelance · Live", overview: "Real estate platform with property listing, advanced search, filtering, and management dashboards for buyers and sellers.", technologies: ["React.js", "Node.js", "MongoDB", "Next.js", "REST APIs"], website: "https://www.think4buysale.in/" },
     ],
   },
 ];
@@ -410,6 +470,7 @@ export const NAV_LINKS = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
   { label: "Experience", href: "/experience" },
+  { label: "Projects", href: "/projects" },
   { label: "Education", href: "/education" },
   { label: "Skills", href: "/skills" },
   { label: "Reviews", href: "/reviews" },
@@ -712,6 +773,34 @@ export default function Chat() {
 <p>The MERN stack is still incredibly productive in 2026. The key evolution: TypeScript everywhere, server-first rendering, AI-native data layer, and lightweight state management.</p>
     `,
   },
+  {
+    slug: "election-dashboard-engineering",
+    title: "Engineering India Today's Election Dashboard: Real-Time Data at Scale",
+    description: "Behind the scenes of building India Today's live election results dashboard — handling 10,000+ constituency results in real-time with WebSockets, React, and Node.js.",
+    date: "2026-01-15",
+    readTime: "8 min read",
+    tags: ["React.js", "WebSocket", "Real-time", "Node.js", "India Today", "Engineering"],
+    coverEmoji: "🗳️",
+    featured: true,
+    content: `
+<p>Election night at <strong>India Today Group</strong> is the Super Bowl of Indian tech media. Millions of concurrent users watching live results. Zero tolerance for downtime. Here's how we engineered it.</p>
+
+<h2>The Challenge</h2>
+<p>Displaying real-time results for <strong>543 Lok Sabha constituencies</strong> + <strong>4000+ state assembly seats</strong> with sub-second updates to millions of concurrent viewers.</p>
+
+<h2>Architecture</h2>
+<pre><code>EC Data Feed → Node.js Ingestion → Redis Pub/Sub → WebSocket Gateway
+  → CDN (static) + SSE/WS (dynamic) → React Dashboard</code></pre>
+
+<h2>Key Decisions</h2>
+<p><strong>Server-Sent Events over WebSockets</strong> — for the public dashboard, SSE is simpler, works through CDN, and handles millions of one-way connections better than bidirectional WebSockets.</p>
+<p><strong>React with Canvas</strong> — the India map visualization renders 543 constituency polygons. DOM would choke at this scale, so we use Canvas with React for the controls.</p>
+<p><strong>Redis for pub/sub</strong> — when a result comes in, it's published to Redis. All WebSocket gateway instances subscribe and push to connected clients within 200ms.</p>
+
+<h2>Results</h2>
+<p>Handled <strong>5 million+ concurrent users</strong> on election night with <strong>99.99% uptime</strong> and <strong>sub-500ms update latency</strong>. The dashboard became one of India Today's most-visited features.</p>
+    `,
+  },
 ];
 
 // Helper: get post by slug
@@ -719,3 +808,114 @@ export const getBlogPost = (slug: string) => BLOG_POSTS.find((p) => p.slug === s
 
 // Helper: get featured posts
 export const getFeaturedPosts = () => BLOG_POSTS.filter((p) => p.featured);
+
+// ============================================================
+// FEATURED PROJECTS
+// ============================================================
+export interface FeaturedProject {
+  title: string;
+  type: string;
+  client: string;
+  role: string;
+  year?: string;
+  website?: string;
+  overview: string;
+  problem?: string;
+  solution?: string;
+  impact?: string[];
+  technologies: string[];
+}
+
+export const FEATURED_PROJECTS: FeaturedProject[] = [
+  {
+    title: "AI Podcast Generation Platform",
+    type: "AI Editorial Tool",
+    client: "Enterprise Media",
+    role: "Senior Software Engineer",
+    year: "2025",
+    overview: "AI-powered platform that converts written news articles into podcast-ready audio using generative AI and voice synthesis.",
+    problem: "Editorial teams needed faster conversion of articles to podcast content without manual recording.",
+    solution: "Automated pipeline — article processing → structured prompts → AI voice synthesis → editorial dashboard.",
+    impact: ["Reduced podcast production time by 80%", "Automated audio generation at scale", "Improved editorial team efficiency"],
+    technologies: ["React.js", "Node.js", "OpenAI", "ElevenLabs", "AI Embeddings", "REST APIs"],
+  },
+  {
+    title: "Election Results Automation Platform",
+    type: "Real-time Data Processing",
+    client: "Enterprise Media",
+    role: "Senior Software Engineer",
+    year: "2024",
+    overview: "Middleware services to automate aggregation and real-time publishing of election results to editorial CMS.",
+    problem: "Election data from multiple sources needed real-time processing and publishing across digital platforms.",
+    solution: "Middleware APIs that ingest election feeds, normalize data, and push updates to CMS platforms.",
+    impact: ["5M+ concurrent users on election night", "Sub-500ms update latency", "99.99% uptime"],
+    technologies: ["Node.js", "React.js", "MySQL", "WebSocket", "Redis", "Microservices"],
+  },
+  {
+    title: "Think4BuySale Real Estate Platform",
+    type: "Property Marketplace",
+    client: "Freelance Project",
+    role: "Full Stack Developer",
+    year: "2023",
+    website: "https://www.think4buysale.in/",
+    overview: "Real estate platform with property listing, advanced search, and management for buyers and sellers. Dev version: reales-think4buysale.vercel.app",
+    impact: ["Improved property discovery UX", "Scalable listing architecture", "Advanced filtering system"],
+    technologies: ["React.js", "Node.js", "MongoDB", "Next.js", "REST APIs"],
+  },
+  {
+    title: "VTechXHub Content Platform",
+    type: "Content Publishing & SEO",
+    client: "Own Product",
+    role: "Product Owner & Lead Developer",
+    year: "2023",
+    website: "https://vtechxhub.com/",
+    overview: "Platform for managing guest posts, high-quality content publishing, and SEO-driven article distribution. Owning this product end-to-end.",
+    impact: ["Structured guest post workflows", "SEO-optimized publishing", "Contributor management system"],
+    technologies: ["React.js", "Node.js", "MongoDB", "SEO Tools", "CMS Architecture"],
+  },
+  {
+    title: "Video Communication Platform",
+    type: "Real-time Communication",
+    client: "Humanize (Enterprise SaaS)",
+    role: "Software Engineer",
+    website: "https://humanize.com/",
+    overview: "Real-time video and audio communication features — Zoom-style meeting platform with screen sharing.",
+    technologies: ["WebRTC", "React.js", "Node.js", "Socket.io", "Real-time Communication"],
+  },
+  {
+    title: "Customer Experience Platform",
+    type: "Marketing Engagement",
+    client: "Ceekr (Enterprise SaaS)",
+    role: "Software Engineer",
+    website: "https://www.ceekr.com/home",
+    overview: "Marketing engagement platform delivering personalized digital experiences with campaign management.",
+    technologies: ["React.js", "Node.js", "Analytics Tools", "AWS"],
+  },
+  {
+    title: "Data Analytics Platform",
+    type: "Business Intelligence",
+    client: "Synqy Corporation",
+    role: "Software Engineer",
+    website: "https://www.linkedin.com/company/synqy-corporation",
+    overview: "Analytics dashboards and backend services for business intelligence reporting and data visualization.",
+    technologies: ["Node.js", "React.js", "D3.js", "Data Visualization", "Analytics APIs"],
+  },
+  {
+    title: "News Publishing Automation",
+    type: "Editorial Workflow",
+    client: "Enterprise Media",
+    role: "Backend Engineer",
+    year: "2024",
+    overview: "Backend services automating news publishing workflows and CMS integration for faster article distribution.",
+    technologies: ["Node.js", "React.js", "MySQL", "CMS APIs", "Microservices"],
+  },
+  {
+    title: "Food Safety Compliance Tool",
+    type: "Compliance System",
+    client: "Internal Enterprise Tool",
+    role: "Software Engineer",
+    year: "2017",
+    overview: "System to monitor food safety procedures and generate compliance reports for production environments.",
+    technologies: ["PHP", "MySQL", "jQuery", "Reporting Tools"],
+  },
+];

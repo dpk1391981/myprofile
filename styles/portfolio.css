@@ -2724,3 +2724,206 @@
 
 /* Rounded border fix for case study result */
 .rounded-12 { border-radius: 12px; }
+
+/* ================================================================
+   EXPERIENCE — Expandable Children
+   ================================================================ */
+
+/* Child card header — tappable row */
+.exp-child-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  -webkit-tap-highlight-color: transparent;
+  text-align: left;
+}
+.exp-child-header:active {
+  opacity: 0.8;
+}
+
+.exp-child-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+.exp-child-toggle--open {
+  background: var(--color-primary-50);
+  color: var(--color-primary);
+  border-color: var(--color-primary-100);
+}
+
+/* Expanded body with slide animation */
+.exp-child-body {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border);
+  animation: slideDown 0.25s ease;
+}
+@keyframes slideDown {
+  from { opacity: 0; max-height: 0; transform: translateY(-8px); }
+  to { opacity: 1; max-height: 1000px; transform: translateY(0); }
+}
+
+/* Projects & Clients toggle button */
+.exp-children-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface-elevated);
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: all 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.exp-children-toggle:hover {
+  border-color: var(--color-primary-200);
+  background: var(--color-primary-50);
+}
+.exp-children-toggle:active {
+  transform: scale(0.99);
+}
+
+.exp-children-toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-secondary);
+}
+.exp-children-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-primary);
+  background: var(--color-primary-50);
+  border: 1px solid var(--color-primary-100);
+  border-radius: 6px;
+  padding: 0 5px;
+}
+
+.exp-children-toggle-hint {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+/* Collapsed preview — company chips */
+.exp-children-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.exp-children-preview-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: 5px 10px;
+  border-radius: 8px;
+}
+
+/* Expanded children list */
+.exp-children-list {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: slideDown 0.3s ease;
+}
+
+/* ---- Experience Project Mini Cards ---- */
+.exp-project-mini {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  transition: border-color 0.15s ease;
+}
+.exp-project-mini:hover {
+  border-color: var(--color-primary-200);
+}
+.exp-project-tech {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: var(--color-primary-50);
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid var(--color-primary-100);
+}
+
+/* ---- Projects Built Toggle ---- */
+.exp-projects-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px dashed var(--color-border);
+  background: var(--color-surface-elevated);
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: all 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.exp-projects-toggle:hover {
+  border-color: var(--color-primary-200);
+  border-style: solid;
+  background: var(--color-primary-50);
+}
+.exp-projects-toggle:active {
+  transform: scale(0.99);
+}
+
+.exp-projects-toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-secondary);
+}
+
+.exp-projects-list {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: slideDown 0.25s ease;
+}
