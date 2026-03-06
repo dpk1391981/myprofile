@@ -31,7 +31,7 @@ const Review = () => {
   return (
     <section
       ref={sectionRef}
-      className="animate-on-scroll relative not-prose scroll-mt-[72px] py-16 md:py-24 bg-slate-50/60"
+      className="animate-on-scroll relative not-prose scroll-mt-[72px] py-16 md:py-10 bg-slate-50/60"
       id="reviews"
       aria-label="Recommendations"
     >

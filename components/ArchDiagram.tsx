@@ -58,7 +58,7 @@ const ArchDiagram = () => {
   const [activeLayer, setActiveLayer] = useState<string | null>("ai");
 
   return (
-    <section className="relative not-prose scroll-mt-[72px] py-2 md:py-5" id="architecture">
+    <section className="relative not-prose scroll-mt-[72px] py-2 md:py-2" id="architecture">
       <div className="max-w-5xl mx-auto px-2 sm:px-6 lg:px-4">
         <header className="section-header mb-8">
           <p className="text-xs font-bold uppercase tracking-widest text-blue-500 mb-1">How I Build</p>
