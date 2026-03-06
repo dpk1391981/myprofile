@@ -241,7 +241,7 @@ const ExperienceEntry = ({ exp }: { exp: ExperienceItem }) => {
                 className="exp-children-toggle"
               >
                 <span className="exp-children-toggle-label">
-                  Projects &amp; Clients
+                  Products &amp; Clients
                   <span className="exp-children-count">{exp.children!.length}</span>
                 </span>
                 <span className="exp-children-toggle-hint">

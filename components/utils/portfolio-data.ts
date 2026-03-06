@@ -102,24 +102,24 @@ export const EXPERIENCES: ExperienceItem[] = [
       "Mentoring junior developers and maintaining best practices in performance, accessibility, and secure development.",
     ],
     projects: [
-      {
-        title: "AI Podcast Generation Platform",
-        type: "AI Editorial Tool · In-house",
-        overview: "AI-powered platform that converts written news articles into podcast-ready audio using OpenAI embeddings and ElevenLabs voice synthesis, with an editorial dashboard for managing generation.",
-        technologies: ["React.js", "Node.js", "OpenAI", "ElevenLabs", "AI Embeddings", "REST APIs"],
-      },
-      {
-        title: "Election Results Automation",
-        type: "Middleware · In-house",
-        overview: "Middleware services to automate aggregation of election results from multiple sources and publish in real-time to editorial CMS tools across digital platforms.",
-        technologies: ["Node.js", "React.js", "MySQL", "Microservices", "REST APIs"],
-      },
-      {
-        title: "News Publishing Automation",
-        type: "Editorial Workflow · In-house",
-        overview: "Backend services automating news publishing workflows — content processing, CMS API integration, and streamlined editorial pipelines for faster article distribution.",
-        technologies: ["Node.js", "React.js", "MySQL", "CMS APIs"],
-      },
+      // {
+      //   title: "AI Podcast Generation Platform",
+      //   type: "AI Editorial Tool · In-house",
+      //   overview: "AI-powered platform that converts written news articles into podcast-ready audio using OpenAI embeddings and ElevenLabs voice synthesis, with an editorial dashboard for managing generation.",
+      //   technologies: ["React.js", "Node.js", "OpenAI", "ElevenLabs", "AI Embeddings", "REST APIs"],
+      // },
+      // {
+      //   title: "Election Results Automation",
+      //   type: "Middleware · In-house",
+      //   overview: "Middleware services to automate aggregation of election results from multiple sources and publish in real-time to editorial CMS tools across digital platforms.",
+      //   technologies: ["Node.js", "React.js", "MySQL", "Microservices", "REST APIs"],
+      // },
+      // {
+      //   title: "News Publishing Automation",
+      //   type: "Editorial Workflow · In-house",
+      //   overview: "Backend services automating news publishing workflows — content processing, CMS API integration, and streamlined editorial pipelines for faster article distribution.",
+      //   technologies: ["Node.js", "React.js", "MySQL", "CMS APIs", "Open API"],
+      // },
     ],
   },
   {
@@ -273,15 +273,15 @@ export const EXPERIENCES: ExperienceItem[] = [
     url: "https://officialdeepak.in",
     role: "Full Stack Developer & Product Owner",
     startDate: { year: "2024", month: "01", day: "01" },
-    endDate: null,
-    isCurrent: true,
-    dateLabel: "2024 - Ongoing",
-    description: "Building and maintaining personal products and freelance projects alongside full-time work.",
+    endDate: { year: "2025", month: "03", day: "01" },
+    isCurrent: false,
+    dateLabel: "2024 - 2025",
+    description: "Building and maintaining personal products and independent projects alongside full-time work to continuously learn and grow with new technologies.",
     tools: ["React.js", "Next.js", "Node.js", "MongoDB", "SEO"],
     highlights: [],
     projects: [
-      { title: "VTechXHub", type: "Own Product · Live", overview: "Content publishing platform for guest posts, quality articles, and SEO-driven distribution. Owning this product end-to-end — built contributor workflows, SEO optimization, and content management.", technologies: ["React.js", "Node.js", "MongoDB", "SEO Tools", "CMS Architecture"], website: "https://vtechxhub.com/" },
-      { title: "Think4BuySale", type: "Freelance · Live", overview: "Real estate platform with property listing, advanced search, filtering, and management dashboards for buyers and sellers.", technologies: ["React.js", "Node.js", "MongoDB", "Next.js", "REST APIs"], website: "https://www.think4buysale.in/" },
+      { title: "VTechXHub", type: "Own Product · Live", overview: "Content publishing platform for guest posts, quality articles, and SEO-driven distribution. Owning this product end-to-end — built contributor workflows, SEO optimization, and content management.", technologies: ["React.js", "Node.js", "MySQL", "NEXT JS", "NEST JS"], website: "https://vtechxhub.com/" },
+      { title: "Think4BuySale", type: "Own Product · Under Development", overview: "Real estate platform with property listing, advanced search, filtering, and management dashboards for buyers and sellers.", technologies: ["React.js", "Nest.js", "MySQL", "Next.js", "REST APIs"], website: "https://reales-think4buysale.vercel.app/" },
     ],
   },
 ];
@@ -517,7 +517,7 @@ export const BLOG_POSTS: BlogPost[] = [
 
 <h2>1. Memoization Done Right</h2>
 <p>Most developers misuse <code>React.memo()</code> and <code>useMemo()</code>. The key is to only memoize components that receive <strong>referentially unstable props</strong> and render expensive trees.</p>
-<pre><code>// ❌ Useless memoization
+<pre><code>// ❌ Useless memoizationBuilding and maintaining personal products and freelance projects alongside full-time work
 const Button = React.memo(({ onClick }) =&gt; &lt;button onClick={onClick}&gt;Click&lt;/button&gt;);
 
 // ✅ Useful — prevents expensive list re-renders
@@ -787,7 +787,7 @@ export default function Chat() {
 
 <h2>The Challenge</h2>
 <p>Displaying real-time results for <strong>543 Lok Sabha constituencies</strong> + <strong>4000+ state assembly seats</strong> with sub-second updates to millions of concurrent viewers.</p>
-
+Building and maintaining personal products and freelance projects alongside full-time work
 <h2>Architecture</h2>
 <pre><code>EC Data Feed → Node.js Ingestion → Redis Pub/Sub → WebSocket Gateway
   → CDN (static) + SSE/WS (dynamic) → React Dashboard</code></pre>
@@ -907,7 +907,7 @@ export const FEATURED_PROJECTS: FeaturedProject[] = [
     role: "Backend Engineer",
     year: "2024",
     overview: "Backend services automating news publishing workflows and CMS integration for faster article distribution.",
-    technologies: ["Node.js", "React.js", "MySQL", "CMS APIs", "Microservices"],
+    technologies: ["Node.js", "React.js", "MySQL", "CMS APIs", "Microservices", "Open API", "LLM Tools"],
   },
   {
     title: "Food Safety Compliance Tool",
