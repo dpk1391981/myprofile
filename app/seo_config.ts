@@ -206,7 +206,7 @@ export const NEXT_SEO_DEFAULT = {
   },
 
   twitter: {
-    card: "summary_large_image",
+    cardType: "summary_large_image",
     title: "Deepak Kumar | Sr Software Engineer — React, AI/ML, Full Stack",
     description: `Sr Software Engineer with ${yearsExp} exp. React.js, Node.js, AI/ML, OpenAI, LangChain. Currently at India Today Group. Open to opportunities.`,
     creator: "@deepakkutniyal",
@@ -221,9 +221,9 @@ export const NEXT_SEO_DEFAULT = {
     googleBot: {
       index: true,
       follow: true,
-      maxVideoPreview: -1,
-      maxImagePreview: "large",
-      maxSnippet: -1,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
     },
   },
 
@@ -337,8 +337,8 @@ const profilePageSchema = {
   name: "Deepak Kumar Portfolio",
   url: SITE_URL,
   mainEntity: { "@type": "Person", name: "Deepak Kumar" },
-  dateCreated: "2023-01-01",
-  dateModified: new Date().toISOString().split("T")[0],
+  dateCreated: "2023-01-01T00:00:00+05:30",
+  dateModified: new Date().toISOString(),
 };
 
 // Combined as @graph for a single JSON-LD block
