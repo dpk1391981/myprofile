@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { totalExperianceYears } from "@/components/utils/date";
 import crypto from "crypto";
 
@@ -20,7 +21,7 @@ function getGravatarUrl(email: string, size = 120): string {
 
 const profileImage = getGravatarUrl(GLOBAL_EMAIL);
 
-export const NEXT_SEO_DEFAULT = {
+export const NEXT_SEO_DEFAULT: Metadata = {
   title,
   applicationName: "Deepak Kumar | Sr Software Engineer",
   description,
@@ -176,11 +177,9 @@ export const NEXT_SEO_DEFAULT = {
     title,
     description,
     type: "profile",
-    profile: {
-      firstName: "Deepak",
-      lastName: "Kumar",
-      gender: "male",
-    },
+    firstName: "Deepak",
+    lastName: "Kumar",
+    gender: "male",
     images: [
       {
         url: profileImage,
@@ -190,7 +189,7 @@ export const NEXT_SEO_DEFAULT = {
       },
     ],
     locale: "en_IN",
-    site_name: "Deepak Kumar — Software Engineer Portfolio",
+    siteName: "Deepak Kumar — Software Engineer Portfolio",
   },
 
   creator: "Deepak Kumar",
@@ -206,13 +205,12 @@ export const NEXT_SEO_DEFAULT = {
   },
 
   twitter: {
-    cardType: "summary_large_image",
+    card: "summary_large_image",
     title: "Deepak Kumar | Sr Software Engineer — React, AI/ML, Full Stack",
     description: `Sr Software Engineer with ${yearsExp} exp. React.js, Node.js, AI/ML, OpenAI, LangChain. Currently at India Today Group. Open to opportunities.`,
     creator: "@deepakkutniyal",
     images: [profileImage],
-    site: "https://x.com/deepakkutniyal",
-    handle: "@deepakkutniyal",
+    site: "@deepakkutniyal",
   },
 
   robots: {
@@ -221,9 +219,9 @@ export const NEXT_SEO_DEFAULT = {
     googleBot: {
       index: true,
       follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
+      "max-video-preview": -1 as const,
+      "max-image-preview": "large" as const,
+      "max-snippet": -1 as const,
     },
   },
 
