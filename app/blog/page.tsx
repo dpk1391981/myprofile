@@ -160,7 +160,6 @@ export default async function BlogPage() {
   };
 
   return (
-    <SmartLoader>
       <main className="portfolio-page">
       <script type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
@@ -303,7 +302,6 @@ export default async function BlogPage() {
         </div>
       </section>
     </main>
-    </SmartLoader>
     
   );
 }
