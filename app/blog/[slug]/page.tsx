@@ -2,174 +2,367 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BLOG_POSTS, getBlogPost, PERSONAL_INFO } from "@/components/utils/portfolio-data";
-import { IconArrowLeft, IconClock, IconBrandTwitter, IconBrandLinkedin, IconLink } from "@tabler/icons-react";
+import { IconArrowLeft, IconClock, IconBrandTwitter, IconBrandLinkedin, IconBrandWhatsapp } from "@tabler/icons-react";
+import { connectToDB } from "@/utils/database";
+import BlogModel from "@/models/Blog";
+import SeoConfig from "@/models/SeoConfig";
+import AdSlot from "@/components/blog/AdSlot";
+import ReadingProgress from "@/components/blog/ReadingProgress";
 
-// Generate static paths for all blog posts
-export async function generateStaticParams() {
-  return BLOG_POSTS.map((post) => ({ slug: post.slug }));
+export const dynamic = "force-dynamic";
+
+const SLOT_TOP     = process.env.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE_TOP    || "2222222222";
+const SLOT_BOTTOM  = process.env.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE_BOTTOM || "3333333333";
+const SLOT_SIDEBAR = process.env.NEXT_PUBLIC_ADSENSE_SLOT_SIDEBAR        || "4444444444";
+const SITE_URL     = process.env.NEXT_PUBLIC_WEB_SITE || "https://officialdeepak.in";
+
+// ── Helpers ───────────────────────────────────────────────────────────────
+
+async function getPost(slug: string) {
+  try {
+    await connectToDB();
+    const p = await BlogModel.findOne({ slug, status: "published" }).lean() as any;
+    if (p) return {
+      _fromDb:        true,
+      slug:           p.slug,
+      title:          p.title,
+      description:    p.description,
+      date:           p.date || new Date(p.createdAt).toISOString().split("T")[0],
+      updatedAt:      new Date(p.updatedAt || p.createdAt).toISOString(),
+      readTime:       p.readTime,
+      tags:           p.tags as string[],
+      coverEmoji:     p.coverEmoji,
+      featured:       !!p.featured,
+      content:        p.content,
+      category:       p.category || "",
+      // SEO fields
+      seoTitle:       p.seoTitle      || "",
+      seoDescription: p.seoDescription || "",
+      focusKeyword:   p.focusKeyword  || "",
+      seoKeywords:    (p.seoKeywords  || []) as string[],
+      ogImage:        p.ogImage       || "",
+      canonicalUrl:   p.canonicalUrl  || "",
+      robots:         p.robots        || "index, follow",
+      noIndex:        !!p.noIndex,
+    };
+  } catch {}
+  const sp = getBlogPost(slug);
+  if (!sp) return null;
+  return { ...sp, _fromDb: false, category: "", updatedAt: sp.date,
+    seoTitle: "", seoDescription: "", focusKeyword: "",
+    seoKeywords: [] as string[], ogImage: "", canonicalUrl: "", robots: "index, follow", noIndex: false };
 }
 
-// Dynamic SEO metadata per post
+async function getDefaults() {
+  try {
+    await connectToDB();
+    return await SeoConfig.findOne({ key: "blog-defaults" }).lean() as any;
+  } catch { return null; }
+}
+
+async function getRelated(slug: string, tags: string[]) {
+  const all: any[] = [];
+  try {
+    await connectToDB();
+    const rows = await BlogModel.find({ slug: { $ne: slug }, tags: { $in: tags }, status: "published" })
+      .limit(4).lean() as any[];
+    all.push(...rows.map((p: any) => ({
+      slug: p.slug, title: p.title, coverEmoji: p.coverEmoji,
+      date: p.date || new Date(p.createdAt).toISOString().split("T")[0], readTime: p.readTime,
+    })));
+  } catch {}
+  const staticRelated = BLOG_POSTS.filter(
+    (p) => p.slug !== slug && p.tags.some((t) => tags.includes(t)) && !all.some((a) => a.slug === p.slug)
+  ).slice(0, 4 - all.length);
+  return [...all, ...staticRelated].slice(0, 4);
+}
+
+// ── Metadata ──────────────────────────────────────────────────────────────
+
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const post = getBlogPost(params.slug);
+  const [post, defaults] = await Promise.all([getPost(params.slug), getDefaults()]);
   if (!post) return {};
 
-  const url = `${process.env.NEXT_PUBLIC_WEB_SITE || "https://officialdeepak.in"}/blog/${post.slug}`;
+  const titleSuffix = defaults?.titleSuffix || ` | ${PERSONAL_INFO.fullName}`;
+  const defaultKws  = (defaults?.defaultKeywords || []) as string[];
+
+  const title       = (post.seoTitle || post.title) + titleSuffix;
+  const description = post.seoDescription || post.description;
+  const kwSet = new Set([post.focusKeyword, ...post.seoKeywords, ...post.tags, ...defaultKws, PERSONAL_INFO.fullName, "blog", "tutorial"].filter(Boolean));
+  const keywords = Array.from(kwSet);
+  const ogImage     = post.ogImage || defaults?.ogImage || `${SITE_URL}/assets/images/profile-pic-removebg-preview.png`;
+  const canonical   = post.canonicalUrl || `${SITE_URL}/blog/${post.slug}`;
+  const robots      = post.noIndex ? "noindex, nofollow" : (post.robots || "index, follow");
+  const [ri, rf]    = robots.split(",").map((s: string) => s.trim());
 
   return {
-    title: `${post.title} | ${PERSONAL_INFO.fullName}`,
-    description: post.description,
-    keywords: [...post.tags, PERSONAL_INFO.fullName, "blog", "tutorial", "software engineering"],
-    authors: [{ name: PERSONAL_INFO.fullName }],
+    title,
+    description,
+    keywords,
+    authors:  [{ name: PERSONAL_INFO.fullName, url: SITE_URL }],
+    creator:  PERSONAL_INFO.fullName,
     openGraph: {
-      title: post.title,
-      description: post.description,
-      type: "article",
-      publishedTime: post.date,
-      authors: [PERSONAL_INFO.fullName],
-      tags: post.tags,
-      url,
+      title:         post.seoTitle || post.title,
+      description,
+      type:          "article",
+      publishedTime: post.date + "T00:00:00+05:30",
+      modifiedTime:  post.updatedAt,
+      authors:       [PERSONAL_INFO.fullName],
+      tags:          [...post.tags, ...(post.seoKeywords || [])],
+      url:           canonical,
+      siteName:      `${PERSONAL_INFO.fullName} Blog`,
+      images:        [{ url: ogImage, width: 1200, height: 630, alt: post.seoTitle || post.title }],
+      locale:        "en_IN",
     },
     twitter: {
-      card: "summary_large_image",
-      title: post.title,
-      description: post.description,
-      creator: "@deepakkutniyal",
+      card:        "summary_large_image",
+      title:       post.seoTitle || post.title,
+      description,
+      creator:     defaults?.twitterCreator || "@deepakkutniyal",
+      images:      [ogImage],
     },
-    alternates: {
-      canonical: url,
+    robots: {
+      index:  !ri.includes("noindex"),
+      follow: !rf?.includes("nofollow"),
+      googleBot: {
+        index: !ri.includes("noindex"), follow: !rf?.includes("nofollow"),
+        "max-video-preview": -1, "max-image-preview": "large", "max-snippet": -1,
+      },
     },
+    alternates: { canonical },
   };
 }
 
-export default function BlogPostPage({ params }: { params: { slug: string } }) {
-  const post = getBlogPost(params.slug);
+// ── Page ──────────────────────────────────────────────────────────────────
+
+export default async function BlogPostPage({ params }: { params: { slug: string } }) {
+  const [post, defaults, related] = await Promise.all([
+    getPost(params.slug),
+    getDefaults(),
+    getPost(params.slug).then((p) => p ? getRelated(p.slug, p.tags) : []),
+  ]);
   if (!post) notFound();
 
-  const siteUrl = process.env.NEXT_PUBLIC_WEB_SITE || "https://officialdeepak.in";
-  const postUrl = `${siteUrl}/blog/${post.slug}`;
+  const titleSuffix = defaults?.titleSuffix || ` | ${PERSONAL_INFO.fullName}`;
+  const postUrl     = `${SITE_URL}/blog/${post.slug}`;
+  const ogImage     = post.ogImage || defaults?.ogImage || `${SITE_URL}/assets/images/profile-pic-removebg-preview.png`;
+  const wordCount   = post.content.replace(/<[^>]+>/g, " ").split(/\s+/).filter(Boolean).length;
+  const readMins    = parseInt(post.readTime) || 5;
 
-  // Related posts — same tags, different slug
-  const related = BLOG_POSTS
-    .filter((p) => p.slug !== post.slug && p.tags.some((t) => post.tags.includes(t)))
-    .slice(0, 3);
-
-  // Article structured data
-  const articleSchema = {
+  // ── Structured data — TechArticle + BreadcrumbList ────────────────
+  const structuredData = {
     "@context": "https://schema.org",
-    "@type": "TechArticle",
-    headline: post.title,
-    description: post.description,
-    author: { "@type": "Person", name: PERSONAL_INFO.fullName, url: siteUrl },
-    datePublished: post.date,
-    dateModified: post.date,
-    url: postUrl,
-    keywords: post.tags.join(", "),
-    publisher: { "@type": "Person", name: PERSONAL_INFO.fullName },
-    mainEntityOfPage: { "@type": "WebPage", "@id": postUrl },
+    "@graph": [
+      {
+        "@type": "TechArticle",
+        "@id": postUrl,
+        headline:     post.seoTitle || post.title,
+        name:         post.seoTitle || post.title,
+        description:  post.seoDescription || post.description,
+        url:          postUrl,
+        datePublished: post.date + "T00:00:00+05:30",
+        dateModified:  post.updatedAt,
+        author: {
+          "@type": "Person",
+          name:    PERSONAL_INFO.fullName,
+          url:     SITE_URL,
+          sameAs: ["https://x.com/deepakkutniyal", "https://www.linkedin.com/in/dpk1391981/", "https://github.com/dpk1391981"],
+        },
+        publisher: {
+          "@type": "Person",
+          name: PERSONAL_INFO.fullName,
+          url:  SITE_URL,
+        },
+        image:             { "@type": "ImageObject", url: ogImage, width: 1200, height: 630 },
+        mainEntityOfPage:  { "@type": "WebPage", "@id": postUrl },
+        keywords:          [post.focusKeyword, ...post.seoKeywords, ...post.tags].filter(Boolean).join(", "),
+        articleSection:    post.category || post.tags[0] || "Technology",
+        inLanguage:        "en-IN",
+        wordCount,
+        timeRequired:      `PT${readMins}M`,
+        isAccessibleForFree: true,
+        ...(post.focusKeyword ? { about: { "@type": "Thing", name: post.focusKeyword } } : {}),
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home",    item: SITE_URL },
+          { "@type": "ListItem", position: 2, name: "Blog",    item: `${SITE_URL}/blog` },
+          { "@type": "ListItem", position: 3, name: post.title, item: postUrl },
+        ],
+      },
+    ],
   };
 
   return (
     <main className="portfolio-page">
-      {/* Article structured data */}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
+      <ReadingProgress />
+      <script type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
 
-      <article className="blog-article" itemScope itemType="https://schema.org/TechArticle">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 md:py-14">
-          {/* Back */}
-          <Link href="/blog" className="blog-back-link">
-            <IconArrowLeft size={16} /> All Articles
+      <article itemScope itemType="https://schema.org/TechArticle">
+
+        {/* ── Full-width article header ──────────────────────────── */}
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-8 md:pt-12">
+          <Link href="/blog" className="blog-back-link mb-6">
+            <IconArrowLeft size={15} /> All Articles
           </Link>
 
-          {/* Header */}
-          <header className="mb-8 md:mb-10">
-            <div className="flex items-center gap-3 flex-wrap mb-4">
-              {post.tags.map((tag) => (
-                <span key={tag} className="blog-tag">{tag}</span>
-              ))}
-            </div>
-
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 tracking-tight leading-tight mb-4" itemProp="headline">
-              {post.title}
-            </h1>
-
-            <p className="text-base text-slate-500 leading-relaxed mb-5" itemProp="description">
-              {post.description}
-            </p>
-
-            <div className="flex items-center justify-between flex-wrap gap-3">
-              {/* Author + Date */}
-              <div className="flex items-center gap-3 text-sm text-slate-500">
-                <span className="font-semibold text-slate-700" itemProp="author">{PERSONAL_INFO.fullName}</span>
-                <span>·</span>
-                <time dateTime={post.date} itemProp="datePublished">{formatDate(post.date)}</time>
-                <span>·</span>
-                <span className="flex items-center gap-1"><IconClock size={14} /> {post.readTime}</span>
-              </div>
-
-              {/* Share */}
-              <div className="flex items-center gap-2">
-                <a
-                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(postUrl)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="blog-share-btn"
-                  aria-label="Share on Twitter"
-                >
-                  <IconBrandTwitter size={16} />
-                </a>
-                <a
-                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(postUrl)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="blog-share-btn"
-                  aria-label="Share on LinkedIn"
-                >
-                  <IconBrandLinkedin size={16} />
-                </a>
-              </div>
-            </div>
-          </header>
-
-          {/* Divider */}
-          <div className="w-full h-px bg-slate-200 mb-8" />
-
-          {/* Content */}
-          <div
-            className="blog-content"
-            itemProp="articleBody"
-            dangerouslySetInnerHTML={{ __html: post.content }}
-          />
-
-          {/* Author box */}
-          <div className="blog-author-box">
-            <div>
-              <p className="text-sm font-bold text-slate-900">{PERSONAL_INFO.fullName}</p>
-              <p className="text-xs text-slate-500">{PERSONAL_INFO.title} at {PERSONAL_INFO.currentWork.company}</p>
-              <p className="text-xs text-slate-400 mt-1">
-                {PERSONAL_INFO.currentWork.focus.join(" · ")} · {post.tags.slice(0, 2).join(" · ")}
-              </p>
-            </div>
-            <Link href="/joinme" className="blog-author-cta">Hire Me</Link>
+          <div className="flex items-center gap-2 flex-wrap mb-5">
+            {post.category && (
+              <span className="text-xs font-bold text-blue-600 uppercase tracking-widest bg-blue-50 px-2.5 py-1 rounded-full">
+                {post.category}
+              </span>
+            )}
+            {post.tags.slice(0, 4).map((tag: string) => (
+              <span key={tag} className="blog-tag">{tag}</span>
+            ))}
           </div>
 
-          {/* Related posts */}
-          {related.length > 0 && (
-            <div className="mt-12">
-              <h2 className="text-sm font-bold text-slate-700 uppercase tracking-widest mb-4">Related Articles</h2>
-              <div className="space-y-3">
-                {related.map((p) => (
-                  <Link key={p.slug} href={`/blog/${p.slug}`} className="blog-card">
-                    <span className="blog-card-emoji blog-card-emoji--sm">{p.coverEmoji}</span>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-bold text-slate-900 line-clamp-1">{p.title}</h3>
-                      <span className="text-[11px] text-slate-400">{formatDate(p.date)} · {p.readTime}</span>
-                    </div>
-                  </Link>
-                ))}
+          <span className="blog-article-cover-emoji" aria-hidden="true">{post.coverEmoji}</span>
+
+          <h1
+            className="text-2xl sm:text-3xl md:text-[2.1rem] font-bold text-slate-900 tracking-tight leading-tight mb-4"
+            itemProp="headline"
+          >
+            {post.title}
+          </h1>
+
+          <p className="text-base sm:text-lg text-slate-500 leading-relaxed mb-6" itemProp="description">
+            {post.description}
+          </p>
+
+          <div className="flex items-center justify-between flex-wrap gap-3 pb-6 border-b border-slate-200">
+            <div className="flex items-center gap-3 text-sm text-slate-500">
+              <span className="font-semibold text-slate-800" itemProp="author">{PERSONAL_INFO.fullName}</span>
+              <span aria-hidden="true">·</span>
+              <time dateTime={post.date} itemProp="datePublished">{formatDate(post.date)}</time>
+              <span aria-hidden="true">·</span>
+              <span className="flex items-center gap-1.5"><IconClock size={13} className="text-slate-400" /> {post.readTime}</span>
+            </div>
+            <div className="flex items-center gap-2" aria-label="Share this article">
+              <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(postUrl)}`}
+                target="_blank" rel="noopener noreferrer" className="blog-share-btn" aria-label="Share on Twitter">
+                <IconBrandTwitter size={16} />
+              </a>
+              <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(postUrl)}`}
+                target="_blank" rel="noopener noreferrer" className="blog-share-btn" aria-label="Share on LinkedIn">
+                <IconBrandLinkedin size={16} />
+              </a>
+              <a href={`https://wa.me/?text=${encodeURIComponent(post.title + " " + postUrl)}`}
+                target="_blank" rel="noopener noreferrer" className="blog-share-btn" aria-label="Share on WhatsApp">
+                <IconBrandWhatsapp size={16} />
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Two-column grid ────────────────────────────────────── */}
+        <div className="blog-article-grid">
+
+          {/* Main column */}
+          <div className="blog-article-main">
+            <AdSlot slot={SLOT_TOP} format="rectangle" className="blog-ad-article" />
+
+            <div className="blog-content" itemProp="articleBody"
+              dangerouslySetInnerHTML={{ __html: post.content }} />
+
+            <AdSlot slot={SLOT_BOTTOM} format="rectangle" className="blog-ad-article" />
+
+            {/* Author box */}
+            <div className="blog-author-box">
+              <div>
+                <p className="text-sm font-bold text-slate-900">{PERSONAL_INFO.fullName}</p>
+                <p className="text-xs text-slate-500">{PERSONAL_INFO.title} at {PERSONAL_INFO.currentWork.company}</p>
+                <p className="text-xs text-slate-400 mt-1">
+                  {PERSONAL_INFO.currentWork.focus.join(" · ")} · {post.tags.slice(0, 2).join(" · ")}
+                </p>
+              </div>
+              <Link href="/joinme" className="blog-author-cta">Hire Me</Link>
+            </div>
+
+            {/* Related articles — mobile only */}
+            {related.length > 0 && (
+              <div className="mt-10 lg:hidden">
+                <h2 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Related Articles</h2>
+                <div className="space-y-3">
+                  {related.map((p: any) => (
+                    <Link key={p.slug} href={`/blog/${p.slug}`} className="blog-card">
+                      <span className="blog-card-emoji blog-card-emoji--sm">{p.coverEmoji}</span>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-sm font-bold text-slate-900 line-clamp-1">{p.title}</h3>
+                        <span className="text-[11px] text-slate-400">{formatDate(p.date)} · {p.readTime}</span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Footer tags + back */}
+            <div className="mt-10 pt-8 border-t border-slate-200 flex items-center justify-between flex-wrap gap-4">
+              <Link href="/blog" className="blog-back-link"><IconArrowLeft size={15} /> All Articles</Link>
+              <div className="flex items-center gap-2 flex-wrap">
+                {post.tags.map((tag: string) => <span key={tag} className="blog-tag">{tag}</span>)}
               </div>
             </div>
-          )}
+          </div>
+
+          {/* Sidebar — desktop */}
+          <aside className="blog-article-sidebar" aria-label="Sidebar">
+            <div className="blog-article-sidebar-inner">
+              <AdSlot slot={SLOT_SIDEBAR} format="rectangle" className="blog-ad-sidebar" />
+
+              {related.length > 0 && (
+                <div>
+                  <p className="blog-sidebar-heading">Related Articles</p>
+                  {related.map((p: any) => (
+                    <Link key={p.slug} href={`/blog/${p.slug}`} className="blog-sidebar-related-link">
+                      <span className="blog-sidebar-related-emoji">{p.coverEmoji}</span>
+                      <div className="min-w-0">
+                        <p className="blog-sidebar-related-title line-clamp-2">{p.title}</p>
+                        <p className="blog-sidebar-related-meta">{formatDate(p.date)} · {p.readTime}</p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+
+              {/* Share */}
+              <div>
+                <p className="blog-sidebar-heading">Share this article</p>
+                <div className="flex gap-2">
+                  <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(postUrl)}`}
+                    target="_blank" rel="noopener noreferrer"
+                    className="blog-share-btn flex-1 justify-center" aria-label="Share on Twitter">
+                    <IconBrandTwitter size={16} />
+                  </a>
+                  <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(postUrl)}`}
+                    target="_blank" rel="noopener noreferrer"
+                    className="blog-share-btn flex-1 justify-center" aria-label="Share on LinkedIn">
+                    <IconBrandLinkedin size={16} />
+                  </a>
+                  <a href={`https://wa.me/?text=${encodeURIComponent(post.title + " " + postUrl)}`}
+                    target="_blank" rel="noopener noreferrer"
+                    className="blog-share-btn flex-1 justify-center" aria-label="Share on WhatsApp">
+                    <IconBrandWhatsapp size={16} />
+                  </a>
+                </div>
+              </div>
+
+              {/* CTA */}
+              <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-5 text-white text-center">
+                <p className="font-bold text-sm mb-1">Open to Work</p>
+                <p className="text-blue-100 text-xs mb-4 leading-relaxed">
+                  Need a React / Node.js / AI engineer? Let&apos;s connect.
+                </p>
+                <Link href="/joinme"
+                  className="inline-block bg-white text-blue-700 font-bold text-xs px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors">
+                  Hire Me →
+                </Link>
+              </div>
+            </div>
+          </aside>
         </div>
       </article>
     </main>

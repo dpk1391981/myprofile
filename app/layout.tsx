@@ -49,6 +49,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
 
+      {/* Google AdSense — set NEXT_PUBLIC_ADSENSE_PUB_ID in .env */}
+      {process.env.NEXT_PUBLIC_ADSENSE_PUB_ID && (
+        <Script
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_PUB_ID}`}
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+      )}
+
       {/* Google Analytics */}
       <Script
         async
