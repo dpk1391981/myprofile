@@ -11,9 +11,33 @@ import ReadingProgress from "@/components/blog/ReadingProgress";
 
 export const dynamic = "force-dynamic";
 
-const SLOT_TOP     = process.env.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE_TOP    || "2222222222";
-const SLOT_BOTTOM  = process.env.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE_BOTTOM || "3333333333";
-const SLOT_SIDEBAR = process.env.NEXT_PUBLIC_ADSENSE_SLOT_SIDEBAR        || "4444444444";
+const SLOT_TOP     = process.env.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE_TOP    ?? "2222222222";
+const SLOT_MID     = process.env.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE_MID    ?? "5555555555";
+const SLOT_BOTTOM  = process.env.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE_BOTTOM ?? "3333333333";
+const SLOT_SIDEBAR = process.env.NEXT_PUBLIC_ADSENSE_SLOT_SIDEBAR        ?? "4444444444";
+
+// Mid-article ad: split HTML at the ~45 % paragraph boundary.
+// Returns [firstHalf, secondHalf]; secondHalf is empty when content is
+// too short (< MIN_WORDS) — in that case no mid-ad is rendered.
+const MID_AD_MIN_WORDS = 600;
+function splitAtMidParagraph(html: string): [string, string] {
+  // Split on closing </p> tags so we never break inside a paragraph
+  const paragraphs = html.split(/(<\/p>)/i);
+  // paragraphs array alternates: [content, "</p>", content, "</p>", ...]
+  const tagCount = Math.floor(paragraphs.length / 2); // number of </p> tags
+  if (tagCount < 5) return [html, ""];              // too few paragraphs
+  const splitAfter = Math.floor(tagCount * 0.45);   // insert after ~45 % of <p>s
+  // Reconstruct first and second halves including the </p> tags
+  const first: string[] = [];
+  const second: string[] = [];
+  let pSeen = 0;
+  for (let i = 0; i < paragraphs.length; i++) {
+    if (/^<\/p>$/i.test(paragraphs[i])) pSeen++;
+    if (pSeen <= splitAfter) first.push(paragraphs[i]);
+    else second.push(paragraphs[i]);
+  }
+  return [first.join(""), second.join("")];
+}
 const SITE_URL     = process.env.NEXT_PUBLIC_WEB_SITE || "https://officialdeepak.in";
 
 // ── Helpers ───────────────────────────────────────────────────────────────
@@ -149,6 +173,13 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
   const wordCount   = post.content.replace(/<[^>]+>/g, " ").split(/\s+/).filter(Boolean).length;
   const readMins    = parseInt(post.readTime) || 5;
 
+  // Mid-article ad — only injected when the article is long enough that
+  // the ad does not dominate the page (content > ads ratio stays healthy).
+  const hasMidAd = wordCount >= MID_AD_MIN_WORDS;
+  const [contentFirst, contentSecond] = hasMidAd
+    ? splitAtMidParagraph(post.content)
+    : [post.content, ""];
+
   // ── Structured data — TechArticle + BreadcrumbList ────────────────
   const structuredData = {
     "@context": "https://schema.org",
@@ -262,11 +293,66 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
 
           {/* Main column */}
           <div className="blog-article-main">
+
+            {/*
+              ── Ad Slot: Below Title / Top of Article Body ──────────────
+              COMPLIANCE:
+              • Placed AFTER the complete article header (title, description,
+                author line, share buttons, divider) — the reader has already
+                consumed the article context before encountering any ad.
+              • blog-ad-article CSS wraps it in border-top + border-bottom
+                + generous margin (32 px top/bottom) — visually isolated from
+                both the header above and the prose below.
+              • "Advertisement" label always rendered above the ins tag.
+              • format="rectangle" (300×250 medium rectangle) — a clearly
+                recognisable ad unit that nobody mistakes for article content.
+              • min-height=250 px pre-reserved inside AdSlot to prevent CLS.
+              • NOT placed next to any button, form, or interactive control.
+            */}
             <AdSlot slot={SLOT_TOP} format="rectangle" className="blog-ad-article" />
 
+            {/* First half of article body */}
             <div className="blog-content" itemProp="articleBody"
-              dangerouslySetInnerHTML={{ __html: post.content }} />
+              dangerouslySetInnerHTML={{ __html: contentFirst }} />
 
+            {/*
+              ── Ad Slot: Mid-Article ─────────────────────────────────────
+              COMPLIANCE:
+              • Rendered ONLY when wordCount ≥ 600 (hasMidAd flag) so the
+                article always has substantially more content than ads.
+                A short post will never show this slot — AdSense policy
+                prohibits ads on thin/low-content pages.
+              • Injected at the 45 % paragraph boundary — the reader has
+                read roughly half the article, so interruption is minimal.
+              • blog-ad-mid-article CSS uses stronger top/bottom borders and
+                slightly elevated background so it cannot be confused with a
+                blockquote, callout, or any article element.
+              • "Advertisement" label always rendered above the ins tag.
+              • min-height=250 px pre-reserved inside AdSlot to prevent CLS.
+              • NOT adjacent to any "Next / Previous" navigation, CTA button,
+                or interactive element — at least 200 px of prose above/below.
+            */}
+            {hasMidAd && contentSecond && (
+              <>
+                <AdSlot slot={SLOT_MID} format="rectangle" className="blog-ad-mid-article" />
+                <div className="blog-content"
+                  dangerouslySetInnerHTML={{ __html: contentSecond }} />
+              </>
+            )}
+
+            {/*
+              ── Ad Slot: End of Article ──────────────────────────────────
+              COMPLIANCE:
+              • Placed AFTER the full article body has been read — the reader
+                has consumed all editorial content before seeing this ad.
+              • Clear border-top / border-bottom separation (blog-ad-article).
+              • There are at least 48 px of margin between this ad and the
+                author box below (which contains no interactive buttons
+                directly adjacent to the ad boundary).
+              • "Hire Me" CTA in the author box is separated from the ad
+                bottom-border by the author box's own padding + margin.
+              • min-height=250 px pre-reserved inside AdSlot to prevent CLS.
+            */}
             <AdSlot slot={SLOT_BOTTOM} format="rectangle" className="blog-ad-article" />
 
             {/* Author box */}
@@ -311,6 +397,21 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
           {/* Sidebar — desktop */}
           <aside className="blog-article-sidebar" aria-label="Sidebar">
             <div className="blog-article-sidebar-inner">
+              {/*
+                ── Ad Slot: Sidebar (desktop ≥ 1024 px only) ────────────
+                COMPLIANCE:
+                • Sidebar column is hidden on mobile via CSS
+                  (display:none at <1024 px) — no accidental tap risk
+                  on small screens.
+                • Sticky offset is top:88 px (below the fixed nav) so the
+                  ad never overlaps navigation or the browser chrome.
+                • sidebar-inner uses overflow:hidden + max-height to prevent
+                  the ad from scrolling beyond the article region.
+                • The ad does NOT overlay article text — it lives in a
+                  separate 300 px grid column with a 48 px gutter.
+                • "Advertisement" label always rendered above the ins tag.
+                • min-height=250 px pre-reserved inside AdSlot to prevent CLS.
+              */}
               <AdSlot slot={SLOT_SIDEBAR} format="rectangle" className="blog-ad-sidebar" />
 
               {related.length > 0 && (

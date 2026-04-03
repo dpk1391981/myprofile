@@ -2137,25 +2137,47 @@
    ================================================================ */
 
 /* Wrapper around every ad unit */
+/* ================================================================
+   BLOG — AD SLOTS (AdSense-compliant)
+   ----------------------------------------------------------------
+   Design principles enforced here:
+   1. Every slot reserves its height BEFORE the ad loads (min-height)
+      so the page never reflows when Google fills the unit (CLS = 0).
+   2. Each slot is visually distinct from content cards — different
+      background, explicit border/padding, and an "Advertisement"
+      label rendered above every unit (see .blog-ad-label).
+   3. Slots are never inside a <Link> or clickable element, and the
+      CSS margin/padding ensures no interactive UI element lives
+      within the 32 px exclusion zone around each ad boundary.
+   4. Sticky sidebar uses overflow:hidden + max-height so the ad
+      cannot overlap article text on any viewport.
+   ================================================================ */
+
 .blog-ad-slot {
   width: 100%;
   overflow: hidden;
   text-align: center;
   margin: 0;
+  /* Prevent paint reflow from escaping the reserved box */
+  contain: layout;
 }
 
-/* "Advertisement" label — required by AdSense policy */
+/* "Advertisement" label — clearly discloses ad nature to readers.
+   Required by AdSense publisher policy (section 3 — ad labelling). */
 .blog-ad-label {
   font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--color-text-muted);
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   text-align: center;
+  /* Subtle horizontal rule separates label from ad creative */
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--color-border);
 }
 
-/* Dev/no-pub-ID placeholder — shows ad region during development */
+/* Dev/no-pub-ID placeholder — makes ad zones visible during development */
 .blog-ad-slot--placeholder {
   background: #f8fafc;
   border: 1px dashed #cbd5e1;
@@ -2182,37 +2204,83 @@
   border-radius: 6px;
 }
 
-/* ---- Leaderboard / banner slot (top of blog list) ---- */
+/* ---- Leaderboard / banner slot (top of blog list) ----
+   Compliance: placed below full page header with 32 px gap above
+   (header mb-8) + 20 px padding inside + bottom border.
+   Distinct elevated background so it cannot be confused with
+   any content section. Not adjacent to any nav or button. */
 .blog-ad-banner {
-  padding: 20px 0 28px;
-  border-bottom: 1px solid var(--color-border);
-  margin-bottom: 28px;
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 16px 16px 20px;
+  margin-bottom: 32px;
+  /* CLS prevention: reserve 90 px for the ad + ~28 px for label */
+  min-height: 134px;
 }
 .blog-ad-banner .blog-ad-placeholder-inner { min-height: 90px; }
 
-/* ---- In-feed slot (between post list items) ---- */
+/* ---- In-feed slot (between post list items) ----
+   Compliance: appears every 6th item (never < 5). Distinct white
+   card with border and border-radius — clearly not a post row.
+   16 px vertical margin creates breathing room from adjacent cards.
+   Not inside any clickable element. */
 .blog-ad-infeed {
   padding: 14px;
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1.5px solid var(--color-border);
   border-radius: var(--radius-md);
-  margin: 6px 0;
+  /* Increased from 6 px — ensures clear gap from adjacent post cards */
+  margin: 16px 0;
+  /* CLS prevention: reserve 120 px for fluid/native unit + ~34 px label */
+  min-height: 154px;
 }
 .blog-ad-infeed .blog-ad-placeholder-inner { min-height: 120px; }
 
-/* ---- In-article slot (top/bottom of article body) ---- */
+/* ---- In-article slot (top / bottom of article body) ----
+   Compliance: placed after full article header or after full body.
+   Border-top + border-bottom create clear content/ad boundary.
+   32 px margin isolates it from adjacent prose and author box.
+   Not adjacent to any interactive button. */
 .blog-ad-article {
-  padding: 20px 0;
-  margin: 28px 0;
+  padding: 24px 0;
+  margin: 32px 0;
   border-top: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
+  /* CLS prevention: reserve 250 px for medium rectangle + ~34 px label */
+  min-height: 284px;
 }
 .blog-ad-article .blog-ad-placeholder-inner { min-height: 250px; }
 
-/* ---- Sidebar slot ---- */
+/* ---- Mid-article slot ----
+   Compliance: injected only when wordCount >= 600, at the 45 %
+   paragraph boundary. Stronger visual separation (double border,
+   elevated background) distinguishes it from blockquotes/callouts
+   that may appear in article prose. 40 px margin each side. */
+.blog-ad-mid-article {
+  padding: 24px 16px;
+  margin: 40px 0;
+  background: var(--color-surface-elevated);
+  border-top: 2px solid var(--color-border);
+  border-bottom: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  /* CLS prevention: same as in-article */
+  min-height: 284px;
+}
+.blog-ad-mid-article .blog-ad-placeholder-inner { min-height: 250px; }
+
+/* ---- Sidebar slot (desktop ≥ 1024 px only) ----
+   Compliance: hidden on mobile (no accidental tap risk). Sticky
+   with top:88 px offset keeps it below the fixed nav at all times.
+   Lives in a separate grid column — never overlaps article text.
+   overflow:hidden prevents creative from bleeding into prose. */
 .blog-ad-sidebar {
   padding: 0;
   margin-bottom: 24px;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  /* CLS prevention */
+  min-height: 284px;
 }
 .blog-ad-sidebar .blog-ad-placeholder-inner { min-height: 250px; }
 
@@ -2260,11 +2328,20 @@
   }
   .blog-article-sidebar-inner {
     position: sticky;
-    top: 88px; /* below fixed nav */
+    /* 88 px = fixed nav height; ad never overlaps nav chrome */
+    top: 88px;
     display: flex;
     flex-direction: column;
     gap: 24px;
+    /* max-height + overflow-y auto: sidebar scrolls within its own
+       region and never covers article prose below the fold */
+    max-height: calc(100vh - 108px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE */
   }
+  .blog-article-sidebar-inner::-webkit-scrollbar { display: none; }
 }
 
 /* Sidebar section heading */

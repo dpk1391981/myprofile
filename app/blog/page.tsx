@@ -9,8 +9,8 @@ import AdSlot from "@/components/blog/AdSlot";
 
 export const dynamic = "force-dynamic";
 
-const SLOT_TOP    = process.env.NEXT_PUBLIC_ADSENSE_SLOT_BLOG_TOP    || "0000000000";
-const SLOT_INFEED = process.env.NEXT_PUBLIC_ADSENSE_SLOT_BLOG_INFEED || "1111111111";
+const SLOT_TOP    = process.env.NEXT_PUBLIC_ADSENSE_SLOT_BLOG_TOP    ?? "0000000000";
+const SLOT_INFEED = process.env.NEXT_PUBLIC_ADSENSE_SLOT_BLOG_INFEED ?? "1111111111";
 const SITE_URL    = process.env.NEXT_PUBLIC_WEB_SITE || "https://officialdeepak.in";
 
 // ── Fetch page-level SEO config from DB ───────────────────────────────────
@@ -181,7 +181,20 @@ export default async function BlogPage() {
             </p>
           </header>
 
-          {/* ── Ad Slot 1 — Top Banner ─────────────────────────────── */}
+          {/*
+            ── Ad Slot 1 — Top Banner ──────────────────────────────────
+            COMPLIANCE:
+            • Placed BELOW the full page header (title + description text).
+              There is a clear visual break (mb-8 + blog-ad-banner padding)
+              between the heading block and this ad — no accidental-click risk.
+            • "Advertisement" label rendered by AdSlot (blog-ad-label).
+            • blog-ad-banner CSS gives a distinct background, generous vertical
+              padding, and a bottom border so it cannot be confused with a
+              content card or navigation link.
+            • format="horizontal" → standard leaderboard / responsive banner
+              unit; not deceptive, not an interactive UI element.
+            • min-height=90 px pre-reserved inside AdSlot to prevent CLS.
+          */}
           <AdSlot slot={SLOT_TOP} format="horizontal" className="blog-ad-banner" />
 
           {/* ── Featured ───────────────────────────────────────────── */}
@@ -211,7 +224,23 @@ export default async function BlogPage() {
             </div>
           )}
 
-          {/* ── All Articles — in-feed ads every 4 posts ───────────── */}
+          {/*
+            ── All Articles — in-feed ad every 6th post ────────────────
+            COMPLIANCE:
+            • Frequency: 1 ad per 6 content items keeps content-to-ad ratio
+              well above the AdSense minimum and avoids "more ads than content"
+              violation. Google recommends no closer than every 5–7 items.
+            • format="fluid" without layout="in-article" is the correct
+              setting for list-page native/in-feed units (layout="in-article"
+              is reserved for within-body article text only).
+            • blog-ad-infeed CSS wraps the unit in a distinct white card with
+              border and border-radius so it is visually separated from
+              blog-card rows above and below — no confusion with content.
+            • "Advertisement" label is always rendered above the unit.
+            • Each in-feed ad sits in its own <div> sibling of post cards,
+              never inside a clickable Link element — zero accidental-click risk.
+            • min-height=120 px pre-reserved inside AdSlot to prevent CLS.
+          */}
           <div>
             <h2 className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-4">
               All Articles
@@ -219,8 +248,8 @@ export default async function BlogPage() {
             <div className="space-y-3">
               {allPosts.map((post, index) => (
                 <div key={post.slug}>
-                  {index > 0 && index % 4 === 0 && (
-                    <AdSlot slot={SLOT_INFEED} format="fluid" layout="in-article" className="blog-ad-infeed" />
+                  {index > 0 && index % 6 === 0 && (
+                    <AdSlot slot={SLOT_INFEED} format="fluid" className="blog-ad-infeed" />
                   )}
                   <Link href={`/blog/${post.slug}`} className="blog-card">
                     <span className="blog-card-emoji blog-card-emoji--sm">{post.coverEmoji}</span>
