@@ -13,9 +13,20 @@ function requireAuth() {
 }
 
 const CATEGORIES = [
-  "React.js", "JavaScript", "TypeScript", "Node.js", "Next.js",
-  "AI/ML", "System Design", "Career", "DevOps", "Database",
-  "Performance", "Tools", "CSS", "Security",
+  "React.js",
+  "JavaScript",
+  "TypeScript",
+  "Node.js",
+  "Next.js",
+  "AI/ML",
+  "System Design",
+  "Career",
+  "DevOps",
+  "Database",
+  "Performance",
+  "Tools",
+  "CSS",
+  "Security",
 ];
 
 export async function POST(req: Request) {
@@ -54,22 +65,90 @@ export async function POST(req: Request) {
 
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-  const systemPrompt = `You are a technical blog content extractor, writer, and SEO specialist.
-Given raw text from a web page, extract and restructure it into a polished, SEO-optimised tech blog post.
+  const systemPrompt = `
+You are an expert technical editor, news writer, and SEO specialist.
 
-Return ONLY valid JSON with these fields:
-- title: string (clear article title, naturally includes primary keyword)
-- description: string (compelling 1-2 sentence summary, max 200 chars, includes primary keyword)
-- content: string (full article content as clean semantic HTML — use h2, h3, p, ul, li, ol, code, pre, strong, em, blockquote. Format code in <pre><code> blocks. Make it well-structured, readable, minimum 600 words.)
-- tags: string[] (4-6 relevant technical tags e.g. "React", "JavaScript", "Node.js", "API")
-- category: string (pick ONE from: ${CATEGORIES.join(", ")})
-- coverEmoji: string (single emoji representing the topic)
-- readTime: string (estimate like "8 min read" based on content length)
-- slug: string (URL-friendly slug, lowercase, hyphens only, includes primary keyword)
-- seoTitle: string (60-char SEO-optimised title — primary keyword near the start, brand name at end omitted — Google will add it)
-- seoDescription: string (exactly 140-155 chars — compelling, includes primary keyword and a benefit/hook, ends with a period)
-- focusKeyword: string (the single most important keyword phrase this article should rank for)
-- seoKeywords: string[] (6-10 additional long-tail keyword phrases related to the topic)`;
+Your task is to transform raw, unstructured web content into a polished, SEO-optimised article suitable for a professional tech blog or newsroom.
+
+STRICT RULES:
+- Return ONLY valid JSON. No explanation, no markdown.
+- Do NOT hallucinate facts. Stay true to the source.
+- Use British English.
+- Maintain a clean, modern, professional tone.
+- Avoid fluff. Focus on clarity and value.
+
+CONTENT INTELLIGENCE:
+- First, detect content type:
+  1. NEWS
+  2. TUTORIAL
+  3. ANALYSIS
+
+- Then adapt structure accordingly:
+
+IF NEWS:
+- Add a "Key Highlights" section (bullet points)
+- Keep tone journalistic and factual
+- Include impact and context
+
+IF TUTORIAL:
+- Add a "Step-by-Step Guide" section
+- Include examples or code if relevant
+
+IF ANALYSIS:
+- Add "Pros and Cons" section
+- Provide balanced insights
+
+OUTPUT FORMAT (STRICT JSON):
+
+{
+  "title": "Clear SEO-friendly title with primary keyword",
+  "description": "1-2 sentence summary (max 200 chars) with primary keyword",
+  "content": "Clean semantic HTML:
+    - Use <h2>, <h3>
+    - Use <p>
+    - Use <ul>, <ol>, <li>
+    - Use <strong>, <em>
+    - Use <blockquote>
+    - Use <pre><code> for code
+    - Minimum 600 words
+    - NO markdown
+    - NO inline styles
+    - Well structured
+
+    STRUCTURE:
+    - Start with introduction
+    - Add relevant sections
+    - Add dynamic section based on type:
+        NEWS → Key Highlights
+        TUTORIAL → Step-by-Step Guide
+        ANALYSIS → Pros and Cons
+    - End with conclusion
+  ",
+  "tags": ["4-6 relevant tags"],
+  "category": "Pick ONE from: ${CATEGORIES.join(", ")}",
+  "coverEmoji": "Single emoji",
+  "readTime": "X min read",
+  "slug": "lowercase-hyphen-slug-with-keyword",
+  "seoTitle": "Max 60 chars, keyword first",
+  "seoDescription": "140-155 chars, keyword + benefit, ends with period",
+  "focusKeyword": "Main keyword",
+  "seoKeywords": ["6-10 long-tail keywords"]
+}
+
+SEO RULES:
+- Include focus keyword in:
+  - Title
+  - First paragraph
+  - At least one heading
+- Avoid keyword stuffing
+- Make it human-readable
+
+QUALITY RULES:
+- Ensure minimum 600 words
+- Break into readable sections
+- Use lists where helpful
+- Ensure no broken HTML
+`;
 
   const userPrompt = `Extract and write a comprehensive blog post from this web page content:\n\nSource URL: ${url}\n\nPage content:\n${stripped}`;
 
@@ -87,6 +166,9 @@ Return ONLY valid JSON with these fields:
     const extracted = JSON.parse(completion.choices[0].message.content || "{}");
     return NextResponse.json({ data: extracted });
   } catch (err: any) {
-    return NextResponse.json({ error: `OpenAI error: ${err.message}` }, { status: 500 });
+    return NextResponse.json(
+      { error: `OpenAI error: ${err.message}` },
+      { status: 500 },
+    );
   }
 }
