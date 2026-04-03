@@ -6,6 +6,8 @@ import { Footer, Nav, ContactModal } from "@/components";
 import { Analytics } from "@vercel/analytics/react";
 import Script from "next/script";
 import { NEXT_SEO_DEFAULT, STRUCT_DATA } from "@/app/seo_config";
+import { Suspense } from "react";
+import Loader from "@/components/ui/Loader";
 
 // ---- Fonts — pin specific weights, force normal style ----
 const outfit = Outfit({
@@ -49,7 +51,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
 
-      {/* Google AdSense — set NEXT_PUBLIC_ADSENSE_PUB_ID in .env */}
+      {/* Google AdSense */}
       {process.env.NEXT_PUBLIC_ADSENSE_PUB_ID && (
         <Script
           async
@@ -77,7 +79,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${dmSans.className} antialiased text-default bg-page tracking-tight portfolio-page`}>
         <ContactModal />
         <Nav />
-        {children}
+
+        {/* ✅ Fallback Loader */}
+        <Suspense fallback={<Loader />}>
+          {children}
+        </Suspense>
+
         <Footer />
         <Analytics />
       </body>

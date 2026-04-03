@@ -6,6 +6,7 @@ import { connectToDB } from "@/utils/database";
 import BlogModel from "@/models/Blog";
 import SeoConfig from "@/models/SeoConfig";
 import AdSlot from "@/components/blog/AdSlot";
+import SmartLoader from "@/components/ui/SmartLoader";
 
 export const dynamic = "force-dynamic";
 
@@ -159,7 +160,8 @@ export default async function BlogPage() {
   };
 
   return (
-    <main className="portfolio-page">
+    <SmartLoader>
+      <main className="portfolio-page">
       <script type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
 
@@ -301,6 +303,8 @@ export default async function BlogPage() {
         </div>
       </section>
     </main>
+    </SmartLoader>
+    
   );
 }
 
