@@ -1,7 +1,7 @@
 "use client";
 import {
   About, Experience, CaseStudies, ArchDiagram,
-  Skills, AIPlayground, Education, Review, BuildWithMe
+  Skills, AIPlayground, Education, Review, FAQ, BuildWithMe
 } from "@/components";
 import { IconDownload } from "@tabler/icons-react";
 import { FOOTER } from "@/components/utils/portfolio-data";
@@ -40,6 +40,9 @@ export default function Home() {
 
       {/* Social Proof */}
       <Review />
+
+      {/* FAQ — Answer Engine Optimization + recruiter quick-answers */}
+      <FAQ />
 
       {/* Build With Me — strong CTA (closes the deal) */}
       <BuildWithMe />

@@ -111,7 +111,7 @@ const AIPlayground = () => {
             </div>
           )}
 
-          <p className="text-[10px] text-slate-400 text-center mt-3">
+          <p className="text-[11px] text-slate-400 text-center mt-3">
             Powered by the same AI stack I use at India Today Group — OpenAI + LangChain + Node.js
           </p>
         </div>

@@ -9,7 +9,7 @@ export const PERSONAL_INFO = {
   fullName: "Deepak Kumar",
   title: "Sr Software Engineer",
   tagline: "JavaScript | Full Stack | Node.js | React.js | Angular | MySQL | NoSQL",
-  bio: `Experienced Software Engineer combining technical expertise, strategic problem-solving, and leadership abilities. Skilled in guiding teams to deliver scalable solutions, optimizing processes, and adapting to new technologies. Passionate about creating innovative solutions and driving success in the fast-paced software development landscape.`,
+  bio: `Senior Software Engineer with 9+ years building scalable, production-grade web applications and AI-powered products. I specialize in the MERN stack (MongoDB, Express, React, Node.js), Next.js, and TypeScript, with deep hands-on experience in Generative AI — OpenAI, LangChain, and RAG systems. At India Today Group I build AI editorial tools and real-time platforms serving millions of users. I care about clean architecture, measurable impact, and mentoring the engineers around me.`,
   careerStartDate: { year: "2016", month: "12", day: "01" },
   email: process.env.NEXT_PUBLIC_EMAIL_ID || "",
   phone: "+91-8285257636",
@@ -305,7 +305,7 @@ export const EDUCATION: EducationItem[] = [
     title: "Post Graduate Computer Application",
     subtitle: "Artificial Intelligence & Machine Learning",
     institution: "University Grants Commission (UGC)",
-    dateLabel: "Expected May 2024",
+    dateLabel: "2022 - 2024",
     logo: "/assets/projects/jain-deemed.png",
     logoAlt: "Jain University",
     type: "degree",
@@ -460,6 +460,60 @@ export const REVIEWS: ReviewItem[] = [
     company: "Teamwork Arts",
     avatar: "/assets/images/maya.jpeg",
     linkedinUrl: "https://www.linkedin.com/in/maya-tripathi-34a16b2b/",
+  },
+];
+
+// ============================================================
+// FAQ — Answer Engine Optimization (AEO)
+// Concise, factual answers recruiters & AI engines (Google AI
+// Overviews, ChatGPT, Perplexity) extract directly. Keep answers
+// self-contained (each works as a standalone snippet).
+// ============================================================
+export interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+export const FAQS: FaqItem[] = [
+  {
+    question: "Who is Deepak Kumar?",
+    answer:
+      "Deepak Kumar is a Senior Software Engineer based in New Delhi, India, with 9+ years of experience building scalable, production-grade web applications and AI-powered products. He currently works at India Today Group, building MERN-stack and Generative AI solutions for editorial and digital platforms.",
+  },
+  {
+    question: "How many years of experience does Deepak Kumar have?",
+    answer:
+      "Deepak Kumar has 9+ years of professional software engineering experience (since December 2016), spanning 7+ companies including India Today Group, Clove Dental, Humanize, SYNQY Corporation, and Ceekr.",
+  },
+  {
+    question: "What is Deepak Kumar's tech stack?",
+    answer:
+      "Deepak specializes in the MERN stack — MongoDB, Express.js, React.js, and Node.js — along with Next.js, TypeScript, and JavaScript (ES6+). On the AI side he works with OpenAI, LangChain, and RAG systems. He also has hands-on experience with AWS (Certified Solutions Architect Associate), Docker, MySQL, Redis, and microservices architecture.",
+  },
+  {
+    question: "Is Deepak Kumar available for hire or freelance work?",
+    answer:
+      "Yes. Deepak Kumar is open to new opportunities, including senior full-stack roles, AI/ML engineering, freelance, and remote work. You can reach him through the contact form on this site, or via email and LinkedIn.",
+  },
+  {
+    question: "What is Deepak Kumar's experience with AI and Generative AI?",
+    answer:
+      "At India Today Group, Deepak builds Generative AI features such as automated article generation, AI summaries, and intelligent semantic search using OpenAI and LangChain. He has built production RAG (Retrieval-Augmented Generation) systems with MongoDB Atlas Vector Search and AI-powered editorial automation tools.",
+  },
+  {
+    question: "What kind of projects has Deepak Kumar built?",
+    answer:
+      "Deepak has delivered 15+ products including AI editorial tools, real-time election dashboards handling 5M+ concurrent users, a Patient Relationship Management system across 500+ dental clinics, video communication platforms, and SaaS analytics dashboards. He also owns independent products like VTechXHub and Think4BuySale.",
+  },
+  {
+    question: "Where is Deepak Kumar located and does he work remotely?",
+    answer:
+      "Deepak Kumar is based in New Delhi, India, and is available for both on-site roles in Delhi NCR and fully remote opportunities worldwide.",
+  },
+  {
+    question: "Why should a company hire Deepak Kumar?",
+    answer:
+      "Deepak combines 9+ years of full-stack expertise with hands-on Generative AI engineering, a track record of shipping products at scale (5M+ concurrent users, 99.99% uptime), and proven leadership mentoring junior developers. He delivers clean, maintainable architecture and measurable business impact.",
   },
 ];
 

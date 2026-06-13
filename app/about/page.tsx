@@ -5,9 +5,9 @@ import { NEXT_SEO_DEFAULT } from "../seo_config";
 const AboutMeta = {
   ...NEXT_SEO_DEFAULT,
   ...{
-    title: "Deepak Kumar | About - Full Stack JavaScript Developer",
+    title: "About Deepak Kumar | Senior Full Stack & AI Engineer (9+ Yrs)",
     description:
-      `Deepak Kumar is an experienced Full Stack JavaScript Develope expertise in React, Node.js, and modern web technologies. Passionate about crafting scalable software solutions, Deepak combines technical skills with innovative problem-solving to deliver exceptional results. Learn more about his journey and professional achievements.`,
+      `About Deepak Kumar — a Senior Software Engineer with 9+ years of experience in React.js, Node.js, Next.js, MongoDB, and Generative AI (OpenAI, LangChain). Currently building MERN-stack and AI-powered platforms at India Today Group. Learn about his career journey, achievements, and the products he has shipped at scale.`,
   },
 };
 export const metadata: Metadata = AboutMeta;

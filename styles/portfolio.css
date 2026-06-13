@@ -259,7 +259,7 @@
   gap: 6px;
   padding: 12px 24px;
   border-radius: 999px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   font-family: var(--font-body);
   color: #0f172a;
@@ -271,7 +271,7 @@
   -webkit-tap-highlight-color: transparent;
 }
 @media (min-width: 640px) {
-  .hero-cta-btn { padding: 14px 28px; font-size: 14px; }
+  .hero-cta-btn { padding: 14px 28px; font-size: 15px; }
 }
 .hero-cta-btn:active {
   transform: scale(0.96);
@@ -333,7 +333,7 @@
 }
 
 .hero-highlight-badge-value {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: #fff;
   line-height: 1.2;
@@ -344,7 +344,7 @@
   .hero-highlight-badge-value { font-size: 16px; }
 }
 .hero-highlight-badge-label {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.5);
   letter-spacing: 0.02em;
@@ -368,7 +368,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.65);
   background: rgba(255, 255, 255, 0.05);
@@ -444,7 +444,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -466,7 +466,7 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--color-primary);
   background: var(--color-primary-50);
@@ -498,7 +498,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12.5px;
+  font-size: 13.5px;
   font-weight: 500;
   color: var(--color-text-secondary);
   background: var(--color-surface-elevated);
@@ -681,7 +681,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -695,7 +695,7 @@
 .tool-tag {
   display: inline-flex;
   align-items: center;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--color-primary);
   background: var(--color-primary-50);
@@ -742,7 +742,7 @@
   font-family: var(--font-display);
 }
 .skill-category-count {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--color-text-muted);
   background: var(--color-surface-elevated);
@@ -805,14 +805,14 @@
 }
 
 .skill-chip-name {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--color-text);
   white-space: nowrap;
   flex: 1;
 }
 .skill-chip-level {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--color-primary);
   background: var(--color-primary-50);
@@ -841,7 +841,7 @@
   display: inline-flex;
   padding: 7px 16px;
   border-radius: 999px;
-  font-size: 12.5px;
+  font-size: 13.5px;
   font-weight: 600;
   background: var(--color-surface);
   color: var(--color-text-secondary);
@@ -929,7 +929,7 @@
   gap: 6px;
   padding: 10px 18px;
   border-radius: 999px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   font-family: var(--font-body);
   color: #fff;
@@ -1114,7 +1114,7 @@
 .edu-date-chip {
   display: inline-flex;
   margin-top: 10px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--color-primary);
   background: var(--color-primary-50);
@@ -1142,7 +1142,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: #d97706;
   background: #fffbeb;
@@ -1246,14 +1246,15 @@
 .nav-inner {
   max-width: 80rem;
   margin: 0 auto;
-  padding: 8px 12px;
+  padding: 8px 16px;
+  min-height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
 }
 @media (min-width: 1024px) {
-  .nav-inner { padding: 0 24px; }
+  .nav-inner { padding: 8px 24px; min-height: 72px; }
 }
 
 /* Brand */
@@ -1270,21 +1271,22 @@
   .nav-brand-text { display: block; }
 }
 .nav-brand-name {
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 700;
   color: var(--color-text);
   line-height: 1.2;
 }
 .nav-brand-tagline {
-  font-size: 10px;
+  font-size: 11.5px;
   font-weight: 600;
   color: var(--color-primary-light);
   letter-spacing: 0.02em;
+  margin-top: 1px;
 }
 
 .nav-avatar {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   overflow: hidden;
   border: 2px solid var(--color-primary);
@@ -1316,9 +1318,9 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 10px 14px;
+  padding: 9px 13px;
   border-radius: 10px;
-  font-size: 13px;
+  font-size: 14.5px;
   font-weight: 600;
   color: var(--color-text-secondary);
   transition: all 0.2s ease;
@@ -1500,7 +1502,7 @@
   gap: 8px;
   padding: 13px;
   border-radius: 14px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   font-family: var(--font-body);
   border: 1.5px solid var(--color-border);
@@ -1815,7 +1817,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--color-text-secondary);
   background: none;
@@ -1846,7 +1848,7 @@
 .joinme-label {
   display: block;
   margin-bottom: 6px;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--color-text);
 }
@@ -1961,7 +1963,7 @@
 
 .blog-tag {
   display: inline-flex;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   color: var(--color-primary);
   background: var(--color-primary-50);
@@ -1977,7 +1979,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--color-text-secondary);
   text-decoration: none;
@@ -2043,7 +2045,7 @@
 }
 .blog-content code {
   font-family: "JetBrains Mono", "Fira Code", monospace;
-  font-size: 13px;
+  font-size: 14px;
   background: var(--color-surface-elevated);
   color: #e879f9;
   padding: 2px 6px;
@@ -2064,7 +2066,7 @@
   border: none;
   color: #e2e8f0;
   padding: 0;
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.7;
 }
 .blog-content ul, .blog-content ol {
@@ -2096,7 +2098,7 @@
   display: inline-flex;
   padding: 10px 22px;
   border-radius: 10px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: #fff;
   background: var(--color-primary);
@@ -2165,7 +2167,7 @@
 /* "Advertisement" label — clearly discloses ad nature to readers.
    Required by AdSense publisher policy (section 3 — ad labelling). */
 .blog-ad-label {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -2190,7 +2192,7 @@
   justify-content: center;
   min-height: 90px;
   color: #94a3b8;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -2346,7 +2348,7 @@
 
 /* Sidebar section heading */
 .blog-sidebar-heading {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -2368,14 +2370,14 @@
 .blog-sidebar-related-link:hover .blog-sidebar-related-title { color: var(--color-primary); }
 .blog-sidebar-related-emoji { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
 .blog-sidebar-related-title {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--color-text);
   line-height: 1.4;
   transition: color 0.15s ease;
 }
 .blog-sidebar-related-meta {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--color-text-muted);
   margin-top: 2px;
 }
@@ -2399,7 +2401,7 @@
   align-items: center;
   padding: 5px 14px;
   border-radius: 99px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   white-space: nowrap;
   border: 1.5px solid var(--color-border);
@@ -2479,7 +2481,7 @@
 
 .project-type-badge {
   display: inline-flex;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   color: var(--color-primary);
   background: var(--color-primary-50);
@@ -2490,7 +2492,7 @@
   letter-spacing: 0.03em;
 }
 .project-year {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--color-text-muted);
   background: var(--color-surface-elevated);
@@ -2526,7 +2528,7 @@
   margin-top: 12px;
 }
 .project-tech-tag {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--color-text-secondary);
   background: var(--color-surface-elevated);
@@ -2541,7 +2543,7 @@
   align-items: center;
   gap: 4px;
   margin-top: 12px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--color-primary);
   background: none;
@@ -2591,7 +2593,7 @@
 
 .project-impact-chip {
   display: inline-flex;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   color: #15803d;
   background: #f0fdf4;
@@ -2605,7 +2607,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--color-primary);
   background: var(--color-primary-50);
@@ -2675,7 +2677,7 @@
   flex-shrink: 0;
 }
 .arch-layer-label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -2687,7 +2689,7 @@
   flex-wrap: wrap;
 }
 .arch-layer-chip {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--color-text-secondary);
   background: var(--color-surface-elevated);
@@ -2758,7 +2760,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   font-family: var(--font-body);
   color: var(--color-text-secondary);
@@ -2781,7 +2783,7 @@
 .ai-input {
   flex: 1;
   padding: 12px 16px;
-  font-size: 14px;
+  font-size: 15px;
   font-family: var(--font-body);
   border: 1.5px solid var(--color-border);
   border-radius: 14px;
@@ -2821,7 +2823,7 @@
   animation: detailsIn 0.3s ease;
 }
 .ai-output-text {
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.7;
   color: #e2e8f0;
   font-family: "JetBrains Mono", "Fira Code", monospace;
@@ -2879,7 +2881,7 @@
 
 .case-study-section { margin-top: 14px; }
 .case-study-section-label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -2910,7 +2912,7 @@
   border-radius: 7px;
   background: var(--color-primary-50);
   color: var(--color-primary);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -2983,7 +2985,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   color: rgba(255,255,255,0.7);
   background: rgba(255,255,255,0.05);
@@ -3127,7 +3129,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -3139,7 +3141,7 @@
   justify-content: center;
   min-width: 20px;
   height: 20px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--color-primary);
   background: var(--color-primary-50);
@@ -3152,7 +3154,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--color-primary);
 }
@@ -3168,7 +3170,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--color-text-secondary);
   background: var(--color-surface);
@@ -3235,7 +3237,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -3248,4 +3250,79 @@
   flex-direction: column;
   gap: 8px;
   animation: slideDown 0.25s ease;
+}
+
+/* ============================================================
+   FAQ — Answer Engine Optimization accordion
+   ============================================================ */
+.faq-item {
+  background: #fff;
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.faq-item:hover {
+  border-color: #bfdbfe;
+}
+
+.faq-item--open {
+  border-color: #93c5fd;
+  box-shadow: var(--shadow-md, 0 4px 16px rgba(0, 0, 0, 0.06));
+}
+
+.faq-question {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 20px;
+  text-align: left;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+  cursor: pointer;
+  background: transparent;
+}
+
+.faq-question-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 9px;
+  color: #2563eb;
+  background: #eff6ff;
+}
+
+.faq-chevron {
+  flex-shrink: 0;
+  color: #94a3b8;
+  transition: transform 0.25s ease;
+}
+
+.faq-chevron--open {
+  transform: rotate(180deg);
+  color: #2563eb;
+}
+
+.faq-answer-wrap {
+  padding: 0 20px 18px 62px;
+  animation: slideDown 0.25s ease;
+}
+
+.faq-answer {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--color-text-secondary, #475569);
+}
+
+@media (max-width: 640px) {
+  .faq-answer-wrap {
+    padding: 0 18px 16px 18px;
+  }
 }

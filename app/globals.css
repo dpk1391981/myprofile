@@ -1,3 +1,71 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ============================================================
+   MOBILE-NATIVE BASE
+   Fixes the common issues that make a site feel "web" not "app":
+   text auto-inflation, sideways drift, rubber-band chaining, tap
+   flashes, and media overflow. Kept global + minimal on purpose.
+   ============================================================ */
+html {
+  -webkit-text-size-adjust: 100%; /* stop mobile browsers resizing text */
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  /* sections already set scroll-mt-[72px]; no global scroll-padding to avoid doubling */
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  /* `clip` kills horizontal drift WITHOUT breaking the sticky navbar
+     (unlike `hidden`, it doesn't create a new scroll container) */
+  overflow-x: clip;
+  max-width: 100%;
+}
+
+body {
+  overscroll-behavior-y: none; /* no rubber-band chaining past the page */
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Media should never punch out of its container on small screens */
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+/* Comfortable tap targets for interactive elements on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  button,
+  a[role="button"],
+  .nav-action-btn,
+  .nav-hamburger {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Respect users who prefer reduced motion — and never hide content from them */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .animate-on-scroll {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* No-JS fallback: scroll-reveal content must still be visible */
+.no-js .animate-on-scroll {
+  opacity: 1;
+  transform: none;
+}

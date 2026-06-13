@@ -377,7 +377,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                       <span className="blog-card-emoji blog-card-emoji--sm">{p.coverEmoji}</span>
                       <div className="flex-1 min-w-0">
                         <h3 className="text-sm font-bold text-slate-900 line-clamp-1">{p.title}</h3>
-                        <span className="text-[11px] text-slate-400">{formatDate(p.date)} · {p.readTime}</span>
+                        <span className="text-[12px] text-slate-400">{formatDate(p.date)} · {p.readTime}</span>
                       </div>
                     </Link>
                   ))}

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { totalExperianceYears } from "@/components/utils/date";
+import { FAQS } from "@/components/utils/portfolio-data";
 import crypto from "crypto";
 
 const GLOBAL_EMAIL = process.env.NEXT_PUBLIC_EMAIL_ID || "";
@@ -285,6 +286,25 @@ const personSchema = {
     "Performance Optimization", "Scalable Web Applications",
     "MERN Stack", "React Native", "Angular",
   ],
+  knowsLanguage: ["English", "Hindi"],
+  nationality: { "@type": "Country", name: "India" },
+  hasCredential: [
+    {
+      "@type": "EducationalOccupationalCredential",
+      credentialCategory: "certification",
+      name: "AWS Certified Solutions Architect – Associate (SAA-C03)",
+      recognizedBy: { "@type": "Organization", name: "Amazon Web Services" },
+    },
+    {
+      "@type": "EducationalOccupationalCredential",
+      credentialCategory: "certification",
+      name: "MERN Stack Front To Back — Full Stack React, Redux & Node.js",
+    },
+  ],
+  seeks: {
+    "@type": "Demand",
+    name: "Senior Software Engineer / Full Stack / AI-ML Engineer roles — remote or Delhi NCR",
+  },
   hasOccupation: {
     "@type": "Occupation",
     name: "Software Engineer",
@@ -339,8 +359,21 @@ const profilePageSchema = {
   dateModified: new Date().toISOString(),
 };
 
+// 4. FAQPage schema (Google "People also ask" + AI answer engines / AEO)
+const faqSchema = {
+  "@type": "FAQPage",
+  mainEntity: FAQS.map((faq) => ({
+    "@type": "Question",
+    name: faq.question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: faq.answer,
+    },
+  })),
+};
+
 // Combined as @graph for a single JSON-LD block
 export const STRUCT_DATA = {
   "@context": "https://schema.org",
-  "@graph": [personSchema, websiteSchema, profilePageSchema],
+  "@graph": [personSchema, websiteSchema, profilePageSchema, faqSchema],
 };

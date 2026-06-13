@@ -84,7 +84,7 @@ const CaseStudyCard = ({ study }: { study: CaseStudyData }) => {
           <div key={i} className="case-study-metric">
             <span className="case-study-metric-icon">{m.icon}</span>
             <p className="text-lg font-bold text-slate-900">{m.value}</p>
-            <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">{m.label}</p>
+            <p className="text-[11px] text-slate-400 font-medium uppercase tracking-wider">{m.label}</p>
           </div>
         ))}
       </div>

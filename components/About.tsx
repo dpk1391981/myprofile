@@ -100,7 +100,7 @@ const About = () => {
                 {PERSONAL_INFO.fullName}
               </h1>
 
-              <p className="text-[11px] sm:text-xs font-semibold tracking-widest uppercase mb-4 text-blue-300/60">
+              <p className="text-[12px] sm:text-xs font-semibold tracking-widest uppercase mb-4 text-blue-300/60">
                 {PERSONAL_INFO.tagline}
               </p>
 
@@ -161,14 +161,14 @@ const About = () => {
         <div className="grid grid-cols-4 gap-2 sm:gap-3">
           {[
             { icon: "⚡", value: yearsExp, label: "Exp." },
-            { icon: "🚀", value: "10+", label: "Products" },
-            { icon: "🏢", value: "5+", label: "Companies" },
+            { icon: "🚀", value: "15+", label: "Projects" },
+            { icon: "🏢", value: "7+", label: "Companies" },
             { icon: "🛠️", value: "25+", label: "Tech" },
           ].map((stat, i) => (
             <article key={i} className="stat-card">
               <span className="text-base sm:text-xl mb-0.5 block" aria-hidden="true">{stat.icon}</span>
               <p className="text-base sm:text-xl md:text-2xl font-bold text-slate-900 leading-tight font-display">{stat.value}</p>
-              <p className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-slate-400 mt-0.5">{stat.label}</p>
+              <p className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-slate-400 mt-0.5">{stat.label}</p>
             </article>
           ))}
         </div>

@@ -135,7 +135,7 @@ const Nav = () => {
             </div>
             <div>
               <p className="text-sm font-bold text-slate-900 font-display">{PERSONAL_INFO.fullName}</p>
-              <p className="text-[11px] text-blue-600 font-medium">{PERSONAL_INFO.title}</p>
+              <p className="text-[12px] text-blue-600 font-medium">{PERSONAL_INFO.title}</p>
             </div>
           </div>
           <button onClick={() => setOpenNav(false)} className="nav-m-close" aria-label="Close menu">

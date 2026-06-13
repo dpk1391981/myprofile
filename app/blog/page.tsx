@@ -214,7 +214,7 @@ export default async function BlogPage() {
                         {post.title}
                       </h3>
                       <p className="text-xs text-slate-500 line-clamp-2 mb-3">{post.description}</p>
-                      <div className="flex items-center gap-3 text-[11px] text-slate-400 font-medium">
+                      <div className="flex items-center gap-3 text-[12px] text-slate-400 font-medium">
                         <time dateTime={post.date}>{formatDate(post.date)}</time>
                         <span className="flex items-center gap-1"><IconClock size={11} /> {post.readTime}</span>
                       </div>
@@ -266,10 +266,10 @@ export default async function BlogPage() {
                       </div>
                     </div>
                     <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                      <time className="text-[11px] text-slate-400 font-medium" dateTime={post.date}>
+                      <time className="text-[12px] text-slate-400 font-medium" dateTime={post.date}>
                         {formatDate(post.date)}
                       </time>
-                      <span className="text-[11px] text-slate-400 flex items-center gap-1">
+                      <span className="text-[12px] text-slate-400 flex items-center gap-1">
                         <IconClock size={11} /> {post.readTime}
                       </span>
                     </div>

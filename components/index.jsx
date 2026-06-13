@@ -7,6 +7,7 @@ export { default as AIPlayground } from "./AIPlayground";
 export { default as CaseStudies } from "./CaseStudies";
 export { default as BuildWithMe } from "./BuildWithMe";
 export { default as Review } from "./Review";
+export { default as FAQ } from "./FAQ";
 export { default as Nav } from "./Nav";
 export { default as Footer } from "./Footer";
 export { default as ContactModal } from "./modals/ContactModal";

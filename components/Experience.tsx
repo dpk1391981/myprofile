@@ -13,7 +13,7 @@ const ProjectMini = ({ project }: { project: ChildProject }) => (
     <div className="flex items-start justify-between gap-2 mb-1">
       <div>
         <p className="text-xs font-bold text-slate-800">{project.title}</p>
-        <p className="text-[10px] text-slate-400 font-medium">{project.type}</p>
+        <p className="text-[11px] text-slate-400 font-medium">{project.type}</p>
       </div>
       {project.website && (
         <a href={project.website} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-700" aria-label={`Visit ${project.title}`} onClick={(e) => e.stopPropagation()}>
@@ -21,7 +21,7 @@ const ProjectMini = ({ project }: { project: ChildProject }) => (
         </a>
       )}
     </div>
-    <p className="text-[11px] text-slate-500 leading-relaxed mb-2">{project.overview}</p>
+    <p className="text-[12px] text-slate-500 leading-relaxed mb-2">{project.overview}</p>
     <div className="flex flex-wrap gap-1">
       {project.technologies.map((t) => <span key={t} className="exp-project-tech">{t}</span>)}
     </div>
