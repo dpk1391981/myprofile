@@ -343,9 +343,9 @@ const personSchema = {
   hasCredential: [
     {
       "@type": "EducationalOccupationalCredential",
-      credentialCategory: "certification",
-      name: "AWS Certified Solutions Architect – Associate (SAA-C03)",
-      recognizedBy: { "@type": "Organization", name: "Amazon Web Services" },
+      credentialCategory: "course",
+      name: "Ultimate AWS Certified Solutions Architect Associate SAA-C03 (course completion)",
+      recognizedBy: { "@type": "Organization", name: "Udemy" },
     },
     {
       "@type": "EducationalOccupationalCredential",

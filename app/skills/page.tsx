@@ -4,13 +4,13 @@ import Capabilities from "@/components/sections/Capabilities";
 import HireCta from "@/components/sections/HireCta";
 import SectionHead from "@/components/sections/SectionHead";
 import { SKILLS_CATEGORIES, SKILL_TAGS } from "@/components/utils/portfolio-data";
-import { YEARS } from "@/components/utils/site-data";
+import { YEARS_WHOLE } from "@/components/utils/site-data";
 import { breadcrumbLd, pageMeta } from "@/components/utils/seo";
 
 export const metadata = pageMeta({
   title: "Skills & Tech Stack | Deepak Kumar — React, Node.js, TypeScript, AWS & AI",
   description:
-    `The full technical stack of Deepak Kumar, a senior JavaScript developer in India with ${YEARS} in production — React.js, Next.js, TypeScript, Angular, Node.js, Express, NestJS, MongoDB, MySQL, Redis, DynamoDB, AWS, Docker, and Generative AI with OpenAI, LangChain and RAG pipelines.`,
+    `The full technical stack of Deepak Kumar, a senior JavaScript developer in India with ${YEARS_WHOLE} years in production — React.js, Next.js, TypeScript, Angular, Node.js, Express, NestJS, MongoDB, MySQL, Redis, DynamoDB, AWS, Docker, and Generative AI with OpenAI, LangChain and RAG pipelines.`,
   path: "/skills",
   keywords: [
     "Deepak Kumar skills",

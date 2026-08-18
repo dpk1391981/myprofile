@@ -23,9 +23,13 @@ export default function Home() {
     <>
       <Jsonld data={HOME_FAQ_STRUCT_DATA} />
       <Hero />
-      <Products />
-      <SelectedWork limit={5} showMore />
+      {/* Work history sits directly under the hero on purpose: recruiters and
+          clients look for it first, and it used to sit below three screens of
+          product write-ups. Products keep their place, one section further
+          down and collapsed by default. */}
       <Career />
+      <SelectedWork limit={5} showMore />
+      <Products />
       <Capabilities />
       <Recommendations />
       <Credentials />

@@ -20,7 +20,10 @@
 
   --shell: 1160px;
   --gutter: 40px;
-  --serif: "Source Serif 4", Georgia, "Times New Roman", Times, serif;
+  /* Set by next/font in app/layout.tsx. --font-serif already carries the
+     metric-adjusted fallback; the plain families behind it only matter if
+     the font pipeline is bypassed entirely. */
+  --serif: var(--font-serif), Georgia, "Times New Roman", Times, serif;
 }
 
 :root[data-ink="dark"] {
@@ -112,10 +115,16 @@ body.bs-body h4 {
   margin: 0;
 }
 .bs-h1 {
-  font-size: clamp(2.4rem, 5.4vw, 4.1rem);
+  font-size: clamp(2.05rem, 5.4vw, 4.1rem);
   line-height: 1.02;
   letter-spacing: -.03em;
+  /* Evens out the ragged edge so the last line is never one orphaned word.
+     Ignored by browsers that do not support it — no fallback needed. */
+  text-wrap: balance;
 }
+/* The years figure, in spot colour. `white-space: nowrap` keeps "9+ years"
+   from ever breaking between the number and its unit at a wrap point. */
+.bs-h1-accent { color: var(--spot); white-space: nowrap; }
 .bs-h2 {
   font-size: clamp(1.8rem, 3.6vw, 2.7rem);
   letter-spacing: -.025em;
@@ -261,6 +270,7 @@ a:hover { color: var(--spot-deep); text-decoration: underline; text-underline-of
   mix-blend-mode: multiply;
 }
 .bs-halftone img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.bs-figure { margin: 0; }
 .bs-figcaption { margin-top: 9px; font-size: 11.5px; line-height: 1.5; color: var(--quiet); }
 .bs-logo {
   object-fit: contain;
@@ -741,43 +751,93 @@ a:hover { color: var(--spot-deep); text-decoration: underline; text-underline-of
 }
 
 /* ---------- products ---------- */
-.bs-product { padding: 40px 0; border-top: 1px solid var(--hair); }
-.bs-product:first-child { border-top: none; padding-top: 8px; }
-.bs-product-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
-.bs-product-role { margin-left: auto; }
-
-/* Prose column + metadata rail.
-   The prose column is capped at the 62ch reading measure rather than filling
-   its track, so the text keeps its line length while the rail takes the space
-   that used to sit empty to the right of every paragraph. */
-.bs-product-body {
+/* ---------- products ----------
+   Two columns on desktop, one on mobile. The old layout ran each product as a
+   full-width long-form article with a metadata rail; four of those pushed the
+   work history below three screens of prose. These are summary cards that
+   expand in place. */
+.bs-product-grid {
   display: grid;
-  grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
-  gap: 26px 56px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 30px 48px;
   align-items: start;
 }
-.bs-product-main { max-width: 62ch; }
-.bs-product-rail {
+.bs-product {
   display: flex;
   flex-direction: column;
-  gap: 22px;
-  padding-left: 28px;
-  border-left: 1px solid var(--hair);
+  padding-top: 24px;
+  border-top: 1px solid var(--hair);
 }
+
+.bs-product-top { display: flex; align-items: flex-start; gap: 14px; }
+/* Fixed height, free width: square app icons and wide wordmarks share one
+   optical line without either being distorted. */
+.bs-product-logo { flex-shrink: 0; display: inline-flex; align-items: center; height: 36px; }
+.bs-product-logo img { height: 36px; width: auto; object-fit: contain; display: block; }
+.bs-product-titles { min-width: 0; }
+.bs-product-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.bs-product-head .bs-h3 { font-size: clamp(1.25rem, 2vw, 1.55rem); }
+.bs-product-tagline {
+  margin: 5px 0 0;
+  font-size: 14.5px;
+  line-height: 1.45;
+  font-style: italic;
+  color: var(--quiet);
+}
+
+.bs-product-overview { margin-top: 14px; font-size: 15px; }
+/* Every closed card presents the same height regardless of how much prose the
+   entry carries, so the grid rows stay even. */
+.bs-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.bs-product-tags { margin-top: 14px; }
+.bs-tag--more { opacity: .65; }
+
+.bs-product-detail { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--hair); }
 .bs-product-meta p { margin: 0; }
+
+.bs-product-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: auto;
+  padding-top: 18px;
+}
+.bs-viewmore {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13.5px;
+  letter-spacing: .01em;
+  color: var(--spot);
+}
+.bs-viewmore:hover { color: var(--spot-deep); }
+.bs-viewmore-icon { transition: transform .2s ease; }
+.bs-viewmore-icon--open { transform: rotate(180deg); }
 .bs-live-flag--wip { color: var(--mag); }
 
+@media (max-width: 860px) {
+  .bs-product-grid { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+}
+
 @media (max-width: 640px) {
-  .bs-product { padding: 30px 0; }
-  .bs-product-role { margin-left: 0; width: 100%; }
-  .bs-product-body { grid-template-columns: minmax(0, 1fr); gap: 26px; }
-  .bs-product-main { max-width: none; }
-  .bs-product-rail {
-    padding-left: 0;
-    border-left: none;
-    border-top: 1px solid var(--hair);
-    padding-top: 22px;
-  }
+  .bs-product { padding-top: 22px; }
+  .bs-product-overview { font-size: 14.5px; }
+  /* Stacked cards get the full prose — there is no neighbouring column whose
+     height it needs to match. */
+  .bs-product-actions { padding-top: 16px; }
 }
 
 

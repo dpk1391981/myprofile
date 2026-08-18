@@ -27,7 +27,11 @@ export default function Hero() {
 
       <div className="bs-split" style={{ paddingTop: 56 }}>
         <div>
-          <h1 className="bs-h1" style={{ maxWidth: "22ch" }}>{HERO.headline}</h1>
+          <h1 className="bs-h1" style={{ maxWidth: "22ch" }}>
+            {HERO.headlineParts.lead}{" "}
+            <span className="bs-h1-accent">{HERO.headlineParts.accent}</span>{" "}
+            {HERO.headlineParts.tail}
+          </h1>
 
           <p className="bs-lede bs-mt-5" style={{ maxWidth: "52ch" }}>
             {ledeBefore}
@@ -67,17 +71,23 @@ export default function Hero() {
         </div>
 
         <div>
-          <figure className="bs-halftone" style={{ width: "100%", aspectRatio: "4 / 5", position: "relative" }}>
-            <Image
-              src="/assets/images/deepak-kumar-react-developer-india.jpg"
-              alt="Deepak Kumar, senior React developer and software engineer in India, at India Today Group in New Delhi"
-              fill
-              priority
-              sizes="(max-width: 1024px) 100vw, 380px"
-              style={{ objectFit: "cover", objectPosition: "top center" }}
-            />
+          {/* The <figure> wraps image AND caption; .bs-halftone is now an inner
+              box so its overflow clip applies to the portrait only. A
+              figcaption outside its figure is invalid HTML and loses the
+              caption-to-image association that image search reads. */}
+          <figure className="bs-figure">
+            <div className="bs-halftone" style={{ width: "100%", aspectRatio: "4 / 5", position: "relative" }}>
+              <Image
+                src="/assets/images/deepak-kumar-react-developer-india.jpg"
+                alt="Deepak Kumar, senior React developer and software engineer in India, at India Today Group in New Delhi"
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 380px"
+                style={{ objectFit: "cover", objectPosition: "top center" }}
+              />
+            </div>
+            <figcaption className="bs-figcaption">{HERO.captions.photo}</figcaption>
           </figure>
-          <figcaption className="bs-figcaption">{HERO.captions.photo}</figcaption>
 
           <div className="bs-mt-5" style={{ paddingTop: 20, borderTop: "1px solid var(--hair)" }}>
             <p className="bs-eyebrow">Currently</p>

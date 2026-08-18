@@ -1,3 +1,8 @@
+import { careerYears } from "./date";
+
+// Whole-year career length ("9+"), so copy never hardcodes the number.
+const YEARS_WHOLE = careerYears();
+
 // ============================================================
 // PORTFOLIO DATA — Single source of truth
 // Update ONLY this file to change all content across the site
@@ -9,7 +14,7 @@ export const PERSONAL_INFO = {
   fullName: "Deepak Kumar",
   title: "Sr Software Engineer",
   tagline: "JavaScript | Full Stack | Node.js | React.js | Angular | MySQL | NoSQL",
-  bio: `Senior Software Engineer with 9+ years building scalable, production-grade web applications and AI-powered products. I specialize in the MERN stack (MongoDB, Express, React, Node.js), Next.js, and TypeScript, with deep hands-on experience in Generative AI — OpenAI, LangChain, and RAG systems. At India Today Group I build AI editorial tools and real-time platforms serving millions of users. On the side I build and run my own products \u2014 PlanToday.in, an AI-powered wedding and event marketplace, and TrendMeToday.com, a real-time trend intelligence platform. I care about clean architecture, measurable impact, and mentoring the engineers around me.`,
+  bio: `Senior Software Engineer with ${YEARS_WHOLE} years building scalable, production-grade web applications and AI-powered products. I specialize in the MERN stack (MongoDB, Express, React, Node.js), Next.js, and TypeScript, with deep hands-on experience in Generative AI — OpenAI, LangChain, and RAG systems. At India Today Group I build AI editorial tools and real-time platforms serving millions of users. On the side I build and run my own products \u2014 PlanToday.in, an AI-powered wedding and event marketplace, and TrendMeToday.com, a real-time trend intelligence platform. I care about clean architecture, measurable impact, and mentoring the engineers around me.`,
   careerStartDate: { year: "2016", month: "12", day: "01" },
   email: process.env.NEXT_PUBLIC_EMAIL_ID || "",
   phone: "+91-8285257636",
@@ -302,10 +307,10 @@ export interface EducationItem {
 
 export const EDUCATION: EducationItem[] = [
   {
-    title: "Post Graduate Computer Application",
+    title: "MCA — Master of Computer Applications",
     subtitle: "Artificial Intelligence & Machine Learning",
-    institution: "University Grants Commission (UGC)",
-    dateLabel: "2022 - 2024",
+    institution: "JAIN (Deemed-to-be University)",
+    dateLabel: "Jun 2023 - Jun 2025",
     logo: "/assets/projects/jain-deemed.png",
     logoAlt: "Jain University",
     type: "degree",
@@ -323,14 +328,14 @@ export const EDUCATION: EducationItem[] = [
     title: "Diploma / Jr Engineering",
     subtitle: "Computer Science / IT",
     institution: "Board of Technical Education (BTE)",
-    dateLabel: "May 2013 - May 2016",
+    dateLabel: "Jun 2013 - Aug 2016",
     logo: "/assets/projects/bte.jpeg",
     logoAlt: "BTE",
     type: "degree",
   },
   {
-    title: "AWS Certified Solutions Architect Associate",
-    subtitle: "Ultimate AWS Certified Solutions Architect Associate SAA-C03",
+    title: "AWS Solutions Architect Associate — coursework",
+    subtitle: "Ultimate AWS Certified Solutions Architect Associate SAA-C03 (course completion)",
     institution: "Udemy",
     dateLabel: "Oct 2023 - Nov 2023",
     logo: "/assets/projects/aws1.png",
@@ -478,17 +483,17 @@ export const FAQS: FaqItem[] = [
   {
     question: "Who is Deepak Kumar?",
     answer:
-      "Deepak Kumar is a Senior Software Engineer based in New Delhi, India, with 9+ years of experience building scalable, production-grade web applications and AI-powered products. He currently works at India Today Group, building MERN-stack and Generative AI solutions for editorial and digital platforms.",
+      `Deepak Kumar is a Senior Software Engineer based in New Delhi, India, with ${YEARS_WHOLE} years of experience building scalable, production-grade web applications and AI-powered products. He currently works at India Today Group, building MERN-stack and Generative AI solutions for editorial and digital platforms.`,
   },
   {
     question: "How many years of experience does Deepak Kumar have?",
     answer:
-      "Deepak Kumar has 9+ years of professional software engineering experience (since December 2016), spanning 7+ companies including India Today Group, Clove Dental, Humanize, SYNQY Corporation, and Ceekr.",
+      `Deepak Kumar has ${YEARS_WHOLE} years of professional software engineering experience (since December 2016), spanning 7+ companies including India Today Group, Clove Dental, Humanize, SYNQY Corporation, and Ceekr.`,
   },
   {
     question: "What is Deepak Kumar's tech stack?",
     answer:
-      "Deepak specializes in the MERN stack — MongoDB, Express.js, React.js, and Node.js — along with Next.js, TypeScript, and JavaScript (ES6+). On the AI side he works with OpenAI, LangChain, and RAG systems. He also has hands-on experience with AWS (Certified Solutions Architect Associate), Docker, MySQL, Redis, and microservices architecture.",
+      "Deepak specializes in the MERN stack — MongoDB, Express.js, React.js, and Node.js — along with Next.js, TypeScript, and JavaScript (ES6+). On the AI side he works with OpenAI, LangChain, and RAG systems. He also has hands-on experience with AWS (Solutions Architect Associate coursework), Docker, MySQL, Redis, and microservices architecture.",
   },
   {
     question: "Is Deepak Kumar available for hire or freelance work?",
@@ -503,7 +508,7 @@ export const FAQS: FaqItem[] = [
   {
     question: "What kind of projects has Deepak Kumar built?",
     answer:
-      "Deepak has delivered 15+ products including AI editorial tools, real-time election dashboards handling 5M+ concurrent users, a Patient Relationship Management system across 500+ dental clinics, video communication platforms, and SaaS analytics dashboards. He also builds and owns independent products end-to-end \u2014 PlanToday.in (AI-powered wedding and event marketplace), TrendMeToday.com (real-time trend intelligence with heat scoring), VTechXHub.com (SEO content platform) and Think4BuySale (real estate marketplace).",
+      "Deepak has delivered 15+ products including AI editorial tools, real-time election dashboards serving millions of daily users, a Patient Relationship Management system used across Clove Dental clinics, video communication platforms, and SaaS analytics dashboards. He also builds and owns independent products end-to-end \u2014 PlanToday.in (AI-powered wedding and event marketplace), TrendMeToday.com (real-time trend intelligence with heat scoring), VTechXHub.com (SEO content platform) and Think4BuySale (real estate marketplace).",
   },
   {
     question: "Where is Deepak Kumar located and does he work remotely?",
@@ -528,7 +533,7 @@ export const FAQS: FaqItem[] = [
   {
     question: "Why should a company hire Deepak Kumar?",
     answer:
-      "Deepak combines 9+ years of full-stack expertise with hands-on Generative AI engineering, a track record of shipping products at scale (5M+ concurrent users, 99.99% uptime), and proven leadership mentoring junior developers. He delivers clean, maintainable architecture and measurable business impact.",
+      `Deepak combines ${YEARS_WHOLE} years of full-stack expertise with hands-on Generative AI engineering, a track record of shipping products at national news scale, and proven leadership mentoring junior developers. He delivers clean, maintainable architecture and measurable business impact.`,
   },
 ];
 
@@ -582,7 +587,7 @@ export const BLOG_POSTS: BlogPost[] = [
     coverEmoji: "⚡",
     featured: true,
     content: `
-<p>After building React applications for 9+ years across companies like <strong>India Today Group</strong>, <strong>Clove Dental</strong>, and multiple startups, I've compiled the performance techniques that actually matter in production.</p>
+<p>After building React applications for ${YEARS_WHOLE} years across companies like <strong>India Today Group</strong>, <strong>Clove Dental</strong>, and multiple startups, I've compiled the performance techniques that actually matter in production.</p>
 
 <h2>1. Memoization Done Right</h2>
 <p>Most developers misuse <code>React.memo()</code> and <code>useMemo()</code>. The key is to only memoize components that receive <strong>referentially unstable props</strong> and render expensive trees.</p>
@@ -815,7 +820,7 @@ export default function Chat() {
     coverEmoji: "🏗️",
     featured: false,
     content: `
-<p>The MERN stack in 2026 looks very different from 2020. Having built MERN apps across <strong>7 companies</strong> over <strong>9+ years</strong>, here's how I architect production MERN applications today.</p>
+<p>The MERN stack in 2026 looks very different from 2020. Having built MERN apps across <strong>7 companies</strong> over <strong>${YEARS_WHOLE} years</strong>, here's how I architect production MERN applications today.</p>
 
 <h2>The Modern MERN Stack</h2>
 <pre><code>MongoDB Atlas (with Vector Search) + Express 5 / tRPC + React 19 (RSC) + Node.js 22</code></pre>

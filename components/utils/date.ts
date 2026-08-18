@@ -53,3 +53,16 @@ export function totalExperianceYears(
   const isCurrent = !endYear;
   return `${total.toFixed(1)}${isCurrent ? "+" : ""} Yrs`;
 }
+/**
+ * Whole-year career length for prose — "9+", "10+", …
+ *
+ * totalExperianceYears() carries one decimal ("9.7+ Yrs"), which is right for a
+ * stat tile and wrong in a sentence: nobody writes "9.7+ years of experience",
+ * and it makes the headline a character longer for no gain. This floors to the
+ * whole year, so the copy stays honest as it ages and no string anywhere needs
+ * editing on an anniversary.
+ */
+export function careerYears(): string {
+  const decimal = parseFloat(totalExperianceYears());
+  return `${Math.floor(decimal) || 9}+`;
+}

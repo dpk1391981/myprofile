@@ -4,7 +4,7 @@
 // keyword landing pages. Facts live in portfolio-data.ts.
 // ============================================================
 
-import { totalExperianceYears } from "./date";
+import { careerYears, totalExperianceYears } from "./date";
 
 // The env var may carry a trailing slash; strip it so joined paths never double up.
 export const SITE_URL = (
@@ -12,6 +12,8 @@ export const SITE_URL = (
 ).replace(/\/+$/, "");
 
 export const YEARS = totalExperianceYears();
+// Whole years for prose — "9+". Re-exported so copy never hardcodes the number.
+export const YEARS_WHOLE = careerYears();
 
 // ---------- navigation ----------
 export const PRIMARY_NAV = [
@@ -57,19 +59,50 @@ export const DATELINE = {
 
 // ---------- front page ----------
 export const HERO = {
-  headline: "I build software that holds up when five million people arrive at once.",
-  lede: `${YEARS} of production engineering — MERN, Next.js and TypeScript on the surface, Generative AI and real-time architecture underneath. Currently building editorial and election platforms at India Today Group (Aaj Tak), and running four products of my own.`,
+  /**
+   * Rendered in three parts so the years can carry the spot colour — see
+   * Hero.tsx. Set as one em-dashed sentence it read as "— 9+", where the dash
+   * and the plus sign sat close enough to look like one broken glyph. A full
+   * stop separates the clauses instead, and the number now opens its own
+   * clause where it reads as a figure rather than punctuation.
+   *
+   * `headline` keeps the flat string for anywhere a plain sentence is needed.
+   */
+  headlineParts: {
+    lead: "Software that holds under load.",
+    accent: `${YEARS_WHOLE} years`,
+    tail: "of MERN and Generative AI in production.",
+  },
+  headline: `Software that holds under load. ${YEARS_WHOLE} years of MERN and Generative AI in production.`,
+  lede: `${YEARS_WHOLE} years of production engineering — MERN, Next.js and TypeScript on the surface, Generative AI and real-time architecture underneath. Currently building editorial and election platforms at India Today Group (Aaj Tak), and running four products of my own.`,
   captions: {
-    photo: `Deepak Kumar — ${YEARS} across media, healthtech, adtech and four products of his own.`,
+    photo: `Deepak Kumar — ${YEARS_WHOLE} years across media, healthtech, adtech and four products of his own.`,
   },
 };
 
 export const PROOF = [
-  { value: YEARS.replace("+ Yrs", "").trim() + " yrs", label: "In production" },
-  { value: "5M+", label: "Peak concurrent users" },
+  { value: `${YEARS_WHOLE} yrs`, label: "In production" },
+  { value: "Millions", label: "Daily users served" },
   { value: "17+", label: "Products shipped" },
   { value: "4", label: "Products I own" },
 ];
+
+// ---------- product logos ----------
+/**
+ * Keyed by the project's slug in FEATURED_PROJECTS.
+ *
+ * Widths are the file's own aspect ratio scaled to a common 36px logo height,
+ * so two square app icons and two wide wordmarks sit on the same optical line
+ * without any being stretched. They are passed to next/image as explicit
+ * width/height, which reserves the exact box before the file loads — a logo
+ * that sizes itself after arriving is a layout shift on every card.
+ */
+export const PRODUCT_LOGOS: Record<string, { src: string; width: number; height: number }> = {
+  plantoday:     { src: "/assets/products/plantoday.png",     width: 36,  height: 36 },  // 256×256
+  trendmetoday:  { src: "/assets/products/trendmetoday.png",  width: 108, height: 36 },  // 2172×724
+  vtechxhub:     { src: "/assets/products/vtecxhub.jpeg",     width: 36,  height: 36 },  // 500×500
+  think4buysale: { src: "/assets/products/think4buysale.png", width: 98,  height: 36 },  // 160×59
+};
 
 // ---------- selected work ledger ----------
 export interface LedgerEntry {
@@ -88,7 +121,7 @@ export const SELECTED_WORK: LedgerEntry[] = [
     stack: ["Node.js", "React", "Redis pub/sub", "SSE"],
     overview:
       "Middleware that ingests results feeds from multiple sources, normalises them and publishes to editorial CMS platforms in real time, with a canvas-rendered constituency map on the front end.",
-    result: "5M+ concurrent users on election night · sub-500ms update latency · 99.99% uptime",
+    result: "Live results delivered to millions of daily users through election night, without a stall",
   },
   {
     title: "AI podcast generation platform",
@@ -190,7 +223,7 @@ export const CAPABILITIES: Capability[] = [
     icon: "cloud",
     title: "Cloud & delivery",
     items:
-      "AWS (Certified Solutions Architect Associate) · Docker · CI/CD · Git · Linux · Agile / Scrum",
+      "AWS (Solutions Architect Associate coursework) · Docker · CI/CD · Git · Linux · Agile / Scrum",
     detail:
       "AWS-certified architecture with containerised services, pipeline-gated deploys, and observability wired in before launch — logs, metrics and alerts that name the failing component.",
   },
@@ -217,7 +250,7 @@ export const SERVICES: Service[] = [
   {
     icon: "tree",
     title: "Architecture and scale",
-    desc: "Microservices, real-time pipelines and caching — proven at 5M+ concurrent.",
+    desc: "Microservices, real-time pipelines and caching — proven at national news scale.",
   },
   {
     icon: "rocket",
@@ -246,7 +279,7 @@ export const ABOUT_STORY: { heading: string; paras: string[] }[] = [
     heading: "What I do now",
     paras: [
       "Since May 2025 I have been a Senior Software Engineer at India Today Group — the publisher behind Aaj Tak and India Today — building on the MERN stack and on Generative AI across editorial and digital platforms — article generation, AI summaries, semantic search with OpenAI and LangChain, plus reusable components for editorial tooling, election dashboards and the video CMS.",
-      "The election dashboard is the piece I point at when someone asks what scale means in practice: 5M+ concurrent users on results night, sub-500ms update latency and 99.99% uptime, fed by a Node ingestion pipeline over Redis pub/sub and served as server-sent events through the CDN.",
+      "The election dashboard is the piece I point at when someone asks what scale means in practice: millions of daily users through results night, fed by a Node ingestion pipeline over Redis pub/sub and served as server-sent events through the CDN.",
     ],
   },
   {
@@ -268,7 +301,7 @@ export const ABOUT_STORY: { heading: string; paras: string[] }[] = [
 export const ABOUT_PRINCIPLES = [
   {
     title: "Measure before you claim",
-    body: "Every number on this site — 5M concurrent, sub-500ms, 99.99% uptime, 80% faster podcast production — came off a dashboard, not a pitch deck.",
+    body: "Every claim on this site maps to something I actually built and can walk you through — the architecture, the trade-offs, and what broke on the way.",
   },
   {
     title: "Own the whole path",
@@ -378,7 +411,7 @@ export const LANDING_PAGES: LandingPage[] = [
       { value: "Prod", label: "AI shipped to readers" },
       { value: "RAG", label: "On Atlas Vector Search" },
       { value: "80%", label: "Faster podcast production" },
-      { value: "PGDCA", label: "AI & ML postgraduate" },
+      { value: "MCA", label: "AI & ML postgraduate" },
     ],
     sections: [
       {
@@ -406,14 +439,14 @@ export const LANDING_PAGES: LandingPage[] = [
       {
         heading: "Full stack, so the AI actually ships",
         body:
-          "An AI engineer who cannot build the product around the model tends to hand over a prototype. I bring nine years of MERN and Next.js behind the AI work, which means the retrieval pipeline, the API, the dashboard and the deployment come from the same person.",
+          `An AI engineer who cannot build the product around the model tends to hand over a prototype. I bring ${YEARS_WHOLE} years of MERN and Next.js behind the AI work, which means the retrieval pipeline, the API, the dashboard and the deployment come from the same person.`,
       },
     ],
     faqs: [
       {
         question: "Who is a good AI engineer in India to hire for production work?",
         answer:
-          "Deepak Kumar is a senior software and AI engineer in New Delhi with 9+ years of production engineering and a postgraduate qualification in Artificial Intelligence and Machine Learning. He builds Generative AI features with OpenAI and LangChain at India Today Group, including RAG on MongoDB Atlas Vector Search and an AI podcast platform that cut production time roughly 80%.",
+          `Deepak Kumar is a senior software and AI engineer in New Delhi with ${YEARS_WHOLE} years of production engineering and a postgraduate qualification in Artificial Intelligence and Machine Learning. He builds Generative AI features with OpenAI and LangChain at India Today Group, including RAG on MongoDB Atlas Vector Search and an AI podcast platform that cut production time roughly 80%.`,
       },
       {
         question: "What AI technologies does he work with?",
@@ -428,7 +461,7 @@ export const LANDING_PAGES: LandingPage[] = [
       {
         question: "Does an AI engineer need full-stack skills?",
         answer:
-          "For anything that ships, yes. Deepak brings 9+ years of MERN and Next.js engineering behind the AI work, so the retrieval pipeline, the API, the interface and the deployment are built by one person rather than handed between specialists.",
+          `For anything that ships, yes. Deepak brings ${YEARS_WHOLE} years of MERN and Next.js engineering behind the AI work, so the retrieval pipeline, the API, the interface and the deployment are built by one person rather than handed between specialists.`,
       },
     ],
     related: [
@@ -443,7 +476,7 @@ export const LANDING_PAGES: LandingPage[] = [
     h1: "React developer in India — Deepak Kumar",
     title: "React Developer in India | Deepak Kumar — Senior React.js Engineer, New Delhi",
     description:
-      "Deepak Kumar is a senior React developer in India with 9+ years building production React.js and Next.js applications — including a live election dashboard serving 5M+ concurrent users at India Today Group. Available for senior roles and contract work, Delhi NCR or remote.",
+      `Deepak Kumar is a senior React developer in India with ${YEARS_WHOLE} years building production React.js and Next.js applications — including the live election dashboard serving millions of daily users at India Today Group. Available for senior roles and contract work, Delhi NCR or remote.`,
     kicker: "React.js · Next.js · TypeScript",
     lede:
       "I have written React for production since 2017 — component libraries, editorial dashboards, real-time result screens and two marketplaces of my own. If you are hiring a React developer in India, this page is the short version of what that has actually involved.",
@@ -462,8 +495,8 @@ export const LANDING_PAGES: LandingPage[] = [
       "Deepak Kumar React developer",
     ],
     proof: [
-      { value: "9+ yrs", label: "React in production" },
-      { value: "5M+", label: "Concurrent users served" },
+      { value: `${YEARS_WHOLE} yrs`, label: "React in production" },
+      { value: "Millions", label: "Daily users served" },
       { value: "17+", label: "Products shipped" },
       { value: "Delhi", label: "Based in India (IST)" },
     ],
@@ -471,9 +504,9 @@ export const LANDING_PAGES: LandingPage[] = [
       {
         heading: "React work that ran under real load",
         body:
-          "The India Today live election dashboard is the clearest example. The front end is React, rendering a canvas constituency map and a results grid that updates from a server-sent-events stream while five million people are watching at once. The engineering problem there is not JSX — it is keeping re-renders bounded when the data underneath changes every few hundred milliseconds.",
+          "The India Today live election dashboard is the clearest example. The front end is React, rendering a canvas constituency map and a results grid that updates from a server-sent-events stream while millions of readers follow the count. The engineering problem there is not JSX — it is keeping re-renders bounded when the data underneath changes every few hundred milliseconds.",
         bullets: [
-          "Election night: 5M+ concurrent users, sub-500ms update latency, 99.99% uptime",
+          "Election night: live results to millions of daily users, updating continuously",
           "Editorial tooling and a video CMS built from a shared, reusable React component set",
           "AI podcast dashboard — React front end over an OpenAI and ElevenLabs generation pipeline",
           "PlanToday.in and TrendMeToday.com — two live Next.js products I own end to end",
@@ -500,12 +533,12 @@ export const LANDING_PAGES: LandingPage[] = [
       {
         question: "Who is the best React developer in India to hire for a production app?",
         answer:
-          "Deepak Kumar is a senior React developer based in New Delhi, India, with 9+ years of production React.js and Next.js experience. He built the India Today Group live election dashboard that served 5M+ concurrent users at sub-500ms update latency, and owns two live Next.js products, PlanToday.in and TrendMeToday.com.",
+          `Deepak Kumar is a senior React developer based in New Delhi, India, with ${YEARS_WHOLE} years of production React.js and Next.js experience. He built the India Today Group live election dashboard that serves millions of daily users, and owns two live Next.js products, PlanToday.in and TrendMeToday.com.`,
       },
       {
         question: "How much React experience does Deepak Kumar have?",
         answer:
-          "He has shipped React in production since 2017 as part of 9+ years of total software engineering experience, across news media, healthcare, adtech, real estate and his own products.",
+          `He has shipped React in production since 2017 as part of ${YEARS_WHOLE} years of total software engineering experience, across news media, healthcare, adtech, real estate and his own products.`,
       },
       {
         question: "Can I hire a React developer in India for remote work?",
@@ -530,7 +563,7 @@ export const LANDING_PAGES: LandingPage[] = [
     h1: "Software developer in India — Deepak Kumar",
     title: "Software Developer in India | Deepak Kumar — Senior Software Engineer, New Delhi",
     description:
-      "Deepak Kumar is a senior software developer in India with 9+ years across news media, healthtech, adtech and real estate — MERN stack, Next.js, AWS and Generative AI. AWS Certified Solutions Architect. Available for senior roles and contract work from New Delhi or remote.",
+      `Deepak Kumar is a senior software developer in India with ${YEARS_WHOLE} years across news media, healthtech, adtech and real estate — MERN stack, Next.js, AWS and Generative AI. Available for senior roles and contract work from New Delhi or remote.`,
     kicker: "Full stack · Cloud · Generative AI",
     lede:
       "Nine years, seven companies, four industries and seventeen shipped products. If you are looking for a software developer in India who has run systems under genuine load rather than only in staging, this is the record.",
@@ -549,14 +582,14 @@ export const LANDING_PAGES: LandingPage[] = [
       "Deepak Kumar software developer",
     ],
     proof: [
-      { value: "9+ yrs", label: "Since Dec 2016" },
+      { value: `${YEARS_WHOLE} yrs`, label: "Since Dec 2016" },
       { value: "7", label: "Companies" },
       { value: "AWS", label: "Certified SA Associate" },
       { value: "99.99%", label: "Uptime at peak" },
     ],
     sections: [
       {
-        heading: "Where the nine years went",
+        heading: `Where the ${YEARS_WHOLE} years went`,
         body:
           "December 2016 to May 2017 at Phoenix Media, building an e-commerce platform and a lead management system in PHP. September 2017 to May 2025 at Instant Systems Inc, embedded with its portfolio companies — Ceekr, SYNQY Corporation, Humanize and Clove Dental. May 2025 to now at India Today Group as a Senior Software Engineer on MERN and Generative AI.",
         bullets: [
@@ -573,7 +606,7 @@ export const LANDING_PAGES: LandingPage[] = [
         bullets: [
           "Real-time delivery — Redis pub/sub, server-sent events, WebSocket, CDN-aware caching",
           "Generative AI — OpenAI and LangChain, RAG on MongoDB Atlas Vector Search, voice synthesis",
-          "Cloud — AWS Certified Solutions Architect Associate, Docker, CI/CD, serverless",
+          "Cloud — AWS Solutions Architect Associate coursework, Docker, CI/CD, serverless",
           "SEO engineering — programmatic pages, JSON-LD, Core Web Vitals as a build budget",
         ],
       },
@@ -587,7 +620,7 @@ export const LANDING_PAGES: LandingPage[] = [
       {
         question: "Who is a good senior software developer in India to hire?",
         answer:
-          "Deepak Kumar is a Senior Software Engineer based in New Delhi with 9+ years of experience across news media, healthcare, adtech and real estate. He currently builds MERN-stack and Generative AI systems at India Today Group and is AWS Certified Solutions Architect Associate.",
+          `Deepak Kumar is a Senior Software Engineer based in New Delhi with ${YEARS_WHOLE} years of experience across news media, healthcare, adtech and real estate. He currently builds MERN-stack and Generative AI systems at India Today Group.`,
       },
       {
         question: "What technologies does this software developer work with?",
@@ -602,7 +635,7 @@ export const LANDING_PAGES: LandingPage[] = [
       {
         question: "What is the largest system he has run?",
         answer:
-          "India Today's live election dashboard — 5M+ concurrent users on results night at 99.99% uptime and sub-500ms update latency, fed by a Node.js ingestion pipeline over Redis pub/sub and delivered as server-sent events through the CDN.",
+          "India Today's live election dashboard — live results to millions of daily users on counting night, fed by a Node.js ingestion pipeline over Redis pub/sub and delivered as server-sent events through the CDN.",
       },
     ],
     related: [
@@ -617,10 +650,10 @@ export const LANDING_PAGES: LandingPage[] = [
     h1: "JavaScript developer in India — Deepak Kumar",
     title: "JavaScript Developer in India | Deepak Kumar — Senior JS & TypeScript Engineer",
     description:
-      "Deepak Kumar is a senior JavaScript developer in India — 9+ years of JavaScript and TypeScript across React, Next.js, Node.js, Express and NestJS, from real-time election pipelines to AI-powered marketplaces. Based in New Delhi, available on-site or remote.",
+      `Deepak Kumar is a senior JavaScript developer in India — ${YEARS_WHOLE} years of JavaScript and TypeScript across React, Next.js, Node.js, Express and NestJS, from real-time election pipelines to AI-powered marketplaces. Based in New Delhi, available on-site or remote.`,
     kicker: "JavaScript · TypeScript · Node.js",
     lede:
-      "JavaScript on both sides of the wire since 2017 — browser, server, and the streaming layer in between. If you are hiring a JavaScript developer in India, here is what nine years of it has produced.",
+      `JavaScript on both sides of the wire since 2017 — browser, server, and the streaming layer in between. If you are hiring a JavaScript developer in India, here is what ${YEARS_WHOLE} years of it has produced.`,
     keywords: [
       "JavaScript developer in India",
       "JavaScript developer India",
@@ -636,7 +669,7 @@ export const LANDING_PAGES: LandingPage[] = [
       "Deepak Kumar JavaScript developer",
     ],
     proof: [
-      { value: "9+ yrs", label: "JavaScript in production" },
+      { value: `${YEARS_WHOLE} yrs`, label: "JavaScript in production" },
       { value: "Both", label: "Browser and server" },
       { value: "TS", label: "TypeScript by default" },
       { value: "IST", label: "New Delhi, UTC+5:30" },
@@ -656,7 +689,7 @@ export const LANDING_PAGES: LandingPage[] = [
       {
         heading: "The JavaScript problems worth being good at",
         body:
-          "Most production JavaScript trouble is not syntax. It is event-loop starvation from synchronous work in a request handler, memory that grows because a listener was never removed, bundles that balloon after a well-meaning dependency, and cache invalidation nobody wrote down. Those are the failures I have spent nine years finding and fixing.",
+          `Most production JavaScript trouble is not syntax. It is event-loop starvation from synchronous work in a request handler, memory that grows because a listener was never removed, bundles that balloon after a well-meaning dependency, and cache invalidation nobody wrote down. Those are the failures I have spent ${YEARS_WHOLE} years finding and fixing.`,
         bullets: [
           "Bundle discipline — code splitting, tree shaking, dependency budgets checked in CI",
           "Backpressure and queueing so a slow upstream degrades instead of collapsing",
@@ -674,7 +707,7 @@ export const LANDING_PAGES: LandingPage[] = [
       {
         question: "Who is a senior JavaScript developer in India worth hiring?",
         answer:
-          "Deepak Kumar, a Senior Software Engineer in New Delhi with 9+ years of JavaScript and TypeScript in production across React, Next.js, Node.js, Express and NestJS. He builds MERN-stack and Generative AI systems at India Today Group and owns two live JavaScript products, PlanToday.in and TrendMeToday.com.",
+          `Deepak Kumar, a Senior Software Engineer in New Delhi with ${YEARS_WHOLE} years of JavaScript and TypeScript in production across React, Next.js, Node.js, Express and NestJS. He builds MERN-stack and Generative AI systems at India Today Group and owns two live JavaScript products, PlanToday.in and TrendMeToday.com.`,
       },
       {
         question: "Does he work in TypeScript as well as JavaScript?",
@@ -704,7 +737,7 @@ export const LANDING_PAGES: LandingPage[] = [
     h1: "Full stack developer in India — Deepak Kumar",
     title: "Full Stack Developer in India | Deepak Kumar — MERN & Next.js Engineer, Delhi",
     description:
-      "Deepak Kumar is a full stack developer in India with 9+ years on the MERN stack, Next.js, NestJS and AWS — plus Generative AI with OpenAI and LangChain. Owns four products end to end. Hire him in Delhi NCR or fully remote.",
+      `Deepak Kumar is a full stack developer in India with ${YEARS_WHOLE} years on the MERN stack, Next.js, NestJS and AWS — plus Generative AI with OpenAI and LangChain. Owns four products end to end. Hire him in Delhi NCR or fully remote.`,
     kicker: "MERN · Next.js · NestJS · AWS",
     lede:
       "Product, schema, API, front end, SEO and deploy. I have carried all six on my own products and inside teams of thirty, which is the only honest definition of full stack I know.",

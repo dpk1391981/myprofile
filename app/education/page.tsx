@@ -6,9 +6,9 @@ import SectionHead from "@/components/sections/SectionHead";
 import { breadcrumbLd, pageMeta } from "@/components/utils/seo";
 
 export const metadata = pageMeta({
-  title: "Education & Certifications | Deepak Kumar — PGDCA (AI/ML), AWS Certified",
+  title: "Education & Certifications | Deepak Kumar — MCA (AI/ML), AWS coursework",
   description:
-    "The academic and professional credentials of Deepak Kumar — Post Graduate Computer Application in Artificial Intelligence & Machine Learning, a Bachelor of Commerce from the University of Delhi, a Junior Engineering diploma in Computer Science, AWS Certified Solutions Architect Associate (SAA-C03) and MERN Stack certification.",
+    "The academic and professional credentials of Deepak Kumar — an MCA in Artificial Intelligence & Machine Learning from JAIN University, a Bachelor of Commerce from the University of Delhi, a Junior Engineering diploma in Computer Science, and AWS Solutions Architect Associate (SAA-C03) and MERN Stack coursework.",
   path: "/education",
   keywords: [
     "Deepak Kumar education",
@@ -56,9 +56,9 @@ export default function EducationPage() {
           <div>
             <h3 className="bs-h4">Cloud architecture</h3>
             <p className="bs-quiet bs-mt-2" style={{ fontSize: 15, lineHeight: 1.7 }}>
-              The AWS Solutions Architect Associate certification (SAA-C03, 2023) formalised what
-              four years of serverless work at SYNQY had already taught me about cost, availability
-              and the difference between the two.
+              Working through the AWS Solutions Architect Associate (SAA-C03) material in 2023 put
+              names to what four years of serverless work at SYNQY had already taught me about cost,
+              availability and the difference between the two.
             </p>
           </div>
           <div>

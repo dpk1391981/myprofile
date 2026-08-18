@@ -7,14 +7,14 @@ import Capabilities from "@/components/sections/Capabilities";
 import Credentials from "@/components/sections/Credentials";
 import HireCta from "@/components/sections/HireCta";
 import SectionHead from "@/components/sections/SectionHead";
-import { ABOUT_PRINCIPLES, ABOUT_STORY, PROOF, YEARS } from "@/components/utils/site-data";
+import { ABOUT_PRINCIPLES, ABOUT_STORY, PROOF, YEARS_WHOLE } from "@/components/utils/site-data";
 import { PERSONAL_INFO } from "@/components/utils/portfolio-data";
 import { breadcrumbLd, pageMeta } from "@/components/utils/seo";
 
 export const metadata = pageMeta({
   title: "About Deepak Kumar | Senior Software Engineer in India — MERN & Generative AI",
   description:
-    `About Deepak Kumar — a senior software developer in India with ${YEARS} across news media, healthtech, adtech and real estate. React.js, Next.js, Node.js, MongoDB and Generative AI with OpenAI and LangChain. Currently at India Today Group, and running four products of his own.`,
+    `About Deepak Kumar — a senior software developer in India with ${YEARS_WHOLE} years across news media, healthtech, adtech and real estate. React.js, Next.js, Node.js, MongoDB and Generative AI with OpenAI and LangChain. Currently at India Today Group, and running four products of his own.`,
   path: "/about",
   keywords: [
     "about Deepak Kumar",
@@ -39,7 +39,7 @@ export default function AboutPage() {
 
       <PageHeader
         crumbs={[{ label: "Home", href: "/" }, { label: "About" }]}
-        dateline={["Profile", "New Delhi, India", `${YEARS} in production`]}
+        dateline={["Profile", "New Delhi, India", `${YEARS_WHOLE} years in production`]}
         kicker="About"
         title="Nine years of shipping things that other people depend on."
         lede={`I am a Senior Software Engineer in New Delhi. I build on the MERN stack and Next.js, add Generative AI where it earns its place, and I have spent most of my career inside production systems with real users attached to them.`}

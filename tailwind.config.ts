@@ -17,16 +17,11 @@ const config: Config = {
       },
     },
   },
-  plugins: [require("daisyui")],
-  daisyui: {
-    themes: false, // false: only light + dark | true: all themes | array: specific themes like this ["light", "dark", "cupcake"]
-    darkTheme: "dark", // name of one of the included themes for dark mode
-    base: true, // applies background color and foreground color for root element by default
-    styled: true, // include daisyUI colors and design decisions for all components
-    utils: true, // adds responsive and modifier utility classes
-    prefix: "", // prefix for daisyUI classnames (components, modifiers and responsive class names. Not colors)
-    logs: true, // Shows info about daisyUI version and used config in the console when building your CSS
-    themeRoot: ":root", // The element that receives theme color CSS variables
-  },
+  // daisyUI was removed: a grep of every className in app/ and components/
+  // matched zero daisyUI component classes — the site is set entirely in the
+  // custom broadsheet system (styles/broadsheet.css, all `bs-` prefixed).
+  // Its themes were still shipping ~85KB of render-blocking CSS on every
+  // page, which is a direct First Contentful Paint cost on mobile.
+  plugins: [],
 };
 export default config;

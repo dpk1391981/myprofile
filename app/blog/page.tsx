@@ -1,3 +1,4 @@
+import { YEARS_WHOLE } from "@/components/utils/site-data";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BLOG_POSTS, PERSONAL_INFO } from "@/components/utils/portfolio-data";
@@ -277,7 +278,7 @@ export default async function BlogPage() {
             </p>
             <p className="bs-mt-2" style={{ fontSize: 15, lineHeight: 1.7, maxWidth: "58ch" }}>
               Building scalable web applications and Generative AI systems. Writing about React,
-              Node.js, AI and the engineering lessons from nine years of production work.
+              Node.js, AI and the engineering lessons from {YEARS_WHOLE} years of production work.
             </p>
             <Link href="/about" className="bs-link bs-mt-3">
               More about me <IconArrowRight size={15} />
