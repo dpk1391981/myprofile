@@ -9,7 +9,7 @@ export const PERSONAL_INFO = {
   fullName: "Deepak Kumar",
   title: "Sr Software Engineer",
   tagline: "JavaScript | Full Stack | Node.js | React.js | Angular | MySQL | NoSQL",
-  bio: `Senior Software Engineer with 9+ years building scalable, production-grade web applications and AI-powered products. I specialize in the MERN stack (MongoDB, Express, React, Node.js), Next.js, and TypeScript, with deep hands-on experience in Generative AI — OpenAI, LangChain, and RAG systems. At India Today Group I build AI editorial tools and real-time platforms serving millions of users. I care about clean architecture, measurable impact, and mentoring the engineers around me.`,
+  bio: `Senior Software Engineer with 9+ years building scalable, production-grade web applications and AI-powered products. I specialize in the MERN stack (MongoDB, Express, React, Node.js), Next.js, and TypeScript, with deep hands-on experience in Generative AI — OpenAI, LangChain, and RAG systems. At India Today Group I build AI editorial tools and real-time platforms serving millions of users. On the side I build and run my own products \u2014 PlanToday.in, an AI-powered wedding and event marketplace, and TrendMeToday.com, a real-time trend intelligence platform. I care about clean architecture, measurable impact, and mentoring the engineers around me.`,
   careerStartDate: { year: "2016", month: "12", day: "01" },
   email: process.env.NEXT_PUBLIC_EMAIL_ID || "",
   phone: "+91-8285257636",
@@ -503,12 +503,27 @@ export const FAQS: FaqItem[] = [
   {
     question: "What kind of projects has Deepak Kumar built?",
     answer:
-      "Deepak has delivered 15+ products including AI editorial tools, real-time election dashboards handling 5M+ concurrent users, a Patient Relationship Management system across 500+ dental clinics, video communication platforms, and SaaS analytics dashboards. He also owns independent products like VTechXHub and Think4BuySale.",
+      "Deepak has delivered 15+ products including AI editorial tools, real-time election dashboards handling 5M+ concurrent users, a Patient Relationship Management system across 500+ dental clinics, video communication platforms, and SaaS analytics dashboards. He also builds and owns independent products end-to-end \u2014 PlanToday.in (AI-powered wedding and event marketplace), TrendMeToday.com (real-time trend intelligence with heat scoring), VTechXHub.com (SEO content platform) and Think4BuySale (real estate marketplace).",
   },
   {
     question: "Where is Deepak Kumar located and does he work remotely?",
     answer:
       "Deepak Kumar is based in New Delhi, India, and is available for both on-site roles in Delhi NCR and fully remote opportunities worldwide.",
+  },
+  {
+    question: "What is PlanToday.in and who built it?",
+    answer:
+      "PlanToday.in is an AI-powered wedding and event vendor marketplace for India, built and owned end-to-end by Deepak Kumar. It lets couples and event hosts search in plain English or Hinglish \u2014 for example \u201cwedding photographer in Noida under 50k\u201d \u2014 and returns budget-aware, hyperlocal vendor matches across 500+ cities and 1 lakh+ listings. It is built on Next.js, NestJS, MySQL and Redis, with an NLP intent parser, an AI event-budget planner, a vendor lead CRM and a token-credit economy.",
+  },
+  {
+    question: "What is TrendMeToday.com?",
+    answer:
+      "TrendMeToday.com is a real-time trend intelligence platform built by Deepak Kumar that tracks what India is talking about and scores each story 0\u2013100 on a \u201cheat\u201d scale. A Python/FastAPI pipeline ingests publisher RSS roughly every 15 minutes, clusters related coverage into a single tracked story, and computes momentum from outlet coverage volume and publishing velocity. Every trend lists the named outlets reporting it, across five verticals \u2014 India, Entertainment, Sports, Money and Tech.",
+  },
+  {
+    question: "Has Deepak Kumar built and launched his own products?",
+    answer:
+      "Yes. Deepak Kumar owns and operates three independent products end-to-end: PlanToday.in (an AI-powered wedding and event vendor marketplace covering 500+ Indian cities), TrendMeToday.com (a real-time trend intelligence platform with momentum-based heat scoring), and VTechXHub.com (an SEO-driven content publishing platform). He handles product, architecture, engineering and SEO on all three.",
   },
   {
     question: "Why should a company hire Deepak Kumar?",
@@ -524,7 +539,7 @@ export const NAV_LINKS = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
   { label: "Experience", href: "/experience" },
-  // { label: "Projects", href: "/projects" },
+  { label: "Projects", href: "/projects" },
   { label: "Education", href: "/education" },
   { label: "Skills", href: "/skills" },
   { label: "Reviews", href: "/reviews" },
@@ -866,22 +881,122 @@ export const getFeaturedPosts = () => BLOG_POSTS.filter((p) => p.featured);
 // ============================================================
 // FEATURED PROJECTS
 // ============================================================
+export interface ProjectMetric {
+  value: string;
+  label: string;
+}
+
 export interface FeaturedProject {
+  slug: string;
   title: string;
+  tagline?: string;          // one-line hook shown on the card
   type: string;
   client: string;
   role: string;
   year?: string;
   website?: string;
+  status?: "Live" | "In Development" | "Archived";
+  flagship?: boolean;        // rendered as a large hero card
+  emoji?: string;
   overview: string;
   problem?: string;
   solution?: string;
   impact?: string[];
+  metrics?: ProjectMetric[]; // headline numbers shown on flagship cards
+  features?: string[];       // bullet list of what it does
   technologies: string[];
 }
 
 export const FEATURED_PROJECTS: FeaturedProject[] = [
+  // ---------- FLAGSHIP PRODUCTS (owned end-to-end) ----------
   {
+    slug: "plantoday",
+    title: "PlanToday.in",
+    tagline: "India's AI-powered wedding & event vendor marketplace",
+    type: "Marketplace · SaaS",
+    client: "Own Product",
+    role: "Founder & Lead Engineer",
+    year: "2026",
+    website: "https://plantoday.in/",
+    status: "Live",
+    flagship: true,
+    emoji: "\ud83d\udc8d",
+    overview:
+      "PlanToday.in is a hyperlocal, AI-powered discovery and lead marketplace for weddings and events across India. Couples and event hosts describe what they need in plain English or Hinglish \u2014 \u201cwedding photographer in Noida under 50k\u201d \u2014 and an NLP intent parser turns that into a structured, budget-aware vendor search. Vendors get a self-serve profile, a lead inbox, and a token wallet they spend to unlock enquiries.",
+    problem:
+      "Wedding and event planning in India is fragmented across WhatsApp groups, Instagram DMs and word of mouth. Hosts cannot compare vendors on price, and vendors have no predictable, measurable lead channel.",
+    solution:
+      "A NestJS + MySQL marketplace with an NLP search layer, a budget-allocation event planner, hyperlocal city/locality scoping, a vendor lead CRM, a token-credit economy, and programmatic SEO pages generated per city \u00d7 service combination.",
+    metrics: [
+      { value: "1 Lakh+", label: "Vendor Listings" },
+      { value: "500+", label: "Cities Covered" },
+      { value: "13", label: "Backend Modules" },
+      { value: "Hinglish", label: "NLP Search" },
+    ],
+    features: [
+      "NLP intent search \u2014 parses event type, service, budget (\u20b92L / 50k / 2 lakh), guest count and location from free-text English or Hinglish queries",
+      "AI event plan generator \u2014 splits a budget across venue, catering, decor, photography and makeup, then recommends vendors that fit each slice",
+      "Vendor dashboard \u2014 lead inbox with quality scoring, profile completeness score, deals, event posts and a dynamic enquiry form builder",
+      "Token economy \u2014 vendors hold a wallet, spend credits to unlock leads, and request top-ups approved by admin",
+      "Programmatic SEO \u2014 auto-generated landing pages per city \u00d7 service (/photography-noida) with per-page metadata and Schema.org JSON-LD",
+      "Phone OTP auth with bcrypt-hashed codes and JWT sessions across user / vendor / admin roles",
+    ],
+    impact: [
+      "One platform replacing WhatsApp-and-Instagram vendor hunting",
+      "Vendors get measurable, scored leads instead of cold enquiries",
+      "Programmatic SEO surface across 500+ cities and every service category",
+    ],
+    technologies: [
+      "Next.js", "React", "TypeScript", "NestJS", "TypeORM", "MySQL", "Redis",
+      "BullMQ", "Zustand", "React Query", "Tailwind CSS", "Docker", "Razorpay", "JWT + OTP",
+    ],
+  },
+  {
+    slug: "trendmetoday",
+    title: "TrendMeToday.com",
+    tagline: "Real-time trend intelligence \u2014 what India is talking about, and why",
+    type: "AI Product · Data Platform",
+    client: "Own Product",
+    role: "Founder & Lead Engineer",
+    year: "2026",
+    website: "https://trendmetoday.com/",
+    status: "Live",
+    flagship: true,
+    emoji: "\ud83d\udd25",
+    overview:
+      "TrendMeToday tracks what India is actually talking about and scores it. An ingestion pipeline reads publisher RSS every ~15 minutes, clusters related coverage into a single story, and computes a 0\u2013100 heat score from how many outlets are covering it, how fast they are publishing, and whether that momentum is rising or cooling. Every number on the site is measured, and every claim links back to the named outlet that reported it.",
+    problem:
+      "News feeds are chronological, not important. Readers cannot tell whether a story is genuinely gathering momentum or is a single outlet repeating itself \u2014 and AI answer engines have no citable, structured source for \u201cis X trending, and who reported it\u201d.",
+    solution:
+      "A Python/FastAPI ingestion and read service that clusters RSS coverage into stories, scores momentum, and serves a server-rendered Next.js frontend over an encrypted loopback channel \u2014 built so that server-rendered HTML plus JSON-LD is fully citable by AI engines that do not execute JavaScript.",
+    metrics: [
+      { value: "~15 min", label: "Ingest Cadence" },
+      { value: "0\u2013100", label: "Heat Score" },
+      { value: "5", label: "Tracked Verticals" },
+      { value: "100%", label: "Sourced Claims" },
+    ],
+    features: [
+      "Heat scoring engine \u2014 ranks stories 0\u2013100 from outlet coverage volume, publishing velocity and momentum direction",
+      "Trend clustering \u2014 groups independent articles about the same story into one tracked trend with a generated canonical title",
+      "Live Wire feed \u2014 rolling activity stream across every tracked trend, refreshed on a ~15-minute ingestion tick",
+      "Source transparency \u2014 every trend lists the outlets reporting it; nothing is invented and nothing is copied",
+      "Built for SEO + GEO + AEO \u2014 server-rendered content, clean Schema.org JSON-LD and snippet-ready standalone facts that AI answer engines can cite",
+      "Verticals for India, Entertainment, Sports, Money and Tech, each with its own ranked feed",
+    ],
+    impact: [
+      "Momentum-ranked view of the news instead of a chronological firehose",
+      "Every published number traceable to a measurement, every claim to a named source",
+      "Architected so AI answer engines can cite it without executing JavaScript",
+    ],
+    technologies: [
+      "Next.js", "React", "TypeScript", "Python", "FastAPI", "MySQL", "Redis",
+      "APScheduler", "OpenAI", "Groq", "RSS Ingestion", "Redux Toolkit", "Tailwind CSS", "PM2",
+    ],
+  },
+  // ---------- CLIENT & ENTERPRISE WORK ----------
+  {
+    slug: "ai-podcast-platform",
+    emoji: "\ud83c\udf99\ufe0f",
     title: "AI Podcast Generation Platform",
     type: "AI Editorial Tool",
     client: "Enterprise Media",
@@ -894,6 +1009,8 @@ export const FEATURED_PROJECTS: FeaturedProject[] = [
     technologies: ["React.js", "Node.js", "OpenAI", "ElevenLabs", "AI Embeddings", "REST APIs"],
   },
   {
+    slug: "election-automation",
+    emoji: "\ud83d\uddf3\ufe0f",
     title: "Election Results Automation Platform",
     type: "Real-time Data Processing",
     client: "Enterprise Media",
@@ -906,6 +1023,8 @@ export const FEATURED_PROJECTS: FeaturedProject[] = [
     technologies: ["Node.js", "React.js", "MySQL", "WebSocket", "Redis", "Microservices"],
   },
   {
+    slug: "think4buysale",
+    emoji: "\ud83c\udfe0",
     title: "Think4BuySale Real Estate Platform",
     type: "Property Marketplace",
     client: "Freelance Project",
@@ -917,6 +1036,8 @@ export const FEATURED_PROJECTS: FeaturedProject[] = [
     technologies: ["React.js", "Node.js", "MongoDB", "Next.js", "REST APIs"],
   },
   {
+    slug: "vtechxhub",
+    emoji: "\u270d\ufe0f",
     title: "VTechXHub Content Platform",
     type: "Content Publishing & SEO",
     client: "Own Product",
@@ -928,6 +1049,8 @@ export const FEATURED_PROJECTS: FeaturedProject[] = [
     technologies: ["React.js", "Node.js", "MongoDB", "SEO Tools", "CMS Architecture"],
   },
   {
+    slug: "video-communication",
+    emoji: "\ud83c\udfa5",
     title: "Video Communication Platform",
     type: "Real-time Communication",
     client: "Humanize (Enterprise SaaS)",
@@ -937,6 +1060,8 @@ export const FEATURED_PROJECTS: FeaturedProject[] = [
     technologies: ["WebRTC", "React.js", "Node.js", "Socket.io", "Real-time Communication"],
   },
   {
+    slug: "customer-experience",
+    emoji: "\ud83c\udfaf",
     title: "Customer Experience Platform",
     type: "Marketing Engagement",
     client: "Ceekr (Enterprise SaaS)",
@@ -946,6 +1071,8 @@ export const FEATURED_PROJECTS: FeaturedProject[] = [
     technologies: ["React.js", "Node.js", "Analytics Tools", "AWS"],
   },
   {
+    slug: "data-analytics",
+    emoji: "\ud83d\udcca",
     title: "Data Analytics Platform",
     type: "Business Intelligence",
     client: "Synqy Corporation",
@@ -955,6 +1082,8 @@ export const FEATURED_PROJECTS: FeaturedProject[] = [
     technologies: ["Node.js", "React.js", "D3.js", "Data Visualization", "Analytics APIs"],
   },
   {
+    slug: "news-publishing-automation",
+    emoji: "\ud83d\udcf0",
     title: "News Publishing Automation",
     type: "Editorial Workflow",
     client: "Enterprise Media",
@@ -964,6 +1093,8 @@ export const FEATURED_PROJECTS: FeaturedProject[] = [
     technologies: ["Node.js", "React.js", "MySQL", "CMS APIs", "Microservices", "Open API", "LLM Tools"],
   },
   {
+    slug: "food-safety-compliance",
+    emoji: "\ud83c\udf7d\ufe0f",
     title: "Food Safety Compliance Tool",
     type: "Compliance System",
     client: "Internal Enterprise Tool",
@@ -973,3 +1104,16 @@ export const FEATURED_PROJECTS: FeaturedProject[] = [
     technologies: ["PHP", "MySQL", "jQuery", "Reporting Tools"],
   },
 ];
+
+// Helper: flagship products owned end-to-end
+export const getFlagshipProjects = () => FEATURED_PROJECTS.filter((p) => p.flagship);
+
+// Helper: everything that isn't a flagship product
+export const getOtherProjects = () => FEATURED_PROJECTS.filter((p) => !p.flagship);
+
+// Helper: unique project types, for the filter chips
+export const getProjectTypes = () =>
+  Array.from(new Set(FEATURED_PROJECTS.map((p) => p.type)));
+
+// Helper: single project by slug
+export const getProject = (slug: string) => FEATURED_PROJECTS.find((p) => p.slug === slug);

@@ -146,12 +146,12 @@ const CaseStudies = () => {
   return (
     <section className="relative not-prose scroll-mt-[72px] py-10 md:py-14 bg-slate-50/60" id="case-studies">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <header className="section-header section-header-center text-center mb-8">
-          <p className="text-xs font-bold uppercase tracking-widest text-blue-500 mb-1">Deep Dives</p>
-          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">
+        <header className="section-header section-header-center text-center">
+          <p className="section-eyebrow">Deep Dives</p>
+          <h2 className="section-title font-display">
             Engineering Case Studies
           </h2>
-          <p className="text-sm text-slate-500 mt-2 max-w-lg mx-auto">
+          <p className="section-sub">
             How I solve real engineering challenges — the decisions, trade-offs, and results.
           </p>
         </header>

@@ -80,11 +80,11 @@ const Skills = () => {
   const sectionRef = useScrollRevealChildren<HTMLDivElement>();
 
   return (
-    <section className="relative not-prose scroll-mt-[72px] py-10 md:py-10" id="skills">
+    <section className="relative not-prose scroll-mt-[72px] section-pad" id="skills">
       <div className="max-w-6xl mx-auto px-5 sm:px-8">
-        <header className="section-header mb-6">
-          <p className="text-xs font-bold uppercase tracking-widest text-blue-500 mb-1">What I Work With</p>
-          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">
+        <header className="section-header">
+          <p className="section-eyebrow">What I Work With</p>
+          <h2 className="section-title font-display">
             Technical Skills
           </h2>
         </header>

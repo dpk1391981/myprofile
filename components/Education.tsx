@@ -11,12 +11,12 @@ const Education = () => {
   const certs = EDUCATION.filter((e) => e.type === "certification");
 
   return (
-    <section className="relative not-prose scroll-mt-[72px] py-10 md:py-10" id="education">
+    <section className="relative not-prose scroll-mt-[72px] section-pad" id="education">
       <div className="edu-bg-pattern" aria-hidden="true" />
       <div className="relative max-w-6xl mx-auto px-5 sm:px-8" ref={sectionRef}>
-        <header className="section-header section-header-center text-center mb-8">
-          <p className="text-xs font-bold uppercase tracking-widest text-blue-500 mb-1">Academic Background</p>
-          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">
+        <header className="section-header section-header-center text-center">
+          <p className="section-eyebrow">Academic Background</p>
+          <h2 className="section-title font-display">
             Education &amp; Certifications
           </h2>
         </header>

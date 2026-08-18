@@ -13,20 +13,20 @@ const FAQ = () => {
   return (
     <section
       ref={sectionRef}
-      className="animate-on-scroll relative not-prose scroll-mt-[72px] py-16 md:py-20"
+      className="animate-on-scroll relative not-prose scroll-mt-[72px] section-pad"
       id="faq"
       aria-label="Frequently Asked Questions"
     >
       <div className="max-w-3xl mx-auto px-5 sm:px-8">
         {/* Header */}
-        <header className="section-header section-header-center text-center mb-10">
-          <p className="text-xs font-bold uppercase tracking-widest text-blue-500 mb-2">
+        <header className="section-header section-header-center text-center">
+          <p className="section-eyebrow">
             Frequently Asked Questions
           </p>
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">
+          <h2 className="section-title font-display">
             What Recruiters Ask
           </h2>
-          <p className="text-sm text-slate-500 mt-3 max-w-lg mx-auto">
+          <p className="section-sub">
             Quick answers about my experience, stack, and availability.
           </p>
         </header>

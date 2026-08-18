@@ -18,12 +18,14 @@ import {
   IconMessageStar,
   IconChevronRight,
   IconArticle,
+  IconStack2,
 } from "@tabler/icons-react";
 
 const ICON_MAP: Record<string, React.ReactNode> = {
   "/": <IconHome2 size={20} />,
   "/about": <IconUserScan size={20} />,
   "/experience": <IconBuildingBank size={20} />,
+  "/projects": <IconStack2 size={20} />,
   "/education": <IconBallpen size={20} />,
   "/skills": <IconChartBubble size={20} />,
   "/reviews": <IconMessageStar size={20} />,

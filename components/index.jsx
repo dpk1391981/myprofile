@@ -5,6 +5,7 @@ export { default as Skills } from "./Skills";
 export { default as ArchDiagram } from "./ArchDiagram";
 export { default as AIPlayground } from "./AIPlayground";
 export { default as CaseStudies } from "./CaseStudies";
+export { default as Projects } from "./Projects";
 export { default as BuildWithMe } from "./BuildWithMe";
 export { default as Review } from "./Review";
 export { default as FAQ } from "./FAQ";

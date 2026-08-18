@@ -281,11 +281,11 @@ const ExperienceEntry = ({ exp }: { exp: ExperienceItem }) => {
 /* ---- Experience Section ---- */
 const Experience = () => {
   return (
-    <section className="relative not-prose scroll-mt-[72px] py-16 md:py-10" id="experience">
+    <section className="relative not-prose scroll-mt-[72px] section-pad" id="experience">
       <div className="max-w-4xl mx-auto px-5 sm:px-8">
         <header className="section-header mb-12">
-          <p className="text-xs font-bold uppercase tracking-widest text-blue-500 mb-2">Career Journey</p>
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">
+          <p className="section-eyebrow">Career Journey</p>
+          <h2 className="section-title font-display">
             Technical Experience
           </h2>
         </header>
