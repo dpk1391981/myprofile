@@ -1,14 +1,2 @@
-export { default as About } from "./About";
-export { default as Experience } from "./Experience";
-export { default as Education } from "./Education";
-export { default as Skills } from "./Skills";
-export { default as ArchDiagram } from "./ArchDiagram";
-export { default as AIPlayground } from "./AIPlayground";
-export { default as CaseStudies } from "./CaseStudies";
-export { default as Projects } from "./Projects";
-export { default as BuildWithMe } from "./BuildWithMe";
-export { default as Review } from "./Review";
-export { default as FAQ } from "./FAQ";
 export { default as Nav } from "./Nav";
 export { default as Footer } from "./Footer";
-export { default as ContactModal } from "./modals/ContactModal";

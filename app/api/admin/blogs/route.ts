@@ -1,8 +1,21 @@
+/**
+ * Admin blog list + create.
+ *
+ * This route is now a thin authenticated proxy in front of the content API on
+ * the agent service — the posts themselves live in MySQL (`portfolio_blogs`) on
+ * that host, which this app cannot reach directly from Vercel.
+ *
+ * Two separate credentials are in play and they are not interchangeable:
+ *   - the `admin_token` cookie authenticates the human using the admin UI;
+ *   - `PORTFOLIO_API_KEY` (held server-side, injected by portfolio-api.ts)
+ *     authenticates this service to the content API.
+ * The cookie is checked FIRST, so a caller without a valid admin session can
+ * never borrow this route's API key to reach the upstream write endpoints.
+ */
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/admin-auth";
-import { connectToDB } from "@/utils/database";
-import Blog from "@/models/Blog";
+import { adminListPosts, adminCreatePost } from "@/components/utils/portfolio-api";
 
 function requireAuth() {
   const token = cookies().get("admin_token")?.value;
@@ -16,9 +29,13 @@ export async function GET() {
   const authError = requireAuth();
   if (authError) return authError;
 
-  await connectToDB();
-  const blogs = await Blog.find({}).sort({ createdAt: -1 }).lean();
-  return NextResponse.json({ blogs });
+  try {
+    const { posts, total } = await adminListPosts();
+    // `blogs` keeps the key the existing admin UI already reads.
+    return NextResponse.json({ blogs: posts, total });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 502 });
+  }
 }
 
 export async function POST(req: Request) {
@@ -27,29 +44,13 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json();
-    await connectToDB();
-
-    // Auto-generate slug if not provided
-    if (!body.slug && body.title) {
-      body.slug = body.title
-        .toLowerCase()
-        .replace(/[^\w\s-]/g, "")
-        .replace(/[\s_]+/g, "-")
-        .replace(/^-+|-+$/g, "");
-    }
-
-    // Auto-set date if missing
-    if (!body.date) {
-      body.date = new Date().toISOString().split("T")[0];
-    }
-
-    const blog = new Blog(body);
-    await blog.save();
-    return NextResponse.json({ blog }, { status: 201 });
+    // Slug and date defaults are applied upstream, so they are not duplicated
+    // here — one place deciding them keeps the two paths from disagreeing.
+    const { post } = await adminCreatePost(body);
+    return NextResponse.json({ blog: post }, { status: 201 });
   } catch (err: any) {
-    if (err.code === 11000) {
-      return NextResponse.json({ error: "Slug already exists" }, { status: 409 });
-    }
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    const msg = String(err.message || "");
+    const status = msg.includes("422") ? 422 : msg.includes("409") ? 409 : 502;
+    return NextResponse.json({ error: msg }, { status });
   }
 }

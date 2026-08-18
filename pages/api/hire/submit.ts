@@ -1,5 +1,4 @@
-import Enquery from "@/models/hire";
-import { connectToDB, disconnectDB } from "@/utils/database";
+import { submitContact } from "@/components/utils/portfolio-api";
 import MailChecker from "mailchecker"
 import nodemailer from "nodemailer"; 
 import { NextApiRequest, NextApiResponse } from "next";
@@ -160,60 +159,66 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ msg: 'Method Not Allowed', data: null });
   }
 
-  let dbConnection: any;
-
   try {
-    // Step 1: Connect to the database
-    dbConnection = await connectToDB();
-
-    // Step 2: Destructure and validate the request body
-    const { email, subject, message, organisation } = req.body;
+    // Step 1: Destructure and validate the request body
+    const { email, subject, message, organisation, name, phone, company } = req.body;
 
     if (!email || !subject || !message) {
       return res.status(400).json({ msg: 'Missing required fields', data: null });
     }
 
-    // Step 3: Validate the email format
+    // Step 2: Validate the email format
     if (!MailChecker.isValid(email)) {
       return res.status(400).json({ msg: 'Invalid email', data: null });
     }
 
-    // Step 4: Send the email asynchronously
-    const emailPromise = sendEmail({ email, subject, message, organisation });
-    const smsPromise =  sendSMS({ 
-      email, 
-      organisation, 
-      subject, 
-      message 
+    // Step 3: PERSIST FIRST, THEN NOTIFY.
+    //
+    // The enquiry is written to MySQL (`portfolio_contact`, via the content
+    // API) and awaited on its own before any mail or SMS is attempted. This
+    // ordering is the whole point: SMTP and Twilio are the least reliable links
+    // in the chain, and a bounced connection must never mean somebody's message
+    // is lost. The row is the record; the email and SMS are only notifications.
+    //
+    // Previously all three ran together under Promise.allSettled, so a save
+    // that failed still counted as a partial success and the sender saw an
+    // error for a message that may well have been delivered by mail anyway.
+    const saved = await submitContact({
+      name:         name || organisation || "",
+      email,
+      organisation: organisation || "",
+      phone:        phone || "",
+      subject,
+      message,
+      pageUrl:      (req.headers.referer as string) || "",
+      source:       "hire-form",
+      company:      company || "",   // honeypot — passed through untouched
     });
 
-    // Step 5: Save the form data to MongoDB
-    const formData = new Enquery({ email, subject, message, organisation });
-    const savePromise = formData.save();
-
-    // Step 6: Wait for both operations to complete
-    const [emailResult, saveResult, smsResult] = await Promise.allSettled([emailPromise, savePromise, smsPromise]);
-
-    // Log the results for debugging
-    console.log('Email Result:', emailResult);
-    console.log('Save Result:', saveResult);
-    console.log(`SMS Result:`,smsResult)
-
-    if (saveResult.status === 'fulfilled') {
-      console.log(`Form data saved successfully:`, formData);
-      return res.status(200).json({ msg: 'Data saved!', data: formData });
-    } else {
-      throw new Error('Failed to save form data');
+    if (!saved?.ok) {
+      // Upstream validation rejected it; hand the field errors back verbatim.
+      return res.status(422).json({ msg: 'Validation failed', data: saved?.errors ?? null });
     }
+
+    // Step 4: Notify. Failures here are logged, never surfaced — the enquiry is
+    // already safely stored, so the sender's outcome does not depend on them.
+    //
+    // NOTE: the content API can send its own plain-text notification when
+    // PORTFOLIO_NOTIFY_EMAIL is set on the agent service. Leave that unset in
+    // production so this richer HTML mail is the only one that goes out;
+    // setting both means two emails per enquiry.
+    const [emailResult, smsResult] = await Promise.allSettled([
+      sendEmail({ email, subject, message, organisation }),
+      sendSMS({ email, organisation, subject, message }),
+    ]);
+
+    if (emailResult.status === 'rejected') console.error('Email failed:', emailResult.reason);
+    if (smsResult.status === 'rejected')   console.error('SMS failed:', smsResult.reason);
+
+    return res.status(200).json({ msg: 'Data saved!', data: { id: saved.id } });
   } catch (error) {
     console.error('Error while processing the request:', error);
     return res.status(500).json({ msg: 'Internal Server Error', data: null });
-  } finally {
-    // Step 7: Disconnect from the database
-    if (dbConnection) {
-      await disconnectDB();
-      console.log('Database connection closed');
-    }
   }
 }
 

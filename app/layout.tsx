@@ -1,48 +1,36 @@
 import type { Metadata, Viewport } from "next";
-import { Outfit, DM_Sans } from "next/font/google";
 import "./globals.css";
-import "../styles/portfolio.css";
-import { Footer, Nav, ContactModal } from "@/components";
+import "../styles/broadsheet.css";
+import { Footer, Nav } from "@/components";
 import { Analytics } from "@vercel/analytics/react";
 import Script from "next/script";
 import { NEXT_SEO_DEFAULT, STRUCT_DATA } from "@/app/seo_config";
-import { Suspense } from "react";
-import Loader from "@/components/ui/Loader";
+import ThemeScript from "@/components/bs/ThemeScript";
 
-// ---- Fonts — pin specific weights, force normal style ----
-const outfit = Outfit({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  style: "normal",
-  variable: "--font-display",
-  display: "swap",
-  adjustFontFallback: true,
-  preload: true,
-});
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  style: "normal",
-  variable: "--font-body",
-  display: "swap",
-  adjustFontFallback: true,
-  preload: true,
-});
-
-// ---- SEO Metadata ----
 export const metadata: Metadata = NEXT_SEO_DEFAULT;
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f3f2f2" },
+    { media: "(prefers-color-scheme: dark)", color: "#171615" },
+  ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${outfit.variable} ${dmSans.variable}`}>
+    <html lang="en">
       <head>
+        {/* Source Serif 4 — the whole system is set in it, roman and italic */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap"
+          rel="stylesheet"
+        />
+        <ThemeScript />
         <script
           key="profile-struct-1"
           type="application/ld+json"
@@ -50,7 +38,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
 
-      {/* Google AdSense */}
       {process.env.NEXT_PUBLIC_ADSENSE_PUB_ID && (
         <Script
           async
@@ -60,7 +47,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       )}
 
-      {/* Google Analytics */}
       <Script
         async
         src="https://www.googletagmanager.com/gtag/js?id=G-YXZRZVFV9F"
@@ -75,15 +61,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         `}
       </Script>
 
-      <body className={`${dmSans.className} antialiased text-default bg-page tracking-tight portfolio-page`}>
-        <ContactModal />
+      <body className="bs-body">
+        <a href="#main" className="bs-skip">Skip to content</a>
         <Nav />
-
-        {/* ✅ Fallback Loader */}
-        <Suspense fallback={<Loader />}>
-          {children}
-        </Suspense>
-
+        <main id="main">{children}</main>
         <Footer />
         <Analytics />
       </body>

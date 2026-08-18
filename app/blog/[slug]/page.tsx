@@ -3,9 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BLOG_POSTS, getBlogPost, PERSONAL_INFO } from "@/components/utils/portfolio-data";
 import { IconArrowLeft, IconClock, IconBrandTwitter, IconBrandLinkedin, IconBrandWhatsapp } from "@tabler/icons-react";
-import { connectToDB } from "@/utils/database";
-import BlogModel from "@/models/Blog";
-import SeoConfig from "@/models/SeoConfig";
+import { getPost as apiGetPost, getSeoConfig } from "@/components/utils/portfolio-api";
 import AdSlot from "@/components/blog/AdSlot";
 import ReadingProgress from "@/components/blog/ReadingProgress";
 
@@ -38,63 +36,66 @@ function splitAtMidParagraph(html: string): [string, string] {
   }
   return [first.join(""), second.join("")];
 }
-const SITE_URL     = process.env.NEXT_PUBLIC_WEB_SITE || "https://officialdeepak.in";
+const SITE_URL     = (process.env.NEXT_PUBLIC_WEB_SITE || "https://officialdeepak.in").replace(/\/+$/, "");
 
 // ── Helpers ───────────────────────────────────────────────────────────────
 
+// The API is the primary source; the hand-written BLOG_POSTS in
+// portfolio-data remain the fallback so the older essays keep their URLs and
+// the page still renders if the agent service is unreachable.
 async function getPost(slug: string) {
-  try {
-    await connectToDB();
-    const p = await BlogModel.findOne({ slug, status: "published" }).lean() as any;
-    if (p) return {
+  const result = await apiGetPost(slug);
+  if (result?.post) {
+    const p = result.post;
+    return {
       _fromDb:        true,
       slug:           p.slug,
       title:          p.title,
       description:    p.description,
-      date:           p.date || new Date(p.createdAt).toISOString().split("T")[0],
-      updatedAt:      new Date(p.updatedAt || p.createdAt).toISOString(),
+      date:           (p.date || p.publishedAt || "").slice(0, 10),
+      updatedAt:      p.updatedAt || p.publishedAt || p.date || "",
       readTime:       p.readTime,
-      tags:           p.tags as string[],
+      tags:           p.tags ?? [],
       coverEmoji:     p.coverEmoji,
-      featured:       !!p.featured,
-      content:        p.content,
+      featured:       p.featured,
+      content:        p.content || "",
       category:       p.category || "",
       // SEO fields
-      seoTitle:       p.seoTitle      || "",
+      seoTitle:       p.seoTitle       || "",
       seoDescription: p.seoDescription || "",
-      focusKeyword:   p.focusKeyword  || "",
-      seoKeywords:    (p.seoKeywords  || []) as string[],
-      ogImage:        p.ogImage       || "",
-      canonicalUrl:   p.canonicalUrl  || "",
-      robots:         p.robots        || "index, follow",
+      focusKeyword:   p.focusKeyword   || "",
+      seoKeywords:    p.seoKeywords    || [],
+      ogImage:        p.ogImage        || "",
+      canonicalUrl:   p.canonicalUrl   || "",
+      robots:         p.robots         || "index, follow",
       noIndex:        !!p.noIndex,
+      // Provenance — rendered as an attribution line under the article.
+      sourceUrl:      p.sourceUrl      || "",
+      sourceTitle:    p.sourceTitle    || "",
+      schemaJsonLd:   p.schemaJsonLd   || null,
+      faq:            p.faq            || [],
+      related:        result.related   || [],
     };
-  } catch {}
+  }
   const sp = getBlogPost(slug);
   if (!sp) return null;
   return { ...sp, _fromDb: false, category: "", updatedAt: sp.date,
     seoTitle: "", seoDescription: "", focusKeyword: "",
-    seoKeywords: [] as string[], ogImage: "", canonicalUrl: "", robots: "index, follow", noIndex: false };
+    seoKeywords: [] as string[], ogImage: "", canonicalUrl: "", robots: "index, follow", noIndex: false,
+    sourceUrl: "", sourceTitle: "", schemaJsonLd: null, faq: [] as any[], related: [] as any[] };
 }
 
 async function getDefaults() {
-  try {
-    await connectToDB();
-    return await SeoConfig.findOne({ key: "blog-defaults" }).lean() as any;
-  } catch { return null; }
+  return getSeoConfig("blog-defaults");
 }
 
-async function getRelated(slug: string, tags: string[]) {
-  const all: any[] = [];
-  try {
-    await connectToDB();
-    const rows = await BlogModel.find({ slug: { $ne: slug }, tags: { $in: tags }, status: "published" })
-      .limit(4).lean() as any[];
-    all.push(...rows.map((p: any) => ({
-      slug: p.slug, title: p.title, coverEmoji: p.coverEmoji,
-      date: p.date || new Date(p.createdAt).toISOString().split("T")[0], readTime: p.readTime,
-    })));
-  } catch {}
+// `apiRelated` is what the single-post endpoint already returned alongside the
+// article — reusing it avoids a second round trip just to fill this rail.
+async function getRelated(slug: string, tags: string[], apiRelated: any[] = []) {
+  const all: any[] = apiRelated.slice(0, 4).map((p: any) => ({
+    slug: p.slug, title: p.title, coverEmoji: p.coverEmoji,
+    date: (p.date || p.publishedAt || "").slice(0, 10), readTime: p.readTime,
+  }));
   const staticRelated = BLOG_POSTS.filter(
     (p) => p.slug !== slug && p.tags.some((t) => tags.includes(t)) && !all.some((a) => a.slug === p.slug)
   ).slice(0, 4 - all.length);
@@ -160,12 +161,15 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 // ── Page ──────────────────────────────────────────────────────────────────
 
 export default async function BlogPostPage({ params }: { params: { slug: string } }) {
-  const [post, defaults, related] = await Promise.all([
+  // One post fetch, not two: the related rail is derived from the same
+  // response, which already carries its siblings.
+  const [post, defaults] = await Promise.all([
     getPost(params.slug),
     getDefaults(),
-    getPost(params.slug).then((p) => p ? getRelated(p.slug, p.tags) : []),
   ]);
   if (!post) notFound();
+
+  const related = await getRelated(post.slug, post.tags, (post as any).related ?? []);
 
   const titleSuffix = defaults?.titleSuffix || ` | ${PERSONAL_INFO.fullName}`;
   const postUrl     = `${SITE_URL}/blog/${post.slug}`;
@@ -226,7 +230,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
   };
 
   return (
-    <main className="portfolio-page">
+    <main className="bs-wrap" style={{ paddingTop: 34 }}>
       <ReadingProgress />
       <script type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
@@ -339,6 +343,39 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                   dangerouslySetInnerHTML={{ __html: contentSecond }} />
               </>
             )}
+
+            {/*
+              Source attribution. Articles produced by the content agent are
+              written from a specific fetched source and are fact-checked against
+              it before publishing; naming that source is the honest half of that
+              arrangement, and it is what lets a reader verify a claim rather
+              than take it on trust. Only rendered when a source actually exists,
+              so hand-written essays are unaffected.
+            */}
+            {(post as any).sourceUrl ? (
+              <p className="bs-small bs-quiet bs-mt-4" style={{ paddingTop: 18, borderTop: "1px solid var(--hair)" }}>
+                Reported from{" "}
+                <a href={(post as any).sourceUrl} target="_blank" rel="noopener noreferrer nofollow" className="bs-link-plain" style={{ textDecoration: "underline" }}>
+                  {(post as any).sourceTitle || (post as any).sourceUrl}
+                </a>
+                . Analysis and opinions are my own.
+              </p>
+            ) : null}
+
+            {/* FAQ — also emitted as FAQPage structured data by the agent. */}
+            {((post as any).faq?.length ?? 0) > 0 ? (
+              <section className="bs-mt-5">
+                <p className="bs-list-head">Frequently asked</p>
+                <div className="bs-mt-3" style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+                  {(post as any).faq.map((f: { question: string; answer: string }) => (
+                    <div key={f.question}>
+                      <p style={{ fontWeight: 600, fontSize: 16 }}>{f.question}</p>
+                      <p className="bs-quiet bs-mt-1" style={{ fontSize: 15, lineHeight: 1.65 }}>{f.answer}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            ) : null}
 
             {/*
               ── Ad Slot: End of Article ──────────────────────────────────

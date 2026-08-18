@@ -1,21 +1,77 @@
-import { Education } from "@/components";
-import type { Metadata } from "next";
-import { NEXT_SEO_DEFAULT } from "../seo_config";
+import PageHeader from "@/components/bs/PageHeader";
+import Jsonld from "@/components/bs/Jsonld";
+import Credentials from "@/components/sections/Credentials";
+import HireCta from "@/components/sections/HireCta";
+import SectionHead from "@/components/sections/SectionHead";
+import { breadcrumbLd, pageMeta } from "@/components/utils/seo";
 
-const EducationMeta = {
-  ...NEXT_SEO_DEFAULT,
-  ...{
-    title: "Deepak Kumar | Education & Academic Qualifications",
-    description:
-      "Discover the educational background of Deepak Kumar, an accomplished software engineer with expertise in JavaScript, Full Stack Development, and modern web technologies. Learn how his degrees from Jain University and Delhi University, combined with his passion for continuous learning, have shaped his journey in software engineering and innovation.",
-  },
-};
-export const metadata: Metadata = EducationMeta;
+export const metadata = pageMeta({
+  title: "Education & Certifications | Deepak Kumar — PGDCA (AI/ML), AWS Certified",
+  description:
+    "The academic and professional credentials of Deepak Kumar — Post Graduate Computer Application in Artificial Intelligence & Machine Learning, a Bachelor of Commerce from the University of Delhi, a Junior Engineering diploma in Computer Science, AWS Certified Solutions Architect Associate (SAA-C03) and MERN Stack certification.",
+  path: "/education",
+  keywords: [
+    "Deepak Kumar education",
+    "AWS certified solutions architect India",
+    "AI ML postgraduate India",
+    "Delhi University software engineer",
+    "certified React developer India",
+  ],
+});
 
-export default function Home() {
+export default function EducationPage() {
   return (
     <>
-      <Education />
+      <Jsonld
+        data={breadcrumbLd([
+          { name: "Home", path: "/" },
+          { name: "Education", path: "/education" },
+        ])}
+      />
+
+      <PageHeader
+        crumbs={[{ label: "Home", href: "/" }, { label: "Education" }]}
+        dateline={["Credentials", "Delhi, India", "AWS Certified SA Associate"]}
+        kicker="Education & certification"
+        title="Degrees, diplomas and the certifications that stuck."
+        lede="A commerce degree, a computer science diploma and a postgraduate qualification in AI and machine learning — plus the AWS certification I use most days."
+      />
+
+      <Credentials />
+
+      <section className="bs-wrap bs-section" id="continuing">
+        <SectionHead
+          kicker="Since graduating"
+          title="What I have learned on the job."
+        />
+        <div className="bs-cols bs-mt-5">
+          <div>
+            <h3 className="bs-h4">Generative AI in production</h3>
+            <p className="bs-quiet bs-mt-2" style={{ fontSize: 15, lineHeight: 1.7 }}>
+              The postgraduate work in AI and ML gave me the vocabulary; India Today gave me the
+              production constraints. Retrieval-augmented generation, embedding pipelines and
+              evaluation are things I learned by shipping them to readers.
+            </p>
+          </div>
+          <div>
+            <h3 className="bs-h4">Cloud architecture</h3>
+            <p className="bs-quiet bs-mt-2" style={{ fontSize: 15, lineHeight: 1.7 }}>
+              The AWS Solutions Architect Associate certification (SAA-C03, 2023) formalised what
+              four years of serverless work at SYNQY had already taught me about cost, availability
+              and the difference between the two.
+            </p>
+          </div>
+          <div>
+            <h3 className="bs-h4">Mentoring</h3>
+            <p className="bs-quiet bs-mt-2" style={{ fontSize: 15, lineHeight: 1.7 }}>
+              Running reviews with junior engineers on performance, accessibility and secure
+              development — the fastest way I know to find the gaps in your own understanding.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <HireCta />
     </>
   );
 }

@@ -1,8 +1,20 @@
+/**
+ * Admin page-SEO config.
+ *
+ * Authenticated proxy in front of the content API's /portfolio/seo routes.
+ *
+ * Note the GET here fetches only the keys the site actually uses, because the
+ * upstream API exposes SEO config per key rather than as a collection. That is
+ * deliberate: the set of configurable pages is a property of this front end,
+ * not of the content service, so it is listed here where it can be seen.
+ */
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/admin-auth";
-import { connectToDB } from "@/utils/database";
-import SeoConfig from "@/models/SeoConfig";
+import { getSeoConfig, adminUpsertSeo } from "@/components/utils/portfolio-api";
+
+/** Page keys the admin UI can configure. */
+const SEO_KEYS = ["blog-index", "blog-defaults"] as const;
 
 function requireAuth() {
   const token = cookies().get("admin_token")?.value;
@@ -12,17 +24,21 @@ function requireAuth() {
   return null;
 }
 
-// GET all SEO configs
 export async function GET() {
   const authError = requireAuth();
   if (authError) return authError;
 
-  await connectToDB();
-  const configs = await SeoConfig.find({}).lean();
-  return NextResponse.json({ configs });
+  try {
+    const results = await Promise.all(SEO_KEYS.map((k) => getSeoConfig(k)));
+    // An unconfigured key yields null upstream; surface it as a bare row so the
+    // admin form has something to render and edit.
+    const configs = SEO_KEYS.map((key, i) => results[i] ?? { key });
+    return NextResponse.json({ configs });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 502 });
+  }
 }
 
-// POST — upsert a config by key
 export async function POST(req: Request) {
   const authError = requireAuth();
   if (authError) return authError;
@@ -35,15 +51,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "key is required" }, { status: 400 });
     }
 
-    await connectToDB();
-    const config = await SeoConfig.findOneAndUpdate(
-      { key },
-      { ...data, key },
-      { upsert: true, new: true }
-    );
-
+    const { config } = await adminUpsertSeo(key, data);
     return NextResponse.json({ config });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: err.message }, { status: 502 });
   }
 }

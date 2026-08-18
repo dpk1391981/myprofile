@@ -4,13 +4,15 @@ import { FAQS } from "@/components/utils/portfolio-data";
 import crypto from "crypto";
 
 const GLOBAL_EMAIL = process.env.NEXT_PUBLIC_EMAIL_ID || "";
-const SITE_URL = process.env.NEXT_PUBLIC_WEB_SITE || "https://officialdeepak.in";
+const SITE_URL = (process.env.NEXT_PUBLIC_WEB_SITE || "https://officialdeepak.in").replace(/\/+$/, "");
 
 const yearsExp = totalExperianceYears();
 
-const description = `Deepak Kumar — Sr Software Engineer with ${yearsExp} of experience building scalable web applications, AI-powered tools, and enterprise platforms. Expert in React.js, Node.js, Next.js, MongoDB, TypeScript, OpenAI, LangChain. Currently at India Today Group building Generative AI solutions. Based in Delhi, India.`;
+const description = `Deepak Kumar is a senior software engineer and AI engineer in India with ${yearsExp} building scalable web applications, Generative AI products and enterprise platforms — React.js, Next.js, Node.js, TypeScript, MongoDB, AWS, OpenAI and LangChain. Currently at India Today Group (Aaj Tak) in New Delhi, running four products of his own. Available for senior roles and contract work, Delhi NCR or fully remote.`;
 
-const title = "Deepak Kumar | Sr Software Engineer — React, Node.js, AI/ML, Full Stack Developer";
+// The home page targets the broad, high-intent terms — a specific technology
+// (React, JavaScript, full stack) gets its own landing page instead.
+const title = "Software & AI Engineer in India | Deepak Kumar — Senior Full Stack Developer";
 
 function getGravatarUrl(email: string, size = 120): string {
   if (email) {
@@ -20,13 +22,30 @@ function getGravatarUrl(email: string, size = 120): string {
   return "";
 }
 
-const profileImage = getGravatarUrl(GLOBAL_EMAIL);
+const profileImage = `${SITE_URL}/assets/images/og-default.png`;
+// Kept for the Person schema, which wants a portrait rather than a share card.
+const portraitImage = `${SITE_URL}/assets/images/deepak-kumar-react-developer-india.jpg`;
+const gravatarFallback = getGravatarUrl(GLOBAL_EMAIL);
 
 export const NEXT_SEO_DEFAULT: Metadata = {
   title,
-  applicationName: "Deepak Kumar | Sr Software Engineer",
+  applicationName: "Deepak Kumar — Software & AI Engineer",
   description,
   keywords: [
+    // ---- Primary targets: broad, high-intent terms for the home page ----
+    "software engineer in India",
+    "AI engineer in India",
+    "software developer in India",
+    "senior software engineer India",
+    "best software engineer in India",
+    "full stack developer in India",
+    "Generative AI engineer India",
+    "AI developer in India",
+    "software engineer in New Delhi",
+    "hire software engineer India",
+    "remote software engineer India",
+    "top software engineer India",
+
     // ---- Name variations (people search your name) ----
     "Deepak Kumar",
     "Deepak Kumar developer",
@@ -184,7 +203,7 @@ export const NEXT_SEO_DEFAULT: Metadata = {
     images: [
       {
         url: profileImage,
-        alt: "Deepak Kumar — Sr Software Engineer | React, Node.js, AI/ML Developer",
+        alt: "Deepak Kumar — React, Node.js and Generative AI developer in India",
         width: 1200,
         height: 630,
       },
@@ -207,7 +226,7 @@ export const NEXT_SEO_DEFAULT: Metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "Deepak Kumar | Sr Software Engineer — React, AI/ML, Full Stack",
+    title: "Deepak Kumar | Software & AI Engineer in India",
     description: `Sr Software Engineer with ${yearsExp} exp. React.js, Node.js, AI/ML, OpenAI, LangChain. Currently at India Today Group. Open to opportunities.`,
     creator: "@deepakkutniyal",
     images: [profileImage],
@@ -249,12 +268,21 @@ export const NEXT_SEO_DEFAULT: Metadata = {
 // 1. Person schema (main)
 const personSchema = {
   "@type": "Person",
+  "@id": `${SITE_URL}/#person`,
   name: "Deepak Kumar",
   alternateName: ["Deepak Kutniyal", "DK"],
-  jobTitle: "Sr Software Engineer",
+  jobTitle: ["Senior Software Engineer", "AI Engineer", "Full Stack Developer"],
   description,
   url: SITE_URL,
-  image: profileImage || `${SITE_URL}/assets/images/profile-pic-removebg-preview.png`,
+  image: {
+    "@type": "ImageObject",
+    url: portraitImage,
+    contentUrl: portraitImage,
+    width: 400,
+    height: 400,
+    caption: "Deepak Kumar — senior React and full stack developer in New Delhi, India",
+    name: "Deepak Kumar, Senior Software Engineer",
+  },
   email: `mailto:${GLOBAL_EMAIL}`,
   telephone: "+91-8285257636",
   address: {
@@ -287,7 +315,18 @@ const personSchema = {
   worksFor: {
     "@type": "Organization",
     name: "India Today Group",
+    alternateName: ["Aaj Tak", "India Today Group | Aaj Tak", "TV Today Network"],
     url: "https://www.indiatodaygroup.com/",
+    sameAs: ["https://www.aajtak.in/", "https://www.indiatoday.in/"],
+  },
+  workLocation: {
+    "@type": "Place",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "New Delhi",
+      addressRegion: "Delhi",
+      addressCountry: "IN",
+    },
   },
   knowsAbout: [
     "React.js", "JavaScript", "Node.js", "TypeScript", "Next.js",
@@ -322,11 +361,6 @@ const personSchema = {
     "@type": "Occupation",
     name: "Software Engineer",
     occupationalCategory: "15-1252.00",
-    estimatedSalary: {
-      "@type": "MonetaryAmountDistribution",
-      currency: "INR",
-      name: "base",
-    },
     skills: "React.js, Node.js, TypeScript, MongoDB, AI/ML, OpenAI, LangChain, AWS, Docker",
   },
   potentialAction: {
@@ -351,10 +385,13 @@ const personSchema = {
 // 2. WebSite schema (enables sitelinks in Google)
 const websiteSchema = {
   "@type": "WebSite",
-  name: "Deepak Kumar — Software Engineer Portfolio",
+  "@id": `${SITE_URL}/#website`,
+  name: "Deepak Kumar — Software & AI Engineer",
   url: SITE_URL,
+  inLanguage: "en-IN",
+  publisher: { "@id": `${SITE_URL}/#person` },
   description: `Portfolio of Deepak Kumar, Sr Software Engineer with ${yearsExp} experience in React, Node.js, AI/ML`,
-  author: { "@type": "Person", name: "Deepak Kumar" },
+  author: { "@id": `${SITE_URL}/#person` },
   potentialAction: {
     "@type": "SearchAction",
     target: `${SITE_URL}/?q={search_term_string}`,
@@ -365,9 +402,12 @@ const websiteSchema = {
 // 3. ProfilePage schema (Google profile rich results)
 const profilePageSchema = {
   "@type": "ProfilePage",
-  name: "Deepak Kumar Portfolio",
+  "@id": `${SITE_URL}/#profilepage`,
+  name: "Deepak Kumar — Software & AI Engineer in India",
   url: SITE_URL,
-  mainEntity: { "@type": "Person", name: "Deepak Kumar" },
+  inLanguage: "en-IN",
+  isPartOf: { "@id": `${SITE_URL}/#website` },
+  mainEntity: { "@id": `${SITE_URL}/#person` },
   dateCreated: "2023-01-01T00:00:00+05:30",
   dateModified: new Date().toISOString(),
 };
@@ -386,7 +426,17 @@ const faqSchema = {
 };
 
 // Combined as @graph for a single JSON-LD block
+// Site-wide graph, emitted from the root layout on every page.
+// faqSchema is deliberately NOT included here — pages that show an FAQ emit
+// their own FAQPage block, and two FAQPage blocks on one URL make Google
+// discard both. The home page adds `HOME_FAQ_STRUCT_DATA` alongside this.
 export const STRUCT_DATA = {
   "@context": "https://schema.org",
-  "@graph": [personSchema, websiteSchema, profilePageSchema, faqSchema],
+  "@graph": [personSchema, websiteSchema, profilePageSchema],
+};
+
+// The home page's own FAQPage block.
+export const HOME_FAQ_STRUCT_DATA = {
+  "@context": "https://schema.org",
+  ...faqSchema,
 };

@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BLOG_POSTS, PERSONAL_INFO } from "@/components/utils/portfolio-data";
-import { IconClock, IconArrowRight, IconSparkles } from "@tabler/icons-react";
-import { connectToDB } from "@/utils/database";
-import BlogModel from "@/models/Blog";
-import SeoConfig from "@/models/SeoConfig";
+import { IconClock, IconArrowRight } from "@tabler/icons-react";
+import { listPosts, getSeoConfig } from "@/components/utils/portfolio-api";
 import AdSlot from "@/components/blog/AdSlot";
 import SmartLoader from "@/components/ui/SmartLoader";
 
@@ -12,34 +10,31 @@ export const dynamic = "force-dynamic";
 
 const SLOT_TOP    = process.env.NEXT_PUBLIC_ADSENSE_SLOT_BLOG_TOP    ?? "0000000000";
 const SLOT_INFEED = process.env.NEXT_PUBLIC_ADSENSE_SLOT_BLOG_INFEED ?? "1111111111";
-const SITE_URL    = process.env.NEXT_PUBLIC_WEB_SITE || "https://officialdeepak.in";
+const SITE_URL    = (process.env.NEXT_PUBLIC_WEB_SITE || "https://officialdeepak.in").replace(/\/+$/, "");
 
-// ── Fetch page-level SEO config from DB ───────────────────────────────────
+// ── Fetch page-level SEO config ───────────────────────────────────────────
+// Served by the agent service (see components/utils/portfolio-api.ts for why
+// this is an HTTP call and not a database read).
 async function getBlogIndexSeo() {
-  try {
-    await connectToDB();
-    const cfg = await SeoConfig.findOne({ key: "blog-index" }).lean() as any;
-    return cfg || null;
-  } catch { return null; }
+  return getSeoConfig("blog-index");
 }
 
-// ── Fetch published DB posts ───────────────────────────────────────────────
+// ── Fetch published posts ─────────────────────────────────────────────────
+// Returns [] if the API is unreachable, so the page still renders. The static
+// BLOG_POSTS below then carry the index on their own.
 async function getDbPosts() {
-  try {
-    await connectToDB();
-    const posts = await BlogModel.find({ status: "published" }).sort({ date: -1 }).lean();
-    return posts.map((p: any) => ({
-      slug:        p.slug,
-      title:       p.title,
-      description: p.description,
-      date:        p.date || new Date(p.createdAt).toISOString().split("T")[0],
-      readTime:    p.readTime,
-      tags:        p.tags as string[],
-      coverEmoji:  p.coverEmoji,
-      featured:    !!p.featured,
-      category:    p.category || "",
-    }));
-  } catch { return []; }
+  const { posts } = await listPosts({ limit: 100 });
+  return posts.map((p) => ({
+    slug:        p.slug,
+    title:       p.title,
+    description: p.description,
+    date:        (p.date || p.publishedAt || "").slice(0, 10),
+    readTime:    p.readTime,
+    tags:        p.tags ?? [],
+    coverEmoji:  p.coverEmoji,
+    featured:    p.featured,
+    category:    p.category || "",
+  }));
 }
 
 // ── Dynamic metadata built from DB config ─────────────────────────────────
@@ -160,149 +155,137 @@ export default async function BlogPage() {
   };
 
   return (
-      <main className="portfolio-page">
+    <>
       <script type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
 
-      <section className="py-8 md:py-14 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto">
+      <header className="bs-wrap" style={{ paddingTop: 26 }}>
+        <nav className="bs-breadcrumb" aria-label="Breadcrumb">
+          <Link href="/">Home</Link>
+          <span aria-hidden="true">·</span>
+          <span>Blog</span>
+        </nav>
 
-          {/* ── Header ─────────────────────────────────────────────── */}
-          <header className="mb-8">
-            <p className="text-xs font-bold uppercase tracking-widest text-blue-500 mb-2">
-              Engineering Blog
-            </p>
-            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight mb-3">
-              Thoughts on Code, Architecture & AI
-            </h1>
-            <p className="text-base text-slate-500 max-w-2xl leading-relaxed">
-              Deep dives into React.js, AI/ML integration, MERN stack patterns, and
-              lessons from building production apps at scale — by{" "}
-              <strong className="text-slate-700">{PERSONAL_INFO.fullName}</strong>.
-            </p>
-          </header>
+        <div className="bs-rail-thick" style={{ marginTop: 16 }} />
+        <div className="bs-dateline">
+          <span>Engineering notes</span>
+          <span>React · AI · Architecture</span>
+          <span className="bs-live">{allPosts.length} articles</span>
+        </div>
+        <div className="bs-rail-thin" />
 
-          {/*
-            ── Ad Slot 1 — Top Banner ──────────────────────────────────
-            COMPLIANCE:
-            • Placed BELOW the full page header (title + description text).
-              There is a clear visual break (mb-8 + blog-ad-banner padding)
-              between the heading block and this ad — no accidental-click risk.
-            • "Advertisement" label rendered by AdSlot (blog-ad-label).
-            • blog-ad-banner CSS gives a distinct background, generous vertical
-              padding, and a bottom border so it cannot be confused with a
-              content card or navigation link.
-            • format="horizontal" → standard leaderboard / responsive banner
-              unit; not deceptive, not an interactive UI element.
-            • min-height=90 px pre-reserved inside AdSlot to prevent CLS.
-          */}
-          <AdSlot slot={SLOT_TOP} format="horizontal" className="blog-ad-banner" />
+        <div style={{ paddingTop: 52 }}>
+          <p className="bs-kicker">Engineering blog</p>
+          <h1 className="bs-h1 bs-mt-2" style={{ maxWidth: "20ch" }}>
+            Thoughts on code, architecture and AI.
+          </h1>
+          <p className="bs-lede bs-mt-4" style={{ maxWidth: "58ch" }}>
+            Deep dives into React.js, AI and ML integration, MERN stack patterns, and lessons
+            from building production applications at scale — written by {PERSONAL_INFO.fullName}.
+          </p>
+        </div>
+      </header>
 
-          {/* ── Featured ───────────────────────────────────────────── */}
-          {featured.length > 0 && (
-            <div className="mb-10">
-              <div className="flex items-center gap-2 mb-4">
-                <IconSparkles size={15} className="text-amber-500" />
-                <h2 className="text-xs font-bold text-slate-600 uppercase tracking-widest">Featured</h2>
-              </div>
-              <div className="grid sm:grid-cols-2 gap-4">
-                {featured.map((post) => (
-                  <Link key={post.slug} href={`/blog/${post.slug}`} className="blog-card blog-card--featured">
-                    <span className="blog-card-emoji">{post.coverEmoji}</span>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-base font-bold text-slate-900 leading-snug mb-1.5 line-clamp-2">
-                        {post.title}
-                      </h3>
-                      <p className="text-xs text-slate-500 line-clamp-2 mb-3">{post.description}</p>
-                      <div className="flex items-center gap-3 text-[12px] text-slate-400 font-medium">
-                        <time dateTime={post.date}>{formatDate(post.date)}</time>
-                        <span className="flex items-center gap-1"><IconClock size={11} /> {post.readTime}</span>
-                      </div>
-                    </div>
+      <section className="bs-wrap bs-section--tight" style={{ paddingTop: 44 }}>
+        {/*
+          Ad slot 1 — top banner. Sits below the complete page header with a
+          clear visual break, carries its own "Advertisement" label from
+          AdSlot, and reserves 90px to prevent layout shift.
+        */}
+        <AdSlot slot={SLOT_TOP} format="horizontal" className="blog-ad-banner" />
+
+        {featured.length > 0 && (
+          <div className="bs-mt-5">
+            <p className="bs-list-head">Featured</p>
+            <div className="bs-cols--quotes bs-mt-4" style={{ display: "grid", gap: 40 }}>
+              {featured.map((post) => (
+                <article key={post.slug}>
+                  <p className="bs-eyebrow">
+                    <time dateTime={post.date}>{formatDate(post.date)}</time> · {post.readTime}
+                  </p>
+                  <h2 className="bs-h3 bs-mt-2">
+                    <Link href={`/blog/${post.slug}`} className="bs-link-plain">{post.title}</Link>
+                  </h2>
+                  <p className="bs-quiet bs-mt-2" style={{ fontSize: 16, lineHeight: 1.65 }}>
+                    {post.description}
+                  </p>
+                  <Link href={`/blog/${post.slug}`} className="bs-link bs-mt-3">
+                    Read the article <IconArrowRight size={15} />
                   </Link>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/*
-            ── All Articles — in-feed ad every 6th post ────────────────
-            COMPLIANCE:
-            • Frequency: 1 ad per 6 content items keeps content-to-ad ratio
-              well above the AdSense minimum and avoids "more ads than content"
-              violation. Google recommends no closer than every 5–7 items.
-            • format="fluid" without layout="in-article" is the correct
-              setting for list-page native/in-feed units (layout="in-article"
-              is reserved for within-body article text only).
-            • blog-ad-infeed CSS wraps the unit in a distinct white card with
-              border and border-radius so it is visually separated from
-              blog-card rows above and below — no confusion with content.
-            • "Advertisement" label is always rendered above the unit.
-            • Each in-feed ad sits in its own <div> sibling of post cards,
-              never inside a clickable Link element — zero accidental-click risk.
-            • min-height=120 px pre-reserved inside AdSlot to prevent CLS.
-          */}
-          <div>
-            <h2 className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-4">
-              All Articles
-            </h2>
-            <div className="space-y-3">
-              {allPosts.map((post, index) => (
-                <div key={post.slug}>
-                  {index > 0 && index % 6 === 0 && (
-                    <AdSlot slot={SLOT_INFEED} format="fluid" className="blog-ad-infeed" />
-                  )}
-                  <Link href={`/blog/${post.slug}`} className="blog-card">
-                    <span className="blog-card-emoji blog-card-emoji--sm">{post.coverEmoji}</span>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-sm sm:text-base font-bold text-slate-900 leading-snug mb-0.5 line-clamp-1">
-                        {post.title}
-                      </h3>
-                      <p className="text-xs text-slate-500 line-clamp-1 hidden sm:block">{post.description}</p>
-                      <div className="flex items-center gap-2 mt-2 flex-wrap">
-                        {post.tags.slice(0, 3).map((tag: string) => (
-                          <span key={tag} className="blog-tag">{tag}</span>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                      <time className="text-[12px] text-slate-400 font-medium" dateTime={post.date}>
-                        {formatDate(post.date)}
-                      </time>
-                      <span className="text-[12px] text-slate-400 flex items-center gap-1">
-                        <IconClock size={11} /> {post.readTime}
-                      </span>
-                    </div>
-                    <IconArrowRight size={16} className="text-slate-300 flex-shrink-0 hidden sm:block" />
-                  </Link>
-                </div>
+                </article>
               ))}
             </div>
           </div>
+        )}
+      </section>
 
-          {/* ── Author strip (boosts AdSense trust) ────────────────── */}
-          <div className="mt-12 p-6 bg-white rounded-2xl border border-slate-200">
-            <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">About the author</p>
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
-                DK
-              </div>
-              <div>
-                <p className="font-bold text-slate-900">{PERSONAL_INFO.fullName}</p>
-                <p className="text-sm text-slate-500">{PERSONAL_INFO.title} at {PERSONAL_INFO.currentWork.company}</p>
-                <p className="text-sm text-slate-500 mt-1 leading-relaxed">
-                  Building scalable web apps and Generative AI solutions.
-                  Writing about React, Node.js, AI/ML, and engineering lessons
-                  from 9+ years of production experience.
-                </p>
-              </div>
+      <section className="bs-wrap bs-section" id="all-articles">
+        <p className="bs-list-head">All articles</p>
+
+        <div className="bs-mt-4">
+          {allPosts.map((post, index) => (
+            <div key={post.slug}>
+              {/*
+                In-feed ad every sixth article — keeps the content-to-ad ratio
+                well above the AdSense minimum, sits as a sibling of the post
+                rows (never inside a link), and reserves 120px against CLS.
+              */}
+              {index > 0 && index % 6 === 0 && (
+                <AdSlot slot={SLOT_INFEED} format="fluid" className="blog-ad-infeed" />
+              )}
+
+              <article className="bs-ledger-row" style={{ gridTemplateColumns: "minmax(0,7fr) minmax(0,3fr)" }}>
+                <div>
+                  <h3 style={{ fontSize: 19, lineHeight: 1.32 }}>
+                    <Link href={`/blog/${post.slug}`} className="bs-link-plain">{post.title}</Link>
+                  </h3>
+                  <p className="bs-quiet bs-mt-1" style={{ fontSize: 15, lineHeight: 1.6 }}>
+                    {post.description}
+                  </p>
+                  <div className="bs-tags bs-mt-2" style={{ gap: 6 }}>
+                    {post.tags.slice(0, 4).map((tag: string) => (
+                      <span key={tag} className="bs-tag bs-tag--outline">{tag}</span>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="bs-small bs-quiet">
+                    <time dateTime={post.date}>{formatDate(post.date)}</time>
+                  </p>
+                  <p className="bs-small bs-quiet bs-mt-1">
+                    <IconClock size={12} style={{ display: "inline", verticalAlign: "-1px" }} /> {post.readTime}
+                  </p>
+                  <Link href={`/blog/${post.slug}`} className="bs-link bs-mt-2" style={{ fontSize: 13.5 }}>
+                    Read <IconArrowRight size={14} />
+                  </Link>
+                </div>
+              </article>
             </div>
-          </div>
-
+          ))}
         </div>
       </section>
-    </main>
-    
+
+      <section className="bs-wrap bs-section">
+        <div className="bs-rail-thick" />
+        <div className="bs-rail-thin" style={{ marginTop: 4 }} />
+        <div style={{ paddingTop: 34, display: "flex", gap: 18, alignItems: "flex-start", flexWrap: "wrap" }}>
+          <div style={{ flex: "1 1 320px" }}>
+            <p className="bs-eyebrow">About the author</p>
+            <p className="bs-h4 bs-mt-2">{PERSONAL_INFO.fullName}</p>
+            <p className="bs-small bs-quiet bs-mt-1">
+              {PERSONAL_INFO.title} at {PERSONAL_INFO.currentWork.company}
+            </p>
+            <p className="bs-mt-2" style={{ fontSize: 15, lineHeight: 1.7, maxWidth: "58ch" }}>
+              Building scalable web applications and Generative AI systems. Writing about React,
+              Node.js, AI and the engineering lessons from nine years of production work.
+            </p>
+            <Link href="/about" className="bs-link bs-mt-3">
+              More about me <IconArrowRight size={15} />
+            </Link>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }
 

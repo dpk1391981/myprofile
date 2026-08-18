@@ -21,10 +21,10 @@ export const PERSONAL_INFO = {
     linkedin: "https://www.linkedin.com/in/dpk1391981/",
     github: "https://github.com/dpk1391981",
   },
-  profileImage: "/assets/images/profile-pic-removebg-preview.png",
+  profileImage: "/assets/images/deepak-kumar-react-developer-india.jpg",
   avatarInitials: "DK",
   currentWork: {
-    company: "India Today Group",
+    company: "India Today Group | Aaj Tak",
     logo: "/assets/projects/group-logo.png",
     url: "https://www.indiatodaygroup.com/",
     role: "Sr Software Engineer",
@@ -82,9 +82,9 @@ export interface ExperienceItem {
 
 export const EXPERIENCES: ExperienceItem[] = [
   {
-    company: "India Today Group",
+    company: "India Today Group | Aaj Tak",
     logo: "/assets/projects/group-logo.png",
-    logoAlt: "Deepak Kumar - India Today Group",
+    logoAlt: "Deepak Kumar — India Today Group and Aaj Tak",
     url: "https://www.indiatodaygroup.com/",
     role: "Sr Software Engineer",
     startDate: { year: "2025", month: "05", day: "14" },
@@ -513,7 +513,7 @@ export const FAQS: FaqItem[] = [
   {
     question: "What is PlanToday.in and who built it?",
     answer:
-      "PlanToday.in is an AI-powered wedding and event vendor marketplace for India, built and owned end-to-end by Deepak Kumar. It lets couples and event hosts search in plain English or Hinglish \u2014 for example \u201cwedding photographer in Noida under 50k\u201d \u2014 and returns budget-aware, hyperlocal vendor matches across 500+ cities and 1 lakh+ listings. It is built on Next.js, NestJS, MySQL and Redis, with an NLP intent parser, an AI event-budget planner, a vendor lead CRM and a token-credit economy.",
+      "PlanToday.in is an AI-powered wedding and event vendor marketplace for India, built and owned end-to-end by Deepak Kumar. It lets couples and event hosts search in plain English or Hinglish \u2014 for example \u201cwedding photographer in Noida under 50k\u201d \u2014 and returns budget-aware, hyperlocal vendor matches across Indian cities. It is built on Next.js, NestJS, MySQL and Redis, with an NLP intent parser, an AI event-budget planner, a vendor lead CRM and a token-credit economy.",
   },
   {
     question: "What is TrendMeToday.com?",
@@ -523,7 +523,7 @@ export const FAQS: FaqItem[] = [
   {
     question: "Has Deepak Kumar built and launched his own products?",
     answer:
-      "Yes. Deepak Kumar owns and operates three independent products end-to-end: PlanToday.in (an AI-powered wedding and event vendor marketplace covering 500+ Indian cities), TrendMeToday.com (a real-time trend intelligence platform with momentum-based heat scoring), and VTechXHub.com (an SEO-driven content publishing platform). He handles product, architecture, engineering and SEO on all three.",
+      "Yes. Deepak Kumar owns and operates four independent products end-to-end: PlanToday.in (an AI-powered wedding and event vendor marketplace), TrendMeToday.com (a real-time trend intelligence platform with momentum-based heat scoring), VTechXHub.com (an SEO-driven content publishing platform) and Think4BuySale (a real-estate marketplace, currently on its development build). He handles product, architecture, engineering and SEO on all four.",
   },
   {
     question: "Why should a company hire Deepak Kumar?",
@@ -927,14 +927,8 @@ export const FEATURED_PROJECTS: FeaturedProject[] = [
       "Wedding and event planning in India is fragmented across WhatsApp groups, Instagram DMs and word of mouth. Hosts cannot compare vendors on price, and vendors have no predictable, measurable lead channel.",
     solution:
       "A NestJS + MySQL marketplace with an NLP search layer, a budget-allocation event planner, hyperlocal city/locality scoping, a vendor lead CRM, a token-credit economy, and programmatic SEO pages generated per city \u00d7 service combination.",
-    metrics: [
-      { value: "1 Lakh+", label: "Vendor Listings" },
-      { value: "500+", label: "Cities Covered" },
-      { value: "13", label: "Backend Modules" },
-      { value: "Hinglish", label: "NLP Search" },
-    ],
     features: [
-      "NLP intent search \u2014 parses event type, service, budget (\u20b92L / 50k / 2 lakh), guest count and location from free-text English or Hinglish queries",
+      "NLP intent search \u2014 parses event type, service, budget, guest count and location from free-text English or Hinglish queries",
       "AI event plan generator \u2014 splits a budget across venue, catering, decor, photography and makeup, then recommends vendors that fit each slice",
       "Vendor dashboard \u2014 lead inbox with quality scoring, profile completeness score, deals, event posts and a dynamic enquiry form builder",
       "Token economy \u2014 vendors hold a wallet, spend credits to unlock leads, and request top-ups approved by admin",
@@ -944,7 +938,7 @@ export const FEATURED_PROJECTS: FeaturedProject[] = [
     impact: [
       "One platform replacing WhatsApp-and-Instagram vendor hunting",
       "Vendors get measurable, scored leads instead of cold enquiries",
-      "Programmatic SEO surface across 500+ cities and every service category",
+      "Programmatic SEO surface across every city and service category",
     ],
     technologies: [
       "Next.js", "React", "TypeScript", "NestJS", "TypeORM", "MySQL", "Redis",
@@ -1025,11 +1019,14 @@ export const FEATURED_PROJECTS: FeaturedProject[] = [
   {
     slug: "think4buysale",
     emoji: "\ud83c\udfe0",
-    title: "Think4BuySale Real Estate Platform",
+    title: "Think4BuySale",
+    tagline: "Real-estate marketplace for buyers, sellers and brokers",
     type: "Property Marketplace",
-    client: "Freelance Project",
-    role: "Full Stack Developer",
+    client: "Own Product",
+    role: "Founder & Lead Engineer",
     year: "2023",
+    status: "In Development",
+    flagship: true,
     website: "https://www.think4buysale.in/",
     overview: "Real estate platform with property listing, advanced search, and management for buyers and sellers. Dev version: reales-think4buysale.vercel.app",
     impact: ["Improved property discovery UX", "Scalable listing architecture", "Advanced filtering system"],
@@ -1038,11 +1035,14 @@ export const FEATURED_PROJECTS: FeaturedProject[] = [
   {
     slug: "vtechxhub",
     emoji: "\u270d\ufe0f",
-    title: "VTechXHub Content Platform",
+    title: "VTechXHub.com",
+    tagline: "SEO-driven content publishing and guest-post platform",
     type: "Content Publishing & SEO",
     client: "Own Product",
-    role: "Product Owner & Lead Developer",
+    role: "Founder & Lead Engineer",
     year: "2023",
+    status: "Live",
+    flagship: true,
     website: "https://vtechxhub.com/",
     overview: "Platform for managing guest posts, high-quality content publishing, and SEO-driven article distribution. Owning this product end-to-end.",
     impact: ["Structured guest post workflows", "SEO-optimized publishing", "Contributor management system"],

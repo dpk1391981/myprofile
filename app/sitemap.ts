@@ -1,9 +1,8 @@
 import type { MetadataRoute } from "next";
 import { BLOG_POSTS } from "@/components/utils/portfolio-data";
-import { connectToDB } from "@/utils/database";
-import BlogModel from "@/models/Blog";
+import { sitemapPosts } from "@/components/utils/portfolio-api";
 
-const SITE_URL = process.env.NEXT_PUBLIC_WEB_SITE || "https://officialdeepak.in";
+const SITE_URL = (process.env.NEXT_PUBLIC_WEB_SITE || "https://officialdeepak.in").replace(/\/+$/, "");
 
 // Static routes with crawl priorities tuned for a portfolio.
 const STATIC_ROUTES: { path: string; priority: number; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"] }[] = [
@@ -14,24 +13,22 @@ const STATIC_ROUTES: { path: string; priority: number; changeFrequency: Metadata
   { path: "/skills",     priority: 0.8,  changeFrequency: "monthly" },
   { path: "/education",  priority: 0.7,  changeFrequency: "monthly" },
   { path: "/reviews",    priority: 0.6,  changeFrequency: "monthly" },
-  { path: "/joinme",     priority: 0.7,  changeFrequency: "monthly" },
+  { path: "/contact",    priority: 0.9,  changeFrequency: "monthly" },
   { path: "/blog",       priority: 0.9,  changeFrequency: "weekly" },
+  // Keyword landing pages — the phrases this site targets in search.
+  { path: "/react-developer-in-india",      priority: 0.95, changeFrequency: "weekly" },
+  { path: "/software-developer-in-india",   priority: 0.95, changeFrequency: "weekly" },
+  { path: "/javascript-developer-in-india", priority: 0.95, changeFrequency: "weekly" },
+  { path: "/full-stack-developer-in-india", priority: 0.95, changeFrequency: "weekly" },
+  { path: "/ai-engineer-in-india",          priority: 0.95, changeFrequency: "weekly" },
 ];
 
-// Pull published blog posts from the DB (gracefully degrade if unavailable).
+// Pull published blog posts from the content API (gracefully degrades to an
+// empty list if the agent service is unavailable — the static routes and the
+// hand-written BLOG_POSTS below still produce a valid sitemap).
 async function getDbBlogSlugs(): Promise<{ slug: string; date?: string }[]> {
-  try {
-    await connectToDB();
-    const posts = await BlogModel.find({ status: "published" })
-      .select({ slug: 1, date: 1, updatedAt: 1, createdAt: 1 })
-      .lean();
-    return posts.map((p: any) => ({
-      slug: p.slug,
-      date: p.updatedAt || p.date || p.createdAt,
-    }));
-  } catch {
-    return [];
-  }
+  const posts = await sitemapPosts();
+  return posts.map((p) => ({ slug: p.slug, date: p.lastModified ?? undefined }));
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
