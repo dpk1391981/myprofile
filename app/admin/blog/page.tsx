@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 
 interface Blog {
-  _id: string;
+  id: string;
   title: string;
   slug: string;
   category: string;
@@ -41,13 +41,13 @@ export default function AdminBlogList() {
 
   async function togglePublish(blog: Blog) {
     const newStatus = blog.status === "published" ? "draft" : "published";
-    await fetch(`/api/admin/blogs/${blog._id}`, {
+    await fetch(`/api/admin/blogs/${blog.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: newStatus }),
     });
     setBlogs((prev) =>
-      prev.map((b) => (b._id === blog._id ? { ...b, status: newStatus } : b))
+      prev.map((b) => (b.id === blog.id ? { ...b, status: newStatus } : b))
     );
   }
 
@@ -55,7 +55,7 @@ export default function AdminBlogList() {
     if (!confirm("Delete this post permanently?")) return;
     setDeleting(id);
     await fetch(`/api/admin/blogs/${id}`, { method: "DELETE" });
-    setBlogs((prev) => prev.filter((b) => b._id !== id));
+    setBlogs((prev) => prev.filter((b) => b.id !== id));
     setDeleting(null);
   }
 
@@ -155,7 +155,7 @@ export default function AdminBlogList() {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {filtered.map((blog) => (
-                <tr key={blog._id} className="hover:bg-slate-50 transition-colors">
+                <tr key={blog.id} className="hover:bg-slate-50 transition-colors">
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
                       <span className="text-2xl flex-shrink-0">{blog.coverEmoji}</span>
@@ -201,17 +201,17 @@ export default function AdminBlogList() {
                         👁️
                       </a>
                       <Link
-                        href={`/admin/blog/${blog._id}/edit`}
+                        href={`/admin/blog/${blog.id}/edit`}
                         className="text-xs bg-slate-100 hover:bg-blue-100 text-slate-600 hover:text-blue-700 px-3 py-1.5 rounded-lg font-medium transition-colors"
                       >
                         Edit
                       </Link>
                       <button
-                        onClick={() => deleteBlog(blog._id)}
-                        disabled={deleting === blog._id}
+                        onClick={() => deleteBlog(blog.id)}
+                        disabled={deleting === blog.id}
                         className="text-xs bg-red-50 hover:bg-red-100 text-red-500 hover:text-red-700 px-3 py-1.5 rounded-lg font-medium transition-colors disabled:opacity-50"
                       >
-                        {deleting === blog._id ? "..." : "Delete"}
+                        {deleting === blog.id ? "..." : "Delete"}
                       </button>
                     </div>
                   </td>
