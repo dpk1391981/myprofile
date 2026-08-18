@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 
 interface Blog {
-  _id: string;
+  id: string;
   title: string;
   slug: string;
   category: string;
@@ -85,8 +85,8 @@ export default function Dashboard() {
             <div className="space-y-2">
               {recent.map((b) => (
                 <Link
-                  key={b._id}
-                  href={`/admin/blog/${b._id}/edit`}
+                  key={b.id}
+                  href={`/admin/blog/${b.id}/edit`}
                   className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 transition-colors group"
                 >
                   <span className="text-xl">{b.coverEmoji}</span>

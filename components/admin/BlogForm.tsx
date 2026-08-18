@@ -18,7 +18,7 @@ const EMOJIS = [
 ];
 
 interface BlogData {
-  _id?: string;
+  id?: string;
   // Content
   title: string;
   slug: string;
@@ -183,7 +183,7 @@ export default function BlogForm({ initial, isEdit = false }: BlogFormProps) {
     setError("");
     const payload = { ...form, status: publishOverride ?? form.status };
     try {
-      const url = isEdit ? `/api/admin/blogs/${form._id}` : "/api/admin/blogs";
+      const url = isEdit ? `/api/admin/blogs/${form.id}` : "/api/admin/blogs";
       const res = await fetch(url, {
         method: isEdit ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },

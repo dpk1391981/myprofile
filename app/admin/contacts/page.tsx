@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 interface Contact {
-  _id: string;
+  id: string;
   email: string;
   organisation?: string;
   subject: string;
@@ -28,7 +28,7 @@ export default function ContactsPage() {
     if (!confirm("Delete this inquiry?")) return;
     setDeleting(id);
     await fetch(`/api/admin/contacts?id=${id}`, { method: "DELETE" });
-    setContacts((prev) => prev.filter((c) => c._id !== id));
+    setContacts((prev) => prev.filter((c) => c.id !== id));
     setDeleting(null);
   }
 
@@ -62,11 +62,11 @@ export default function ContactsPage() {
       ) : (
         <div className="space-y-3">
           {contacts.map((c) => (
-            <div key={c._id} className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+            <div key={c.id} className="bg-white rounded-xl border border-slate-200 overflow-hidden">
               {/* Row */}
               <button
                 className="w-full text-left px-5 py-4 flex items-start gap-4 hover:bg-slate-50 transition-colors"
-                onClick={() => setExpanded(expanded === c._id ? null : c._id)}
+                onClick={() => setExpanded(expanded === c.id ? null : c.id)}
               >
                 {/* Avatar */}
                 <div className="flex-shrink-0 w-9 h-9 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm uppercase">
@@ -91,13 +91,13 @@ export default function ContactsPage() {
                 <div className="flex-shrink-0 text-right">
                   <p className="text-xs text-slate-400 whitespace-nowrap">{formatDate(c.createdAt)}</p>
                   <span className="text-xs text-blue-500 mt-1 block">
-                    {expanded === c._id ? "▲ collapse" : "▼ expand"}
+                    {expanded === c.id ? "▲ collapse" : "▼ expand"}
                   </span>
                 </div>
               </button>
 
               {/* Expanded detail */}
-              {expanded === c._id && (
+              {expanded === c.id && (
                 <div className="border-t border-slate-100 px-5 py-4 bg-slate-50">
                   <div className="grid sm:grid-cols-2 gap-3 mb-4">
                     <div>
@@ -137,11 +137,11 @@ export default function ContactsPage() {
                       Reply via Email
                     </a>
                     <button
-                      onClick={() => handleDelete(c._id)}
-                      disabled={deleting === c._id}
+                      onClick={() => handleDelete(c.id)}
+                      disabled={deleting === c.id}
                       className="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold rounded-lg transition-colors disabled:opacity-50"
                     >
-                      {deleting === c._id ? "Deleting…" : "Delete"}
+                      {deleting === c.id ? "Deleting…" : "Delete"}
                     </button>
                   </div>
                 </div>
