@@ -44,7 +44,7 @@ const Footer = () => {
       </div>
 
       <div className="bs-footer-base">
-        <p>© {year} Deepak Kumar · officialdeepak.in</p>
+        <p>{year} Deepak Kumar · officialdeepak.in</p>
         <p>New Delhi, India · IST (UTC+5:30)</p>
       </div>
     </footer>
