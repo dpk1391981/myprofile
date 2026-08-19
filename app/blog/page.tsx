@@ -76,7 +76,7 @@ export async function generateMetadata(
        "full stack developer blog", "software engineer blog India"];
   const ogTitle       = cfg?.ogTitle       || `Engineering Blog | ${PERSONAL_INFO.fullName}`;
   const ogDescription = cfg?.ogDescription || description;
-  const ogImage       = cfg?.ogImage       || `${SITE_URL}/assets/images/profile-pic-removebg-preview.png`;
+  const ogImage       = cfg?.ogImage       || `${SITE_URL}/assets/images/og-default.png`;
   const robots        = cfg?.robots        || "index, follow";
   const canonical     = cfg?.canonicalUrl  || `${SITE_URL}/blog`;
 

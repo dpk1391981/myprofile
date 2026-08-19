@@ -1,23 +1,13 @@
 import { totalExperianceYears } from "./components/utils/date";
 import { PERSONAL_INFO } from "./components/utils/portfolio-data";
-import crypto from "crypto";
 
 const GLOBAL_EMAIL = PERSONAL_INFO.email || process.env.NEXT_PUBLIC_EMAIL_ID || "";
 const description = `Experienced React/JavaScript Developer with ${totalExperianceYears()} of expertise. ${PERSONAL_INFO.fullName} excels in developing high-quality web applications using modern frameworks like React, Node.js, and Next.js for seamless software development.`;
 const title = `${PERSONAL_INFO.fullName} | Expert React & JavaScript Developer`;
 
-function getGravatarUrl(email: string, size = 120): string {
-  if (email) {
-    const emailHash = crypto
-      .createHash("md5")
-      .update(email.trim().toLowerCase())
-      .digest("hex");
-    return `https://www.gravatar.com/avatar/${emailHash}?s=${size}&d=identicon`;
-  }
-  return "";
-}
-
-const profileImage = getGravatarUrl(GLOBAL_EMAIL);
+const SITE_URL = (process.env.NEXT_PUBLIC_WEB_SITE || "https://officialdeepak.in").replace(/\/+$/, "");
+// Share cards use the current og-default card — never a gravatar or an old portrait.
+const profileImage = `${SITE_URL}/assets/images/og-default.png`;
 
 export const NEXT_SEO_DEFAULT = {
   title,

@@ -52,10 +52,10 @@ export default function ProjectsPage() {
 
       <PageHeader
         crumbs={[{ label: "Home", href: "/" }, { label: "Projects" }]}
-        dateline={["Portfolio", "17+ products shipped", "2 live products I own"]}
+        dateline={["Portfolio", "17+ products shipped", "4 live products I own"]}
         kicker="Projects & products"
         title="Everything I have shipped, and what it did."
-        lede="Two products I own end to end, then the client and employer work — news media, healthcare, adtech, real estate and real-time communication. Numbers attached where numbers exist."
+        lede="Four products I own end to end, then the client and employer work — news media, healthcare, adtech, real estate and real-time communication. Numbers attached where numbers exist."
       />
 
       <Products heading={false} />

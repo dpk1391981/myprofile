@@ -273,7 +273,7 @@ export const EXPERIENCES: ExperienceItem[] = [
   },
   {
     company: "Own Products",
-    logo: "/assets/images/profile-pic-removebg-preview.png",
+    logo: "/assets/images/deepak-kumar-react-developer-india.jpg",
     logoAlt: "Deepak Kumar - Freelance",
     url: "https://officialdeepak.in",
     role: "Full Stack Developer & Product Owner",
@@ -286,7 +286,7 @@ export const EXPERIENCES: ExperienceItem[] = [
     highlights: [],
     projects: [
       { title: "VTechXHub", type: "Own Product · Live", overview: "Content publishing platform for guest posts, quality articles, and SEO-driven distribution. Owning this product end-to-end — built contributor workflows, SEO optimization, and content management.", technologies: ["React.js", "Node.js", "MySQL", "NEXT JS", "NEST JS"], website: "https://vtechxhub.com/" },
-      { title: "Think4BuySale", type: "Own Product · Under Development", overview: "Real estate platform with property listing, advanced search, filtering, and management dashboards for buyers and sellers.", technologies: ["React.js", "Nest.js", "MySQL", "Next.js", "REST APIs"], website: "https://reales-think4buysale.vercel.app/" },
+      { title: "Think4BuySale", type: "Own Product · Live", overview: "Real estate platform with property listing, advanced search, filtering, and management dashboards for buyers and sellers.", technologies: ["React.js", "Nest.js", "MySQL", "Next.js", "REST APIs"], website: "https://www.think4buysale.in/" },
     ],
   },
 ];
@@ -1030,10 +1030,10 @@ export const FEATURED_PROJECTS: FeaturedProject[] = [
     client: "Own Product",
     role: "Founder & Lead Engineer",
     year: "2023",
-    status: "In Development",
+    status: "Live",
     flagship: true,
     website: "https://www.think4buysale.in/",
-    overview: "Real estate platform with property listing, advanced search, and management for buyers and sellers. Dev version: reales-think4buysale.vercel.app",
+    overview: "Real estate platform with property listing, advanced search, and management for buyers and sellers.",
     impact: ["Improved property discovery UX", "Scalable listing architecture", "Advanced filtering system"],
     technologies: ["React.js", "Node.js", "MongoDB", "Next.js", "REST APIs"],
   },

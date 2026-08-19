@@ -142,7 +142,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const description = post.seoDescription || post.description;
   const kwSet = new Set([post.focusKeyword, ...post.seoKeywords, ...post.tags, ...defaultKws, PERSONAL_INFO.fullName, "blog", "tutorial"].filter(Boolean));
   const keywords = Array.from(kwSet);
-  const ogImage     = post.ogImage || defaults?.ogImage || `${SITE_URL}/assets/images/profile-pic-removebg-preview.png`;
+  const ogImage     = post.ogImage || defaults?.ogImage || `${SITE_URL}/assets/images/og-default.png`;
   const canonical   = post.canonicalUrl || `${SITE_URL}/blog/${post.slug}`;
   const robots      = post.noIndex ? "noindex, nofollow" : (post.robots || "index, follow");
   const [ri, rf]    = robots.split(",").map((s: string) => s.trim());
@@ -205,7 +205,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
   const related = await getRelated(post.slug, post.tags, (post as any).related ?? []);
 
   const postUrl   = `${SITE_URL}/blog/${post.slug}`;
-  const ogImage   = post.ogImage || defaults?.ogImage || `${SITE_URL}/assets/images/profile-pic-removebg-preview.png`;
+  const ogImage   = post.ogImage || defaults?.ogImage || `${SITE_URL}/assets/images/og-default.png`;
   const wordCount = countWords(post.content);
   const readMins  = parseInt(post.readTime) || Math.max(1, Math.round(wordCount / 225));
   const faq: { question: string; answer: string }[] = (post as any).faq ?? [];

@@ -24,7 +24,11 @@ function getGravatarUrl(email: string, size = 120): string {
 
 const profileImage = `${SITE_URL}/assets/images/og-default.png`;
 // Kept for the Person schema, which wants a portrait rather than a share card.
+// This is the image Google's Knowledge Panel reads, and it gets cropped square,
+// so it carries no text -- unlike the OG card above.
 const portraitImage = `${SITE_URL}/assets/images/deepak-kumar-react-developer-india.jpg`;
+// Must match the file on disk; both are produced by scripts/generate-og.py.
+const PORTRAIT_SIZE = 800;
 const gravatarFallback = getGravatarUrl(GLOBAL_EMAIL);
 
 export const NEXT_SEO_DEFAULT: Metadata = {
@@ -278,8 +282,8 @@ const personSchema = {
     "@type": "ImageObject",
     url: portraitImage,
     contentUrl: portraitImage,
-    width: 400,
-    height: 400,
+    width: PORTRAIT_SIZE,
+    height: PORTRAIT_SIZE,
     caption: "Deepak Kumar — senior React and full stack developer in New Delhi, India",
     name: "Deepak Kumar, Senior Software Engineer",
   },
