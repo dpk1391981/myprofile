@@ -631,6 +631,13 @@ a:hover { color: var(--spot-deep); text-decoration: underline; text-underline-of
 
 /* ============================================================
    BLOG — the article pages, set in the same ink
+   ------------------------------------------------------------
+   Every value below resolves through the broadsheet tokens
+   (--ink / --paper / --hair / --rule / --quiet / --spot), which
+   is what makes the dark theme work: `:root[data-ink="dark"]`
+   swaps the tokens and this section needs no dark variant of its
+   own. Nothing here may hardcode a colour — a literal #hex or a
+   Tailwind palette class is invisible in one of the two themes.
    ============================================================ */
 
 .blog-progress-bar {
@@ -638,85 +645,410 @@ a:hover { color: var(--spot-deep); text-decoration: underline; text-underline-of
   background: var(--spot); transition: width .1s linear;
 }
 
+/* ---------- the article shell ----------
+   Deliberately narrower than --shell. The article is a reading
+   page, not a landing page: 636px of main column at 18px sets the
+   body to roughly 68 characters a line, which is the measure the
+   rest of the type scale was drawn for. The old layout put the
+   header in a centred `max-w-3xl` above a full-width grid, so the
+   headline and the prose it introduced started at two different
+   left edges — everything now hangs off one axis. */
+.blog-article-shell {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
 .blog-article-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 300px;
-  gap: 56px;
+  gap: 64px;
   align-items: start;
 }
 .blog-article-main { min-width: 0; }
 .blog-article-sidebar { min-width: 0; }
-.blog-article-sidebar-inner { position: sticky; top: 92px; }
+.blog-article-sidebar-inner {
+  position: sticky; top: 92px;
+  display: flex; flex-direction: column; gap: 34px;
+}
 
-.blog-article-cover-emoji { font-size: 40px; line-height: 1; display: block; }
+/* ---------- masthead of the article ---------- */
+.blog-article-head { padding-top: 8px; }
+
+.blog-kicker-row {
+  display: flex; align-items: center; gap: 10px;
+  flex-wrap: wrap; margin-bottom: 14px;
+}
+.blog-category {
+  font-size: 11px; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--spot); font-weight: 600;
+}
+.blog-kicker-sep { color: var(--hair); }
+
+.blog-article-title {
+  font-size: clamp(1.95rem, 4vw, 2.9rem);
+  line-height: 1.08;
+  letter-spacing: -.028em;
+  margin: 0;
+}
+
+/* The standfirst — the deck under the headline. Set larger and
+   quieter than the body so the eye reads it as summary, not as the
+   article's first paragraph. Also the block marked `speakable`. */
+.blog-standfirst {
+  font-size: clamp(1.05rem, 1.6vw, 1.22rem);
+  line-height: 1.6;
+  color: var(--quiet);
+  margin: 18px 0 0;
+  max-width: 62ch;
+}
+
+.blog-byline {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 18px; flex-wrap: wrap;
+  margin-top: 26px; padding: 12px 0;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--hair);
+}
+/* The byline. A named person with a face, a role and a link to who he is —
+   this is a personal blog under one byline, and the header should say so
+   before the first paragraph does. It is also the E-E-A-T signal Google reads
+   off the page and matches against the Person entity in the JSON-LD. */
+.blog-byline-author { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.blog-avatar {
+  width: 44px; height: 44px; flex-shrink: 0;
+  border-radius: 50%; object-fit: cover;
+  border: 1px solid var(--rule);
+  background: var(--surface);
+}
+.blog-avatar--lg { width: 66px; height: 66px; }
+.blog-byline-who { font-size: 14.5px; }
+.blog-byline-who strong { font-weight: 600; }
+.blog-byline-meta {
+  display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+  font-size: 12px; letter-spacing: .04em; color: var(--quiet);
+  margin-top: 3px;
+}
+.blog-byline-meta .sep { opacity: .5; }
+
+.blog-share-row { display: flex; align-items: center; gap: 7px; }
 
 .blog-back-link {
   display: inline-flex; align-items: center; gap: 7px;
-  font-size: 13.5px; color: var(--quiet); text-decoration: none;
+  font-size: 13px; letter-spacing: .05em; text-transform: uppercase;
+  color: var(--quiet); text-decoration: none;
 }
 .blog-back-link:hover { color: var(--spot); text-decoration: none; }
 
 .blog-tag {
-  display: inline-block; font-size: 11px; letter-spacing: .02em;
-  padding: 2px 8px; border: 1px solid var(--hair); border-radius: 2px;
-  color: var(--quiet); background: transparent;
+  display: inline-block; font-size: 11px; letter-spacing: .04em;
+  padding: 3px 9px; border: 1px solid var(--hair); border-radius: 2px;
+  color: var(--quiet); background: transparent; text-decoration: none;
 }
+a.blog-tag:hover { border-color: var(--spot); color: var(--spot); text-decoration: none; }
 
 .blog-share-btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 7px 12px; border: 1px solid var(--rule); border-radius: 2px;
-  font-size: 13px; color: var(--ink); background: transparent; text-decoration: none;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  width: 34px; height: 34px;
+  border: 1px solid var(--rule); border-radius: 2px;
+  font-size: 13px; color: var(--quiet); background: transparent; text-decoration: none;
   transition: background .18s ease, border-color .18s ease, color .18s ease;
 }
 .blog-share-btn:hover { background: var(--surface); border-color: var(--spot); color: var(--spot); text-decoration: none; }
+.blog-share-btn--wide { width: auto; flex: 1; height: 36px; }
 
-/* article body — the reading column */
-.blog-content { font-size: 17px; line-height: 1.75; color: var(--ink); }
-.blog-content h2 { font-size: clamp(1.5rem, 2.6vw, 1.9rem); margin: 44px 0 14px; letter-spacing: -.02em; }
-.blog-content h3 { font-size: 1.25rem; margin: 32px 0 10px; letter-spacing: -.015em; }
-.blog-content p { margin: 0 0 20px; }
+/* ---------- contents rail ----------
+   Built from the article's own h2/h3 at render time, so it cannot
+   drift from the piece. Rendered as a <details> on mobile (closed,
+   costs one line) and as an open sticky list on desktop. */
+.blog-toc { border-top: 1px solid var(--ink); padding-top: 12px; }
+.blog-toc-head {
+  font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--quiet); margin: 0 0 4px; cursor: pointer; list-style: none;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+}
+.blog-toc-head::-webkit-details-marker { display: none; }
+.blog-toc-list { list-style: none; margin: 8px 0 0; padding: 0; counter-reset: toc; }
+.blog-toc-list li { margin: 0; }
+.blog-toc-list a {
+  display: block; padding: 7px 0;
+  font-size: 14.5px; line-height: 1.4; color: var(--ink);
+  text-decoration: none; border-bottom: 1px solid var(--hair);
+}
+.blog-toc-list a:hover { color: var(--spot); text-decoration: none; }
+.blog-toc-list a::before {
+  counter-increment: toc; content: counter(toc, decimal-leading-zero);
+  font-size: 10.5px; letter-spacing: .1em; color: var(--quiet);
+  margin-right: 9px; vertical-align: 1px;
+}
+.blog-toc-list li.is-sub a { padding-left: 26px; font-size: 13.5px; color: var(--quiet); }
+.blog-toc-list li.is-sub a::before { content: none; }
+
+/* Inline (in-article) variant, shown only on narrow screens. */
+.blog-toc--inline { margin: 30px 0 8px; }
+.blog-toc--inline[open] .blog-toc-chevron { transform: rotate(180deg); }
+.blog-toc-chevron { transition: transform .18s ease; flex-shrink: 0; }
+
+/* ---------- key-facts strip ----------
+   The scannable answer block. Everything in it is a stored field —
+   nothing is inferred — which is what lets it sit this high on the
+   page without over-claiming. */
+.blog-facts {
+  margin: 30px 0 6px;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--hair);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+}
+.blog-fact { padding: 13px 18px 14px 0; }
+.blog-fact + .blog-fact { border-left: 1px solid var(--hair); padding-left: 18px; }
+.blog-fact-label {
+  font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--quiet); margin: 0 0 5px;
+}
+.blog-fact-value { font-size: 15px; line-height: 1.35; margin: 0; }
+
+/* ---------- article body — the reading column ---------- */
+.blog-content {
+  font-size: 18px;
+  line-height: 1.72;
+  color: var(--ink);
+  max-width: 68ch;
+}
+.blog-content > *:first-child { margin-top: 0; }
+
+/* Headings carry scroll-margin so a jump from the contents rail
+   does not land the target underneath the fixed masthead. */
+.blog-content h2,
+.blog-content h3 { scroll-margin-top: 96px; }
+
+.blog-content h2 {
+  font-size: clamp(1.4rem, 2.3vw, 1.72rem);
+  line-height: 1.18;
+  letter-spacing: -.022em;
+  margin: 52px 0 16px;
+  padding-top: 15px;
+  border-top: 1px solid var(--hair);
+}
+.blog-content h3 {
+  font-size: 1.18rem; line-height: 1.3; letter-spacing: -.015em;
+  margin: 34px 0 10px;
+}
+.blog-content p { margin: 0 0 22px; }
 .blog-content strong { font-weight: 600; }
-.blog-content a { color: var(--spot); }
-.blog-content ul, .blog-content ol { margin: 0 0 20px; padding-left: 22px; }
-.blog-content li { margin-bottom: 8px; }
+.blog-content a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--spot);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+.blog-content a:hover { color: var(--spot); }
+
+.blog-content ul, .blog-content ol { margin: 0 0 24px; padding-left: 0; list-style: none; counter-reset: bsli; }
+.blog-content li { margin-bottom: 13px; padding-left: 30px; position: relative; }
+.blog-content ul > li::before {
+  content: ""; position: absolute; left: 8px; top: .68em;
+  width: 5px; height: 5px; background: var(--spot); border-radius: 50%;
+}
+.blog-content ol > li::before {
+  counter-increment: bsli; content: counter(bsli) ".";
+  position: absolute; left: 0; top: 0;
+  font-size: 14px; color: var(--quiet); font-variant-numeric: tabular-nums;
+}
+.blog-content li > ul, .blog-content li > ol { margin: 11px 0 0; }
+
 .blog-content code {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: .86em; background: var(--surface); padding: 2px 6px; border-radius: 2px;
+  font-size: .84em; background: var(--surface); padding: 2px 6px;
+  border-radius: 2px; word-break: break-word;
 }
 .blog-content pre {
-  background: var(--surface); padding: 18px; border-radius: 2px;
-  overflow-x: auto; margin: 0 0 24px; font-size: 13.5px; line-height: 1.6;
+  background: var(--surface); padding: 18px 20px; border-radius: 2px;
+  border-left: 2px solid var(--spot);
+  overflow-x: auto; margin: 0 0 26px; font-size: 13.5px; line-height: 1.65;
 }
 .blog-content pre code { background: transparent; padding: 0; font-size: inherit; }
 .blog-content blockquote {
-  margin: 0 0 24px; padding-left: 20px;
-  border-left: 2px solid var(--spot); font-style: italic; color: var(--quiet);
+  margin: 30px 0; padding: 2px 0 2px 22px;
+  border-left: 2px solid var(--spot);
+  font-size: 1.08em; line-height: 1.55; color: var(--quiet);
 }
-.blog-content img { max-width: 100%; height: auto; }
-.blog-content table { width: 100%; border-collapse: collapse; margin: 0 0 24px; font-size: 15px; }
-.blog-content th, .blog-content td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--hair); }
-.blog-content th { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--quiet); border-bottom-color: var(--ink); }
+.blog-content blockquote p:last-child { margin-bottom: 0; }
+.blog-content img { max-width: 100%; height: auto; margin: 0 0 24px; }
+.blog-content hr { border: 0; border-top: 1px solid var(--hair); margin: 40px 0; }
 
-.blog-author-box { padding-top: 26px; margin-top: 44px; border-top: 1px solid var(--hair); }
+/* Tables scroll inside their own box rather than widening the page. */
+.blog-content table {
+  width: 100%; border-collapse: collapse; margin: 0 0 26px;
+  font-size: 15px; display: block; overflow-x: auto;
+}
+.blog-content th, .blog-content td {
+  text-align: left; padding: 10px 14px 10px 0; border-bottom: 1px solid var(--hair);
+  white-space: nowrap;
+}
+.blog-content th {
+  font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--quiet); border-bottom-color: var(--ink);
+}
+
+/* ---------- source attribution ---------- */
+.blog-source {
+  margin-top: 40px; padding-top: 16px;
+  border-top: 1px solid var(--hair);
+  font-size: 13.5px; line-height: 1.6; color: var(--quiet);
+  max-width: 68ch;
+}
+.blog-source a { color: var(--quiet); text-decoration: underline; text-underline-offset: 2px; }
+.blog-source a:hover { color: var(--spot); }
+
+/* ---------- FAQ ----------
+   Rendered as real text, not an accordion that hides its answers:
+   an answer engine quoting this page should find the answer in the
+   markup, and the same FAQPage JSON-LD is emitted alongside it. */
+.blog-faq { margin-top: 52px; max-width: 68ch; }
+.blog-faq-head {
+  font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--quiet); margin: 0 0 4px;
+  padding-bottom: 10px; border-bottom: 1px solid var(--ink);
+}
+.blog-faq-item { padding: 20px 0; border-bottom: 1px solid var(--hair); }
+.blog-faq-q { font-size: 17px; font-weight: 600; line-height: 1.35; margin: 0; }
+.blog-faq-a { font-size: 15.5px; line-height: 1.65; color: var(--quiet); margin: 9px 0 0; }
+
+/* ---------- sources ----------
+   Set as an editorial sources block, the way a reported technical piece cites
+   what it was written from — not as a footnote-sized disclaimer. Naming the
+   source is what lets a reader check a claim instead of taking it on trust. */
+.blog-sources {
+  margin-top: 46px; padding-top: 16px;
+  border-top: 1px solid var(--hair);
+  max-width: 68ch;
+}
+.blog-sources-head {
+  font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--quiet); margin: 0 0 10px;
+}
+.blog-sources-item { font-size: 14.5px; line-height: 1.6; margin: 0; }
+.blog-sources-item a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--rule); }
+.blog-sources-item a:hover { color: var(--spot); text-decoration-color: var(--spot); }
+.blog-sources-note { font-size: 13px; line-height: 1.6; color: var(--quiet); margin: 9px 0 0; }
+
+/* ---------- author card ---------- */
+.blog-author-box {
+  display: flex; align-items: flex-start; gap: 20px; flex-wrap: nowrap;
+  padding-top: 24px; margin-top: 52px; border-top: 1px solid var(--ink);
+}
+.blog-author-body { min-width: 0; flex: 1; }
+.blog-author-name { font-size: 19px; font-weight: 600; line-height: 1.25; margin: 6px 0 0; letter-spacing: -.015em; }
+.blog-author-name a { color: var(--ink); text-decoration: none; }
+.blog-author-name a:hover { color: var(--spot); }
+.blog-author-role { font-size: 13.5px; color: var(--quiet); margin: 4px 0 0; }
+.blog-author-bio { font-size: 15px; line-height: 1.65; margin: 11px 0 0; max-width: 58ch; }
+.blog-author-links { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 14px; align-items: center; }
+.blog-author-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13.5px; color: var(--quiet); text-decoration: none;
+}
+.blog-author-link:hover { color: var(--spot); text-decoration: none; }
 .blog-author-cta {
   display: inline-flex; align-items: center; gap: 7px;
   font-size: 14px; font-weight: 600; color: var(--spot); text-decoration: none;
+  white-space: nowrap;
 }
 .blog-author-cta:hover { text-decoration: underline; text-underline-offset: 3px; }
 
+/* ---------- next / previous ---------- */
+.blog-pager {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 34px;
+  margin-top: 46px; padding-top: 22px; border-top: 1px solid var(--hair);
+}
+.blog-pager-link { text-decoration: none; color: var(--ink); display: block; }
+.blog-pager-link:hover { text-decoration: none; }
+.blog-pager-link:hover .blog-pager-title { color: var(--spot); }
+.blog-pager-dir {
+  font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--quiet); margin: 0 0 7px;
+}
+.blog-pager-title { font-size: 16px; font-weight: 600; line-height: 1.35; margin: 0; }
+.blog-pager-link--next { text-align: right; }
+
+/* ---------- sidebar furniture ---------- */
 .blog-sidebar-heading {
-  font-size: 11px; letter-spacing: .13em; text-transform: uppercase;
-  color: var(--quiet); padding-bottom: 10px; border-bottom: 1px solid var(--ink); margin: 0 0 4px;
+  font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--quiet); padding-bottom: 10px; border-bottom: 1px solid var(--ink); margin: 0 0 2px;
 }
 .blog-sidebar-related-link {
-  display: flex; gap: 11px; align-items: flex-start;
-  padding: 14px 0; border-bottom: 1px solid var(--hair); text-decoration: none; color: var(--ink);
+  display: block; padding: 14px 0;
+  border-bottom: 1px solid var(--hair); text-decoration: none; color: var(--ink);
 }
 .blog-sidebar-related-link:hover { text-decoration: none; }
 .blog-sidebar-related-link:hover .blog-sidebar-related-title { color: var(--spot); }
-.blog-sidebar-related-emoji { font-size: 19px; line-height: 1.2; flex-shrink: 0; }
-.blog-sidebar-related-title { font-size: 14.5px; font-weight: 600; line-height: 1.4; }
-.blog-sidebar-related-meta { font-size: 12px; color: var(--quiet); margin-top: 4px; }
+.blog-sidebar-related-title { font-size: 14.5px; font-weight: 600; line-height: 1.4; margin: 0; }
+.blog-sidebar-related-meta {
+  font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--quiet); margin-top: 6px;
+}
+
+/* The hire card. Was a blue gradient panel with 12px radii — the one
+   element on the site that belonged to a different design system, and
+   the only one that stayed light-blue in dark mode. Same message, set
+   in ink. */
+.blog-cta {
+  border: 1px solid var(--ink);
+  padding: 20px;
+}
+.blog-cta-label {
+  font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--spot); margin: 0 0 8px;
+}
+.blog-cta-title { font-size: 17px; line-height: 1.25; margin: 0; font-weight: 600; }
+.blog-cta-body { font-size: 13.5px; line-height: 1.55; color: var(--quiet); margin: 8px 0 14px; }
+.blog-cta-link {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 13.5px; font-weight: 600; color: var(--ink);
+  border-bottom: 1px solid var(--spot); padding-bottom: 2px; text-decoration: none;
+}
+.blog-cta-link:hover { color: var(--spot); text-decoration: none; }
+
+/* ---------- index page ---------- */
+.blog-topics {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-top: 12px;
+}
+.blog-topic {
+  font-size: 12px; letter-spacing: .03em;
+  padding: 5px 11px; border: 1px solid var(--hair); border-radius: 2px;
+  color: var(--quiet); text-decoration: none; white-space: nowrap;
+}
+.blog-topic:hover, .blog-topic[data-active="true"] {
+  border-color: var(--ink); color: var(--ink); text-decoration: none;
+}
+.blog-topic-count { color: var(--quiet); font-size: 11px; margin-left: 5px; }
+
+.blog-lead {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 48px;
+  padding-bottom: 34px; border-bottom: 1px solid var(--hair);
+}
+.blog-lead-title { font-size: clamp(1.35rem, 2.4vw, 1.75rem); line-height: 1.16; letter-spacing: -.022em; margin: 10px 0 0; }
+.blog-lead-desc { font-size: 15.5px; line-height: 1.6; color: var(--quiet); margin: 12px 0 0; }
+
+.blog-row {
+  display: grid; grid-template-columns: 62px minmax(0, 1fr) 132px;
+  gap: 24px; align-items: start;
+  padding: 26px 0; border-bottom: 1px solid var(--hair);
+}
+.blog-row-index {
+  font-size: 11px; letter-spacing: .1em; color: var(--quiet);
+  font-variant-numeric: tabular-nums; padding-top: 5px;
+}
+.blog-row-title { font-size: 19px; line-height: 1.32; letter-spacing: -.014em; margin: 0; }
+.blog-row-desc { font-size: 15px; line-height: 1.6; color: var(--quiet); margin: 8px 0 0; max-width: 62ch; }
+.blog-row-meta {
+  font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
+  color: var(--quiet); text-align: right; padding-top: 6px; line-height: 1.9;
+}
 
 /* legacy card used by any remaining listing */
 .blog-card {
@@ -729,7 +1061,7 @@ a:hover { color: var(--spot-deep); text-decoration: underline; text-underline-of
 .blog-card-emoji { font-size: 26px; line-height: 1.2; flex-shrink: 0; }
 .blog-card-emoji--sm { font-size: 20px; }
 
-/* ad slots — labelled, separated, height-reserved */
+/* ---------- ad slots — labelled, separated, height-reserved ---------- */
 .blog-ad-slot { display: block; width: 100%; }
 .blog-ad-label {
   display: block; font-size: 10px; letter-spacing: .14em;
@@ -742,12 +1074,31 @@ a:hover { color: var(--spot-deep); text-decoration: underline; text-underline-of
 }
 .blog-ad-banner { display: block; padding: 20px 0; border-bottom: 1px solid var(--hair); }
 .blog-ad-infeed { display: block; padding: 20px 0; margin: 8px 0; border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); }
-.blog-ad-article, .blog-ad-mid-article { display: block; padding: 24px 0; margin: 32px 0; border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); }
-.blog-ad-sidebar { display: block; padding: 18px 0; margin-top: 28px; border-top: 1px solid var(--hair); }
+.blog-ad-article, .blog-ad-mid-article { display: block; padding: 24px 0; margin: 40px 0; border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); max-width: 68ch; }
+.blog-ad-sidebar { display: block; padding: 18px 0 0; border-top: 1px solid var(--ink); }
 
+/* ---------- responsive ---------- */
 @media (max-width: 1024px) {
-  .blog-article-grid { grid-template-columns: minmax(0, 1fr); gap: 44px; }
+  .blog-article-grid { grid-template-columns: minmax(0, 1fr); gap: 48px; }
   .blog-article-sidebar-inner { position: static; }
+  .blog-content, .blog-faq, .blog-source, .blog-ad-article, .blog-ad-mid-article { max-width: none; }
+  .blog-lead { grid-template-columns: minmax(0, 1fr); gap: 30px; }
+}
+
+@media (max-width: 720px) {
+  .blog-article-shell { padding: 0 20px; }
+  .blog-content { font-size: 17px; }
+  .blog-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .blog-fact { padding: 12px 14px 12px 0; }
+  .blog-fact + .blog-fact { border-left: none; padding-left: 0; }
+  .blog-fact:nth-child(odd) { padding-left: 0; }
+  .blog-byline { gap: 14px; }
+  .blog-author-box { flex-wrap: wrap; }
+  .blog-pager { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .blog-pager-link--next { text-align: left; }
+  .blog-row { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .blog-row-index { display: none; }
+  .blog-row-meta { text-align: left; padding-top: 2px; line-height: 1.6; }
 }
 
 /* ---------- products ---------- */

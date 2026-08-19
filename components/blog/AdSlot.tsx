@@ -14,6 +14,23 @@ interface AdSlotProps {
 
 const PUB_ID = process.env.NEXT_PUBLIC_ADSENSE_PUB_ID;
 
+/**
+ * MASTER SWITCH — ads are OFF unless this is explicitly turned on.
+ *
+ *   NEXT_PUBLIC_ADS_ENABLED=true
+ *
+ * Every call site, its placement and the AdSense compliance reasoning behind
+ * each slot are left intact in app/blog/*; this gate is the one thing that
+ * decides whether any of it renders. Turning ads back on is setting one
+ * variable, not re-deriving where the units are allowed to sit.
+ *
+ * While it is off, AdSlot renders NOTHING — not an empty wrapper and not the
+ * dev placeholder. An empty labelled box with a border is worse than no ad: it
+ * takes 250px of the reading column and tells the reader the page is monetised
+ * without showing them anything.
+ */
+const ADS_ENABLED = process.env.NEXT_PUBLIC_ADS_ENABLED === "true";
+
 // CLS prevention: pre-reserve space before the ad script fires.
 // Heights match the minimum rendered size for each format so the
 // page does not reflow when the ad slot fills in.
@@ -44,7 +61,7 @@ export default function AdSlot({
   const pushed = useRef(false);
 
   useEffect(() => {
-    if (!PUB_ID || pushed.current) return;
+    if (!ADS_ENABLED || !PUB_ID || pushed.current) return;
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
       pushed.current = true;
@@ -55,17 +72,8 @@ export default function AdSlot({
 
   const reservedMinHeight = FORMAT_MIN_HEIGHT[format] ?? 90;
 
-  // Dev / no pub-ID: render a visible placeholder so layout is auditable
-  if (!PUB_ID) {
-    return (
-      <div className={`blog-ad-slot blog-ad-slot--placeholder ${className}`} style={style}>
-        {label && <p className="blog-ad-label">Advertisement</p>}
-        <div className="blog-ad-placeholder-inner" style={{ minHeight: reservedMinHeight }}>
-          <span>Ad · {format}</span>
-        </div>
-      </div>
-    );
-  }
+  // Switched off, or no publisher ID configured — render nothing at all.
+  if (!ADS_ENABLED || !PUB_ID) return null;
 
   return (
     <div className={`blog-ad-slot ${className}`} style={style}>

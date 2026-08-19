@@ -44,9 +44,21 @@ export default function Faq({
                   )}
                 </button>
               </h3>
-              {isOpen ? (
-                <p className="bs-faq-a" id={`${id}-panel-${i}`}>{f.answer}</p>
-              ) : null}
+              {/*
+                Rendered whether or not the panel is open, and hidden with the
+                `hidden` attribute rather than removed from the tree.
+
+                The FAQPage JSON-LD this page emits (HOME_FAQ_STRUCT_DATA)
+                describes every answer. Conditionally rendering them meant the
+                HTML a crawler received contained exactly one of them, so the
+                markup asserted content that was not on the page — a structured
+                data policy violation, not merely a lost rich result. Google
+                explicitly allows FAQ answers inside a collapsed accordion; what
+                it does not allow is markup with no corresponding content.
+              */}
+              <p className="bs-faq-a" id={`${id}-panel-${i}`} hidden={!isOpen}>
+                {f.answer}
+              </p>
             </div>
           );
         })}

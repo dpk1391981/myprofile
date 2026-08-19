@@ -46,7 +46,11 @@ interface BlogData {
 const EMPTY: BlogData = {
   title: "", slug: "", description: "", content: "",
   tags: [], category: "JavaScript", coverEmoji: "📝",
-  readTime: "5 min read", featured: false, status: "draft",
+  // New posts start LIVE, not as drafts. The draft state exists for a review
+  // queue that nobody works — a post saved here was written to be published,
+  // and leaving it at "draft" only meant it silently never appeared on /blog.
+  // The status select below still offers "draft" for a deliberate hold.
+  readTime: "5 min read", featured: false, status: "published",
   date: new Date().toISOString().split("T")[0], sourceUrl: "",
   seoTitle: "", seoDescription: "", focusKeyword: "",
   seoKeywords: [], ogImage: "", canonicalUrl: "",

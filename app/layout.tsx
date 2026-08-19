@@ -64,7 +64,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
 
-      {process.env.NEXT_PUBLIC_ADSENSE_PUB_ID && (
+      {/* Loaded only when ads are switched on — see components/blog/AdSlot.tsx
+          for the master switch. With ads off there is no reason to pull a
+          third-party script onto every page in the site. */}
+      {process.env.NEXT_PUBLIC_ADS_ENABLED === "true" && process.env.NEXT_PUBLIC_ADSENSE_PUB_ID && (
         <Script
           async
           src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_PUB_ID}`}
