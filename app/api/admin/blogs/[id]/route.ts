@@ -7,6 +7,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/require-admin";
 import { adminUpdatePost, adminDeletePost } from "@/components/utils/portfolio-api";
+import { revalidateBlog } from "@/lib/revalidate-blog";
 
 const API_BASE = (
   process.env.PORTFOLIO_API_URL || "https://ai.vtechxhub.com/api/v1"
@@ -42,6 +43,9 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   try {
     const body = await req.json();
     const { post } = await adminUpdatePost(params.id, body);
+    // An edit that the author cannot see on the live site reads as a failed
+    // save, so the public caches are dropped before this responds.
+    revalidateBlog(post?.slug);
     return NextResponse.json({ blog: post });
   } catch (err: any) {
     const msg = String(err.message || "");
@@ -57,6 +61,9 @@ export async function DELETE(_req: Request, { params }: { params: { id: string }
 
   try {
     await adminDeletePost(params.id);
+    // The slug is already gone upstream — the route-level purge inside
+    // revalidateBlog is what drops the cached page for it.
+    revalidateBlog();
     return NextResponse.json({ success: true });
   } catch (err: any) {
     const msg = String(err.message || "");

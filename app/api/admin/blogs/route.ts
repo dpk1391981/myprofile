@@ -15,6 +15,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/require-admin";
 import { adminListPosts, adminCreatePost } from "@/components/utils/portfolio-api";
+import { revalidateBlog } from "@/lib/revalidate-blog";
 
 export async function GET() {
   const authError = requireAdmin();
@@ -38,6 +39,7 @@ export async function POST(req: Request) {
     // Slug and date defaults are applied upstream, so they are not duplicated
     // here — one place deciding them keeps the two paths from disagreeing.
     const { post } = await adminCreatePost(body);
+    revalidateBlog(post?.slug);
     return NextResponse.json({ blog: post }, { status: 201 });
   } catch (err: any) {
     const msg = String(err.message || "");

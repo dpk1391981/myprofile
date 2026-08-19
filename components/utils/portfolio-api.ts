@@ -362,7 +362,15 @@ export async function adminListContacts(): Promise<{
 export async function adminTriggerContentRun(params: {
   count?: number;
   publish?: boolean;
-} = {}): Promise<{ status: string; run_id: string; count: number; publish: boolean }> {
+  /** false = release each article on write instead of 4–25 minutes later. */
+  schedule?: boolean;
+} = {}): Promise<{
+  status: string;
+  run_id: string;
+  count: number;
+  publish: boolean;
+  schedule?: boolean;
+}> {
   return apiFetch("/portfolio/blog/run-daily", {
     method: "POST",
     auth: true,
@@ -370,6 +378,7 @@ export async function adminTriggerContentRun(params: {
     body: {
       count: params.count,
       publish: params.publish ?? true,
+      schedule: params.schedule ?? true,
     },
   });
 }

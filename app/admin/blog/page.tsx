@@ -25,6 +25,31 @@ interface Blog {
   tags: string[];
   readTime: string;
   createdAt: string;
+  /** Release instant. A value in the future means the post is written and
+   *  marked published but the public API still answers 404 for it. */
+  publishedAt?: string | null;
+}
+
+type LiveState = "live" | "scheduled" | "draft";
+
+/**
+ * What the public site would say about this post right now.
+ *
+ * The upstream read filters on `published_at <= NOW()`, so "published" in the
+ * database is not the same as "reachable at its URL" — which is exactly the
+ * gap that made a freshly generated post look like a broken 404.
+ */
+function liveState(b: Blog): LiveState {
+  if (b.status !== "published") return "draft";
+  if (!b.publishedAt) return "scheduled";
+  return new Date(b.publishedAt).getTime() <= Date.now() ? "live" : "scheduled";
+}
+
+function goLiveLabel(iso?: string | null) {
+  if (!iso) return "waiting for a release time";
+  const at = new Date(iso);
+  const mins = Math.max(1, Math.round((at.getTime() - Date.now()) / 60000));
+  return `goes live in ~${mins} min (${at.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })})`;
 }
 
 export default function AdminBlogList() {
@@ -33,6 +58,7 @@ export default function AdminBlogList() {
   const [filter, setFilter] = useState<"all" | "published" | "draft">("all");
   const [search, setSearch] = useState("");
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [toggling, setToggling] = useState<string | null>(null);
 
   useEffect(() => {
     loadBlogs();
@@ -49,14 +75,33 @@ export default function AdminBlogList() {
     }
   }
 
+  /**
+   * Publish / unpublish, and — for a post still inside its release window —
+   * "publish now": the API pulls a future published_at back to the present, so
+   * the post is reachable the moment this returns rather than whenever the
+   * generator had scheduled it.
+   */
   async function togglePublish(blog: Blog) {
-    const newStatus = blog.status === "published" ? "draft" : "published";
-    await fetch(`/api/admin/blogs/${blog.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: newStatus }),
-    });
-    setBlogs((prev) => prev.map((b) => (b.id === blog.id ? { ...b, status: newStatus } : b)));
+    const state = liveState(blog);
+    const newStatus = state === "live" ? "draft" : "published";
+    setToggling(blog.id);
+    try {
+      const res = await fetch(`/api/admin/blogs/${blog.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      const data = await res.json().catch(() => ({}));
+      setBlogs((prev) =>
+        prev.map((b) =>
+          b.id === blog.id
+            ? { ...b, status: newStatus, publishedAt: data?.blog?.publishedAt ?? b.publishedAt }
+            : b
+        )
+      );
+    } finally {
+      setToggling(null);
+    }
   }
 
   async function deleteBlog(id: string) {
@@ -76,10 +121,31 @@ export default function AdminBlogList() {
     return matchStatus && matchSearch;
   });
 
-  const statusPill = (status: string) =>
-    status === "published"
-      ? "bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
-      : "bg-amber-50 text-amber-700 hover:bg-amber-100";
+  const PILL: Record<LiveState, string> = {
+    live: "bg-emerald-50 text-emerald-700 hover:bg-emerald-100",
+    scheduled: "bg-sky-50 text-sky-700 hover:bg-sky-100",
+    draft: "bg-amber-50 text-amber-700 hover:bg-amber-100",
+  };
+
+  function StatusButton({ blog }: { blog: Blog }) {
+    const state = liveState(blog);
+    return (
+      <button
+        onClick={() => togglePublish(blog)}
+        disabled={toggling === blog.id}
+        title={
+          state === "scheduled"
+            ? `Not on the site yet — ${goLiveLabel(blog.publishedAt)}. Click to publish now.`
+            : state === "live"
+              ? "Live on the site. Click to unpublish."
+              : "Draft. Click to publish now."
+        }
+        className={`rounded-full px-2.5 py-1 text-[11px] font-semibold capitalize transition-colors disabled:opacity-50 ${PILL[state]}`}
+      >
+        {toggling === blog.id ? "…" : state === "live" ? "published" : state}
+      </button>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
@@ -192,13 +258,10 @@ export default function AdminBlogList() {
                       {blog.date || new Date(blog.createdAt).toLocaleDateString()}
                     </td>
                     <td className="px-4 py-3.5">
-                      <button
-                        onClick={() => togglePublish(blog)}
-                        title="Toggle published / draft"
-                        className={`rounded-full px-2.5 py-1 text-[11px] font-semibold capitalize transition-colors ${statusPill(blog.status)}`}
-                      >
-                        {blog.status}
-                      </button>
+                      <StatusButton blog={blog} />
+                      {liveState(blog) === "scheduled" && (
+                        <p className="mt-1 text-[11px] text-sky-600">{goLiveLabel(blog.publishedAt)}</p>
+                      )}
                     </td>
                     <td className="px-5 py-3.5">
                       <div className="flex items-center justify-end gap-1">
@@ -258,12 +321,7 @@ export default function AdminBlogList() {
                   </div>
 
                   <div className="mt-3 flex items-center justify-between gap-2">
-                    <button
-                      onClick={() => togglePublish(blog)}
-                      className={`rounded-full px-2.5 py-1 text-[11px] font-semibold capitalize transition-colors ${statusPill(blog.status)}`}
-                    >
-                      {blog.status}
-                    </button>
+                    <StatusButton blog={blog} />
                     <div className="flex items-center gap-1">
                       <a
                         href={`/blog/${blog.slug}`}

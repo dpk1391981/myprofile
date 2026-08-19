@@ -52,7 +52,10 @@ export async function POST(req: Request) {
   }
 
   try {
-    const result = await adminTriggerContentRun({ count, publish });
+    // schedule:false — this run was triggered by a person watching the list.
+    // The 4–25 minute release jitter is for the nightly cron, where staggering
+    // a batch matters; here it only looks like the post failed to appear.
+    const result = await adminTriggerContentRun({ count, publish, schedule: false });
     return NextResponse.json({
       status: "triggered",
       runId: result.run_id,
