@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "seed": "node scripts/seed.js",
-    "validate:schema": "node scripts/validate-schema.mjs"
+    "validate:schema": "node scripts/validate-schema.mjs",
+    "admin:hash": "node scripts/hash-admin-password.mjs"
   },
   "dependencies": {
     "@tabler/icons-react": "^2.47.0",

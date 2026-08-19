@@ -2,7 +2,9 @@ import mongoose from "mongoose";
 let isConnected = false;
 
 export const connectToDB = async () => {
-  console.log(`Connecting with : `, process.env.NEXT_PUBLIC_MONGO_URI);
+  // Never log the URI itself — it carries the database password, and server
+  // logs are the easiest place in a deployment to read a credential from.
+  console.log("Connecting to MongoDB…");
   mongoose.set("strictQuery", true);
   if (isConnected) {
     return;

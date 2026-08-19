@@ -5,8 +5,7 @@
  * ../route.ts about the two distinct credentials involved.
  */
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { verifyToken } from "@/lib/admin-auth";
+import { requireAdmin } from "@/lib/require-admin";
 import { adminUpdatePost, adminDeletePost } from "@/components/utils/portfolio-api";
 
 const API_BASE = (
@@ -14,16 +13,8 @@ const API_BASE = (
 ).replace(/\/+$/, "");
 const INTERNAL_KEY = process.env.PORTFOLIO_API_KEY || "";
 
-function requireAuth() {
-  const token = cookies().get("admin_token")?.value;
-  if (!token || !verifyToken(token)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  return null;
-}
-
 export async function GET(_req: Request, { params }: { params: { id: string } }) {
-  const authError = requireAuth();
+  const authError = requireAdmin();
   if (authError) return authError;
 
   try {
@@ -45,7 +36,7 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
 }
 
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
-  const authError = requireAuth();
+  const authError = requireAdmin();
   if (authError) return authError;
 
   try {
@@ -61,7 +52,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 }
 
 export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
-  const authError = requireAuth();
+  const authError = requireAdmin();
   if (authError) return authError;
 
   try {

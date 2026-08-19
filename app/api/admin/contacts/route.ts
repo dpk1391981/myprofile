@@ -11,20 +11,11 @@
  * the message recoverable where a hard delete did not.
  */
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { verifyToken } from "@/lib/admin-auth";
+import { requireAdmin } from "@/lib/require-admin";
 import { adminListContacts } from "@/components/utils/portfolio-api";
 
-function requireAuth() {
-  const token = cookies().get("admin_token")?.value;
-  if (!token || !verifyToken(token)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  return null;
-}
-
 export async function GET() {
-  const authError = requireAuth();
+  const authError = requireAdmin();
   if (authError) return authError;
 
   try {

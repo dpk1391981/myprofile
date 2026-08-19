@@ -1,16 +1,10 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { verifyToken } from "@/lib/admin-auth";
-import axios from "axios";
+import { requireAdmin } from "@/lib/require-admin";
+import { fetchPublicHtml } from "@/lib/safe-url";
 import OpenAI from "openai";
 
-function requireAuth() {
-  const token = cookies().get("admin_token")?.value;
-  if (!token || !verifyToken(token)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  return null;
-}
+// dns/net in the SSRF guard need the Node runtime, not Edge.
+export const runtime = "nodejs";
 
 const CATEGORIES = [
   "React.js",
@@ -30,25 +24,23 @@ const CATEGORIES = [
 ];
 
 export async function POST(req: Request) {
-  const authError = requireAuth();
+  const authError = requireAdmin();
   if (authError) return authError;
 
-  const { url } = await req.json();
-  if (!url) {
-    return NextResponse.json({ error: "URL is required" }, { status: 400 });
+  let body: any;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 
-  // Fetch the page content
-  let rawHtml = "";
-  try {
-    const resp = await axios.get(url, {
-      timeout: 15000,
-      headers: { "User-Agent": "Mozilla/5.0 (compatible; blog-extractor/1.0)" },
-    });
-    rawHtml = resp.data as string;
-  } catch {
-    return NextResponse.json({ error: "Failed to fetch URL" }, { status: 422 });
+  // Rejects private/loopback/metadata targets, on the first URL and on every
+  // redirect it follows — see lib/safe-url.ts.
+  const fetched = await fetchPublicHtml(body?.url);
+  if ("error" in fetched) {
+    return NextResponse.json({ error: fetched.error }, { status: 400 });
   }
+  const { html: rawHtml, url } = fetched;
 
   // Strip scripts, styles, nav, header, footer — keep article body text
   const stripped = rawHtml

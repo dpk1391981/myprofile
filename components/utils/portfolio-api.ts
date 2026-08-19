@@ -350,3 +350,26 @@ export async function adminListContacts(): Promise<{
 }> {
   return apiFetch("/portfolio/contacts?limit=300", { auth: true, revalidate: false });
 }
+
+/**
+ * Kick off a portfolio content generation run on the agent service.
+ *
+ * The upstream route hands the work to a FastAPI BackgroundTask and answers
+ * straight away, so this call is fast even though the run itself takes minutes.
+ * All we get back is the run id — there is nothing to poll from here, and the
+ * finished articles simply appear in the post list.
+ */
+export async function adminTriggerContentRun(params: {
+  count?: number;
+  publish?: boolean;
+} = {}): Promise<{ status: string; run_id: string; count: number; publish: boolean }> {
+  return apiFetch("/portfolio/blog/run-daily", {
+    method: "POST",
+    auth: true,
+    revalidate: false,
+    body: {
+      count: params.count,
+      publish: params.publish ?? true,
+    },
+  });
+}

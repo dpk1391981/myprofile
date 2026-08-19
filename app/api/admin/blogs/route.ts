@@ -13,20 +13,11 @@
  * never borrow this route's API key to reach the upstream write endpoints.
  */
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { verifyToken } from "@/lib/admin-auth";
+import { requireAdmin } from "@/lib/require-admin";
 import { adminListPosts, adminCreatePost } from "@/components/utils/portfolio-api";
 
-function requireAuth() {
-  const token = cookies().get("admin_token")?.value;
-  if (!token || !verifyToken(token)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  return null;
-}
-
 export async function GET() {
-  const authError = requireAuth();
+  const authError = requireAdmin();
   if (authError) return authError;
 
   try {
@@ -39,7 +30,7 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const authError = requireAuth();
+  const authError = requireAdmin();
   if (authError) return authError;
 
   try {

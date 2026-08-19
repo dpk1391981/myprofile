@@ -9,23 +9,14 @@
  * not of the content service, so it is listed here where it can be seen.
  */
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { verifyToken } from "@/lib/admin-auth";
+import { requireAdmin } from "@/lib/require-admin";
 import { getSeoConfig, adminUpsertSeo } from "@/components/utils/portfolio-api";
 
 /** Page keys the admin UI can configure. */
 const SEO_KEYS = ["blog-index", "blog-defaults"] as const;
 
-function requireAuth() {
-  const token = cookies().get("admin_token")?.value;
-  if (!token || !verifyToken(token)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  return null;
-}
-
 export async function GET() {
-  const authError = requireAuth();
+  const authError = requireAdmin();
   if (authError) return authError;
 
   try {
@@ -40,7 +31,7 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const authError = requireAuth();
+  const authError = requireAdmin();
   if (authError) return authError;
 
   try {

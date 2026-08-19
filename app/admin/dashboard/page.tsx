@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import GenerateContentCta from "@/components/admin/GenerateContentCta";
 
 interface Blog {
   id: string;
@@ -40,6 +41,8 @@ export default function Dashboard() {
         <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
         <p className="text-slate-500 text-sm mt-1">Welcome back, Deepak!</p>
       </div>
+
+      <GenerateContentCta />
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
