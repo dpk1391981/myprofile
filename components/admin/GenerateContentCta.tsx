@@ -15,6 +15,12 @@
  */
 
 import { useState } from "react";
+import {
+  IconRobot,
+  IconCircleCheck,
+  IconAlertTriangle,
+  IconSparkles,
+} from "@tabler/icons-react";
 
 type Status =
   | { kind: "idle" }
@@ -60,13 +66,15 @@ export default function GenerateContentCta() {
   }
 
   return (
-    <div className="bg-gradient-to-r from-indigo-600 to-violet-600 rounded-xl p-6 mb-8 text-white">
-      <div className="flex flex-col lg:flex-row lg:items-center gap-5">
-        <div className="flex items-start gap-3 flex-1">
-          <span className="text-3xl leading-none">🤖</span>
+    <div className="mb-6 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 p-4 text-white shadow-sm sm:p-5">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
+        <div className="flex flex-1 items-start gap-3">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/15">
+            <IconRobot size={20} stroke={1.8} />
+          </span>
           <div>
-            <h2 className="font-bold text-base">Generate aivtechx Content</h2>
-            <p className="text-indigo-100 text-sm mt-1 max-w-xl">
+            <h2 className="text-sm font-semibold sm:text-base">Generate aivtechx Content</h2>
+            <p className="mt-1 max-w-xl text-xs leading-relaxed text-indigo-100 sm:text-sm">
               Runs the content pipeline on the agent service — sources topics, writes,
               humanises and fact-checks each article. Takes several minutes and finishes
               in the background; new posts appear in the list on refresh.
@@ -74,13 +82,16 @@ export default function GenerateContentCta() {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3 lg:shrink-0">
           <label className="flex items-center gap-2 text-sm">
             <span className="text-indigo-100">Articles</span>
             <select
               value={count}
               onChange={(e) => setCount(Number(e.target.value))}
-              className="bg-white/15 border border-white/25 rounded-lg px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-white/50 [&>option]:text-slate-900"
+              /* A translucent select inherits the banner's white text, which left
+                 the chosen number all but invisible against the control's own
+                 light native background. Solid white + dark ink instead. */
+              className="rounded-lg border border-white/30 bg-white px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-white/60"
             >
               {[1, 2, 3, 4].map((n) => (
                 <option key={n} value={n}>
@@ -95,7 +106,7 @@ export default function GenerateContentCta() {
               type="checkbox"
               checked={!publish}
               onChange={(e) => setPublish(!e.target.checked)}
-              className="w-4 h-4 rounded accent-white"
+              className="h-4 w-4 rounded border-white/40 accent-white"
             />
             Draft only
           </label>
@@ -104,24 +115,36 @@ export default function GenerateContentCta() {
             type="button"
             onClick={trigger}
             disabled={cooling}
-            className="bg-white text-indigo-700 hover:bg-indigo-50 disabled:opacity-60 disabled:cursor-not-allowed font-semibold rounded-lg px-5 py-2.5 text-sm transition-colors whitespace-nowrap"
+            className="flex items-center gap-1.5 whitespace-nowrap rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-indigo-700 transition-colors hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {cooling ? "Triggered ✓" : "Generate Now"}
+            {cooling ? (
+              <>
+                <IconCircleCheck size={16} stroke={2} /> Triggered
+              </>
+            ) : (
+              <>
+                <IconSparkles size={16} stroke={2} /> Generate Now
+              </>
+            )}
           </button>
         </div>
       </div>
 
       {status.kind === "sent" && (
-        <p className="mt-4 text-sm bg-white/15 rounded-lg px-4 py-2.5">
-          ✅ Run started for {status.count} article{status.count > 1 ? "s" : ""}
-          {publish ? "" : " (drafts)"}. It finishes in the background — no need to wait
-          on this page.
+        <p className="mt-4 flex items-start gap-2 rounded-lg bg-white/15 px-3.5 py-2.5 text-xs sm:text-sm">
+          <IconCircleCheck size={16} stroke={2} className="mt-0.5 shrink-0" />
+          <span>
+            Run started for {status.count} article{status.count > 1 ? "s" : ""}
+            {publish ? "" : " (drafts)"}. It finishes in the background — published posts
+            go live a few minutes after the run, on their scheduled release time.
+          </span>
         </p>
       )}
 
       {status.kind === "error" && (
-        <p className="mt-4 text-sm bg-red-900/40 border border-red-300/40 rounded-lg px-4 py-2.5">
-          ⚠️ {status.message}
+        <p className="mt-4 flex items-start gap-2 rounded-lg border border-red-300/40 bg-red-900/40 px-3.5 py-2.5 text-xs sm:text-sm">
+          <IconAlertTriangle size={16} stroke={2} className="mt-0.5 shrink-0" />
+          <span>{status.message}</span>
         </p>
       )}
     </div>

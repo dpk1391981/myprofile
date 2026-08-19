@@ -1,0 +1,68 @@
+/* ============================================================
+   ADMIN SCOPE
+   The public site is a serif "broadsheet": body copy in Source
+   Serif 4, teal links, paper-coloured background, and a dark ink
+   theme toggled from the masthead. None of that belongs in a CMS,
+   and all of it leaks in through body.bs-body and :root.
+
+   Everything here is scoped to .admin-scope so the public pages
+   are untouched. Selectors are written to out-specify the
+   broadsheet rules they replace (body.bs-body h1 is (0,1,2), so a
+   plain .admin-scope h1 at (0,1,1) would lose).
+   ============================================================ */
+
+.admin-scope {
+  /* Broadsheet sets `a { color: var(--spot) }` globally. Rather than fight it
+     with a selector that would also beat Tailwind's text-* utilities, the
+     variable itself is re-pointed at the admin accent inside this subtree. */
+  --spot: #2563eb;
+  --spot-deep: #1d4ed8;
+
+  --admin-sidebar: 264px;
+
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #0f172a;
+  background: #f1f5f9;
+  color-scheme: light; /* the admin is light-only; ignore the site's ink toggle */
+  -webkit-font-smoothing: antialiased;
+}
+
+body.bs-body .admin-scope h1,
+body.bs-body .admin-scope h2,
+body.bs-body .admin-scope h3,
+body.bs-body .admin-scope h4 {
+  font-family: inherit;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+}
+
+/* Form controls inherit the serif otherwise (UA stylesheet aside, the site
+   sets families on body). Admin forms are dense — they need the sans. */
+.admin-scope input,
+.admin-scope textarea,
+.admin-scope select,
+.admin-scope button {
+  font-family: inherit;
+}
+
+.admin-scope :focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+/* Sidebar scrollbar, kept unobtrusive on the dark panel */
+.admin-nav-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
+}
+.admin-nav-scroll::-webkit-scrollbar { width: 6px; }
+.admin-nav-scroll::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 999px;
+}
+
+/* The drawer traps the page behind it on small screens. */
+.admin-scroll-lock { overflow: hidden; }

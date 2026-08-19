@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { IconDeviceFloppy, IconCheck } from "@tabler/icons-react";
+import PageHeader from "@/components/admin/PageHeader";
 
 const TABS = [
-  { key: "blog-index", label: "📋 Blog Listing Page", desc: "SEO for /blog" },
-  { key: "blog-defaults", label: "📄 Article Defaults", desc: "Applied to all articles" },
+  { key: "blog-index", label: "Blog Listing Page", desc: "SEO for /blog" },
+  { key: "blog-defaults", label: "Article Defaults", desc: "Applied to all articles" },
 ] as const;
 
 type TabKey = (typeof TABS)[number]["key"];
@@ -85,7 +87,7 @@ function KeywordInput({
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={add}
         placeholder="Type keyword + Enter to add"
-        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
     </div>
   );
@@ -152,49 +154,54 @@ export default function SeoAdminPage() {
 
   if (loading) {
     return (
-      <div className="p-8 max-w-3xl mx-auto">
-        <div className="space-y-4">{[...Array(6)].map((_, i) => <div key={i} className="h-12 bg-slate-100 rounded-xl animate-pulse" />)}</div>
+      <div className="mx-auto max-w-3xl p-4 sm:p-6 lg:p-8">
+        <div className="space-y-4">{[...Array(6)].map((_, i) => <div key={i} className="h-12 animate-pulse rounded-xl bg-white" />)}</div>
       </div>
     );
   }
 
   return (
-    <div className="p-6 md:p-8 max-w-3xl mx-auto">
-      {/* Header */}
-      <div className="flex items-start justify-between mb-6 flex-wrap gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">SEO Settings</h1>
-          <p className="text-slate-500 text-sm mt-1">Manage titles, descriptions, keywords and Open Graph for all blog pages.</p>
-        </div>
-        <button
-          onClick={save}
-          disabled={saving}
-          className="bg-blue-600 hover:bg-blue-500 disabled:opacity-60 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2"
-        >
-          {saving && <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin inline-block" />}
-          {saving ? "Saving..." : saved ? "✓ Saved!" : "Save Changes"}
-        </button>
-      </div>
+    <div className="mx-auto max-w-3xl p-4 sm:p-6 lg:p-8">
+      <PageHeader
+        title="SEO Settings"
+        description="Manage titles, descriptions, keywords and Open Graph for all blog pages."
+        actions={
+          <button
+            onClick={save}
+            disabled={saving}
+            className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-60"
+          >
+            {saving ? (
+              <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+            ) : saved ? (
+              <IconCheck size={16} stroke={2.2} />
+            ) : (
+              <IconDeviceFloppy size={16} stroke={1.9} />
+            )}
+            {saving ? "Saving…" : saved ? "Saved" : "Save Changes"}
+          </button>
+        }
+      />
 
       {/* Tabs */}
-      <div className="flex gap-1 mb-6 bg-slate-100 p-1 rounded-xl">
+      <div className="mb-6 flex gap-1 rounded-xl bg-slate-100 p-1">
         {TABS.map((t) => (
           <button
             key={t.key}
             onClick={() => { setTab(t.key); setSaved(false); }}
-            className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-colors ${
-              tab === t.key ? "bg-white shadow-sm text-slate-900" : "text-slate-500 hover:text-slate-700"
+            className={`flex-1 rounded-lg px-3 py-2 text-sm font-semibold transition-colors sm:px-4 sm:py-2.5 ${
+              tab === t.key ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
             }`}
           >
             <span className="block">{t.label}</span>
-            <span className="text-xs font-normal opacity-60">{t.desc}</span>
+            <span className="hidden text-xs font-normal opacity-60 sm:block">{t.desc}</span>
           </button>
         ))}
       </div>
 
       {/* Google SERP Preview */}
-      <div className="bg-white border border-slate-200 rounded-xl p-5 mb-6">
-        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Google Search Preview</p>
+      <div className="mb-6 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+        <p className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Google Search Preview</p>
         <div className="space-y-0.5">
           <p className="text-xs text-slate-500 truncate">{previewUrl}</p>
           <p className="text-[17px] text-blue-700 font-medium leading-snug line-clamp-1 cursor-pointer hover:underline">
@@ -205,7 +212,7 @@ export default function SeoAdminPage() {
           </p>
         </div>
         {/* Char indicators */}
-        <div className="mt-3 pt-3 border-t border-slate-100 grid grid-cols-2 gap-3 text-xs">
+        <div className="mt-3 grid grid-cols-1 gap-2 border-t border-slate-100 pt-3 text-xs sm:grid-cols-2 sm:gap-3">
           <div>
             <span className="text-slate-400">Title length: </span>
             <span className={`font-semibold ${previewTitle.length <= 60 ? "text-green-600" : previewTitle.length <= 70 ? "text-amber-600" : "text-red-600"}`}>
@@ -222,7 +229,7 @@ export default function SeoAdminPage() {
       </div>
 
       {/* Form */}
-      <div className="space-y-5">
+      <div className="space-y-5 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
         {/* Page Title / Title Suffix */}
         {tab === "blog-index" ? (
           <div>
@@ -234,7 +241,7 @@ export default function SeoAdminPage() {
               type="text" value={form.pageTitle}
               onChange={(e) => set("pageTitle", e.target.value)}
               placeholder="Blog | Deepak Kumar — React, AI/ML Engineering"
-              className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <p className="text-xs text-slate-400 mt-1">Target: 50–60 chars. Used as &lt;title&gt; and og:title if OG title is empty.</p>
           </div>
@@ -247,7 +254,7 @@ export default function SeoAdminPage() {
               type="text" value={form.titleSuffix}
               onChange={(e) => set("titleSuffix", e.target.value)}
               placeholder=" | Deepak Kumar"
-              className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
             />
             <p className="text-xs text-slate-400 mt-1">Appended after every article title. e.g. "How I Built X <em>| Deepak Kumar</em>"</p>
           </div>
@@ -266,7 +273,7 @@ export default function SeoAdminPage() {
             placeholder={tab === "blog-index"
               ? "Technical blog by Deepak Kumar — React.js, AI/ML, MERN stack. Deep dives into performance, architecture, and production lessons."
               : "Default description used when article has no custom description set."}
-            className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
           />
           <p className="text-xs text-slate-400 mt-1">Target: 130–160 chars. Include primary keywords naturally.</p>
         </div>
@@ -279,8 +286,8 @@ export default function SeoAdminPage() {
         )}
 
         {/* OG Section */}
-        <div className="border border-slate-200 rounded-xl p-4 space-y-4">
-          <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Open Graph (Facebook / LinkedIn)</p>
+        <div className="space-y-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Open Graph (Facebook / LinkedIn)</p>
           <div>
             <div className="flex items-center justify-between mb-1">
               <label className="text-xs font-semibold text-slate-600">OG Title</label>
@@ -290,7 +297,7 @@ export default function SeoAdminPage() {
               type="text" value={form.ogTitle}
               onChange={(e) => set("ogTitle", e.target.value)}
               placeholder="Leave blank to use Page Title"
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -303,7 +310,7 @@ export default function SeoAdminPage() {
               onChange={(e) => set("ogDescription", e.target.value)}
               rows={2}
               placeholder="Leave blank to use Meta Description"
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
             />
           </div>
           <div>
@@ -312,14 +319,14 @@ export default function SeoAdminPage() {
               type="url" value={form.ogImage}
               onChange={(e) => set("ogImage", e.target.value)}
               placeholder="https://your-site.com/og-blog.png (1200×630px recommended)"
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
 
         {/* Twitter Section */}
-        <div className="border border-slate-200 rounded-xl p-4 space-y-4">
-          <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Twitter / X Card</p>
+        <div className="space-y-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Twitter / X Card</p>
           <div>
             <div className="flex items-center justify-between mb-1">
               <label className="text-xs font-semibold text-slate-600">Twitter Title</label>
@@ -329,7 +336,7 @@ export default function SeoAdminPage() {
               type="text" value={form.twitterTitle}
               onChange={(e) => set("twitterTitle", e.target.value)}
               placeholder="Leave blank to use OG/Page Title"
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -339,7 +346,7 @@ export default function SeoAdminPage() {
               onChange={(e) => set("twitterDescription", e.target.value)}
               rows={2}
               placeholder="Leave blank to use Meta Description"
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
             />
           </div>
           <div>
@@ -348,7 +355,7 @@ export default function SeoAdminPage() {
               type="text" value={form.twitterCreator}
               onChange={(e) => set("twitterCreator", e.target.value)}
               placeholder="@deepakkutniyal"
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
             />
           </div>
         </div>
@@ -360,7 +367,7 @@ export default function SeoAdminPage() {
             <select
               value={form.robots}
               onChange={(e) => set("robots", e.target.value)}
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="index, follow">index, follow (default)</option>
               <option value="noindex, follow">noindex, follow</option>
@@ -374,7 +381,7 @@ export default function SeoAdminPage() {
               type="url" value={form.canonicalUrl}
               onChange={(e) => set("canonicalUrl", e.target.value)}
               placeholder={`${siteUrl}/blog`}
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
@@ -384,10 +391,10 @@ export default function SeoAdminPage() {
           <button
             onClick={save}
             disabled={saving}
-            className="bg-blue-600 hover:bg-blue-500 disabled:opacity-60 text-white px-6 py-2.5 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2"
+            className="flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-60"
           >
             {saving && <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin inline-block" />}
-            {saving ? "Saving..." : "Save Changes"}
+            {saving ? "Saving…" : "Save Changes"}
           </button>
           {saved && <span className="text-green-600 text-sm font-semibold">✓ Saved successfully!</span>}
         </div>

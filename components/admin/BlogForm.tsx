@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import BlogEditor from "./BlogEditor";
 import UrlExtractor from "./UrlExtractor";
+import { IconAlertTriangle, IconChevronDown, IconRobot } from "@tabler/icons-react";
 
 const CATEGORIES = [
   "React.js", "JavaScript", "TypeScript", "Node.js", "Next.js",
@@ -206,50 +207,54 @@ export default function BlogForm({ initial, isEdit = false }: BlogFormProps) {
   const previewUrl   = `${siteUrl}/blog/${form.slug || "post-slug"}`;
 
   return (
-    <div className="p-6 md:p-8 max-w-5xl mx-auto">
+    <div className="mx-auto max-w-6xl p-4 sm:p-6 lg:p-8">
       {/* ── Header ──────────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">{isEdit ? "Edit Post" : "New Post"}</h1>
-          <p className="text-slate-500 text-sm mt-0.5">
+      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
+            {isEdit ? "Edit Post" : "New Post"}
+          </h1>
+          <p className="mt-0.5 truncate text-sm text-slate-500">
             {isEdit ? `Editing: ${initial?.title}` : "Create a new blog post"}
           </p>
         </div>
-        <div className="flex gap-2">
+        {/* The actions wrap rather than shrink — three buttons do not fit a phone row. */}
+        <div className="flex flex-wrap gap-2">
           <button type="button" onClick={() => router.push("/admin/blog")}
-            className="px-4 py-2 text-sm border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors">
+            className="rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50">
             Cancel
           </button>
           <button type="button" onClick={() => save("draft")} disabled={saving}
-            className="px-4 py-2 text-sm bg-slate-200 hover:bg-slate-300 rounded-lg text-slate-800 font-semibold transition-colors disabled:opacity-50">
+            className="rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-50">
             Save Draft
           </button>
           <button type="button" onClick={() => save("published")} disabled={saving}
-            className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 rounded-lg text-white font-semibold transition-colors disabled:opacity-50 flex items-center gap-2">
-            {saving && <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin inline-block" />}
-            {saving ? "Saving..." : "Publish"}
+            className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-50">
+            {saving && <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />}
+            {saving ? "Saving…" : "Publish"}
           </button>
         </div>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg px-4 py-3 mb-4">
-          ⚠️ {error}
+        <div className="mb-4 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+          <IconAlertTriangle size={16} stroke={2} className="mt-0.5 shrink-0" />
+          <span>{error}</span>
         </div>
       )}
 
       {/* ── Main Tabs: Content | SEO ─────────────────────────────────── */}
-      <div className="flex gap-1 mb-5 bg-slate-100 p-1 rounded-xl w-fit">
+      <div className="mb-5 flex w-full gap-1 rounded-xl bg-slate-100 p-1 sm:w-fit">
         {(["content", "seo"] as const).map((t) => (
           <button
             key={t}
             type="button"
             onClick={() => setActiveTab(t)}
-            className={`px-5 py-2 rounded-lg text-sm font-semibold transition-colors ${
-              activeTab === t ? "bg-white shadow-sm text-slate-900" : "text-slate-500 hover:text-slate-700"
+            className={`flex-1 rounded-lg px-4 py-2 text-sm font-semibold transition-colors sm:flex-none sm:px-5 ${
+              activeTab === t ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
             }`}
           >
-            {t === "content" ? "✏️ Content & Settings" : "🔍 SEO"}
+            {t === "content" ? "Content & Settings" : "SEO"}
           </button>
         ))}
       </div>
@@ -262,16 +267,17 @@ export default function BlogForm({ initial, isEdit = false }: BlogFormProps) {
           {/* AI extractor */}
           <div className="mb-5">
             <button type="button" onClick={() => setShowExtractor((s) => !s)}
-              className="text-sm text-purple-700 font-semibold hover:text-purple-500 flex items-center gap-1.5">
-              <span>{showExtractor ? "▲" : "▼"}</span>
-              🤖 {showExtractor ? "Hide" : "Show"} AI URL Extractor
+              className="flex items-center gap-1.5 rounded-lg border border-purple-200 bg-purple-50 px-3 py-2 text-sm font-semibold text-purple-700 transition-colors hover:bg-purple-100">
+              <IconRobot size={16} stroke={1.9} />
+              {showExtractor ? "Hide" : "Show"} AI URL Extractor
+              <IconChevronDown size={15} stroke={2} className={showExtractor ? "rotate-180 transition-transform" : "transition-transform"} />
             </button>
             {showExtractor && <div className="mt-3"><UrlExtractor onExtracted={handleExtracted} /></div>}
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid gap-5 lg:grid-cols-3 lg:gap-6">
             {/* Left: editor */}
-            <div className="md:col-span-2 space-y-5">
+            <div className="space-y-5 lg:col-span-2">
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-1.5">
                   Title <span className="text-red-500">*</span>
@@ -279,7 +285,7 @@ export default function BlogForm({ initial, isEdit = false }: BlogFormProps) {
                 <input type="text" value={form.title}
                   onChange={(e) => set("title", e.target.value)}
                   placeholder="e.g. How I Built a Real-Time Dashboard with React and WebSockets"
-                  className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900"
+                  className="w-full bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900"
                 />
               </div>
               <div>
@@ -289,7 +295,7 @@ export default function BlogForm({ initial, isEdit = false }: BlogFormProps) {
                 <textarea value={form.description} onChange={(e) => set("description", e.target.value)}
                   placeholder="Short summary shown on the blog list page (1-2 sentences)"
                   rows={2}
-                  className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 resize-none"
+                  className="w-full bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 resize-none"
                 />
               </div>
               <div>
@@ -303,13 +309,13 @@ export default function BlogForm({ initial, isEdit = false }: BlogFormProps) {
             {/* Right: settings sidebar */}
             <div className="space-y-4">
               {/* Publishing */}
-              <div className="bg-white border border-slate-200 rounded-xl p-4">
-                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Publishing</h3>
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <h3 className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-3">Publishing</h3>
                 <div className="space-y-3">
                   <div>
                     <label className="block text-xs font-medium text-slate-600 mb-1">Status</label>
                     <select value={form.status} onChange={(e) => set("status", e.target.value as any)}
-                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                      className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                       <option value="draft">Draft</option>
                       <option value="published">Published</option>
                     </select>
@@ -317,39 +323,39 @@ export default function BlogForm({ initial, isEdit = false }: BlogFormProps) {
                   <div>
                     <label className="block text-xs font-medium text-slate-600 mb-1">Date</label>
                     <input type="date" value={form.date} onChange={(e) => set("date", e.target.value)}
-                      className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                      className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                   </div>
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input type="checkbox" checked={form.featured} onChange={(e) => set("featured", e.target.checked)}
                       className="w-4 h-4 rounded accent-blue-600" />
-                    <span className="text-xs font-medium text-slate-700">⭐ Featured post</span>
+                    <span className="text-xs font-medium text-slate-700">Featured post</span>
                   </label>
                 </div>
               </div>
 
               {/* Slug */}
-              <div className="bg-white border border-slate-200 rounded-xl p-4">
-                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">URL Slug</h3>
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <h3 className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-2">URL Slug</h3>
                 <p className="text-[11px] text-slate-400 mb-1.5">/blog/</p>
                 <input type="text" value={form.slug}
                   onChange={(e) => { slugEdited.current = true; set("slug", e.target.value); }}
                   placeholder="my-post-slug"
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 <p className="text-xs text-slate-400 mt-1">Auto-generated from title</p>
               </div>
 
               {/* Category */}
-              <div className="bg-white border border-slate-200 rounded-xl p-4">
-                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Category</h3>
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <h3 className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-3">Category</h3>
                 <select value={form.category} onChange={(e) => set("category", e.target.value)}
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                   {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
                 </select>
               </div>
 
               {/* Cover Emoji */}
-              <div className="bg-white border border-slate-200 rounded-xl p-4">
-                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Cover Emoji</h3>
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <h3 className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-2">Cover Emoji</h3>
                 <button type="button" onClick={() => setShowEmojiPicker((s) => !s)}
                   className="text-4xl mb-1 hover:scale-110 transition-transform">{form.coverEmoji}</button>
                 {showEmojiPicker && (
@@ -367,8 +373,8 @@ export default function BlogForm({ initial, isEdit = false }: BlogFormProps) {
               </div>
 
               {/* Tags */}
-              <div className="bg-white border border-slate-200 rounded-xl p-4">
-                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Tags</h3>
+              <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <h3 className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-3">Tags</h3>
                 <div className="flex flex-wrap gap-1.5 mb-2">
                   {form.tags.map((tag) => (
                     <span key={tag} className="flex items-center gap-1 bg-blue-50 text-blue-700 text-xs px-2 py-0.5 rounded-full font-medium">
@@ -382,23 +388,23 @@ export default function BlogForm({ initial, isEdit = false }: BlogFormProps) {
                   onChange={(e) => setTagInput(e.target.value)}
                   onKeyDown={addTag}
                   placeholder="Type tag + Enter"
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 <p className="text-xs text-slate-400 mt-1">Press Enter or comma to add</p>
               </div>
 
               {/* Read time + Source */}
-              <div className="bg-white border border-slate-200 rounded-xl p-4 space-y-3">
+              <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
                 <div>
-                  <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Read Time</h3>
+                  <h3 className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-2">Read Time</h3>
                   <input type="text" value={form.readTime} onChange={(e) => set("readTime", e.target.value)}
                     placeholder="5 min read"
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
                 <div>
-                  <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Source URL</h3>
+                  <h3 className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-2">Source URL</h3>
                   <input type="url" value={form.sourceUrl || ""} onChange={(e) => set("sourceUrl", e.target.value)}
                     placeholder="https://original-article.com"
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
               </div>
             </div>
@@ -410,7 +416,7 @@ export default function BlogForm({ initial, isEdit = false }: BlogFormProps) {
           TAB 2 — SEO
       ════════════════════════════════════════════════════════════════ */}
       {activeTab === "seo" && (
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid gap-5 lg:grid-cols-2 lg:gap-6">
           {/* Left: SEO fields */}
           <div className="space-y-5">
 
@@ -422,7 +428,7 @@ export default function BlogForm({ initial, isEdit = false }: BlogFormProps) {
               <input type="text" value={form.seoTitle}
                 onChange={(e) => set("seoTitle", e.target.value)}
                 placeholder={form.title || "Article title (auto-used if blank)"}
-                className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <div className="mt-1.5">
                 <CharBar len={form.seoTitle.length || form.title.length} max={70} warn={60} />
@@ -441,7 +447,7 @@ export default function BlogForm({ initial, isEdit = false }: BlogFormProps) {
                 onChange={(e) => set("seoDescription", e.target.value)}
                 rows={3}
                 placeholder={form.description || "Compelling description with primary keyword (130–160 chars)"}
-                className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
               />
               <div className="mt-1.5">
                 <CharBar len={form.seoDescription.length || form.description.length} max={165} warn={160} />
@@ -459,14 +465,14 @@ export default function BlogForm({ initial, isEdit = false }: BlogFormProps) {
               <input type="text" value={form.focusKeyword}
                 onChange={(e) => set("focusKeyword", e.target.value)}
                 placeholder="e.g. React performance optimization"
-                className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <p className="text-xs text-slate-400 mt-1">Primary keyword you want to rank for.</p>
             </div>
 
             {/* Keyword analysis */}
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
-              <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Keyword Analysis</p>
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-3">Keyword Analysis</p>
               <KeywordAnalyzer
                 focusKeyword={form.focusKeyword}
                 title={form.seoTitle || form.title}
@@ -495,7 +501,7 @@ export default function BlogForm({ initial, isEdit = false }: BlogFormProps) {
                 onChange={(e) => setSeoKwInput(e.target.value)}
                 onKeyDown={addSeoKw}
                 placeholder="Type keyword + Enter"
-                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <p className="text-xs text-slate-400 mt-1">These are added to the &lt;meta keywords&gt; tag alongside post tags.</p>
             </div>
@@ -506,7 +512,7 @@ export default function BlogForm({ initial, isEdit = false }: BlogFormProps) {
               <input type="url" value={form.ogImage}
                 onChange={(e) => set("ogImage", e.target.value)}
                 placeholder="https://your-site.com/og-images/post.png (1200×630)"
-                className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <p className="text-xs text-slate-400 mt-1">
                 Shown when shared on Twitter, LinkedIn, Facebook. Recommended: 1200×630px.
@@ -518,7 +524,7 @@ export default function BlogForm({ initial, isEdit = false }: BlogFormProps) {
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1">Robots</label>
                 <select value={form.robots} onChange={(e) => set("robots", e.target.value)}
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                   <option value="index, follow">index, follow</option>
                   <option value="noindex, follow">noindex, follow</option>
                   <option value="index, nofollow">index, nofollow</option>
@@ -530,7 +536,7 @@ export default function BlogForm({ initial, isEdit = false }: BlogFormProps) {
                 <input type="url" value={form.canonicalUrl}
                   onChange={(e) => set("canonicalUrl", e.target.value)}
                   placeholder={`${siteUrl}/blog/${form.slug}`}
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -539,7 +545,7 @@ export default function BlogForm({ initial, isEdit = false }: BlogFormProps) {
           {/* Right: Preview panel */}
           <div className="space-y-5">
             {/* Google preview */}
-            <div className="bg-white border border-slate-200 rounded-xl p-5 sticky top-24">
+            <div className="sticky top-[72px] rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">
                 Google Search Preview
               </p>

@@ -2,7 +2,20 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import {
+  IconArticle,
+  IconCircleCheck,
+  IconNote,
+  IconStar,
+  IconPencilPlus,
+  IconLink,
+  IconWorld,
+  IconArrowRight,
+  IconInbox,
+  type TablerIconsProps,
+} from "@tabler/icons-react";
 import GenerateContentCta from "@/components/admin/GenerateContentCta";
+import PageHeader from "@/components/admin/PageHeader";
 
 interface Blog {
   id: string;
@@ -15,6 +28,13 @@ interface Blog {
   coverEmoji: string;
   createdAt: string;
 }
+
+type Stat = {
+  label: string;
+  value: number;
+  icon: (p: TablerIconsProps) => JSX.Element;
+  tone: string;
+};
 
 export default function Dashboard() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
@@ -30,128 +50,171 @@ export default function Dashboard() {
   const published = blogs.filter((b) => b.status === "published").length;
   const drafts = blogs.filter((b) => b.status === "draft").length;
   const featured = blogs.filter((b) => b.featured).length;
-  const recent = [...blogs].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  ).slice(0, 5);
+  const recent = [...blogs]
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 5);
+
+  const stats: Stat[] = [
+    { label: "Total Posts", value: blogs.length, icon: IconArticle, tone: "bg-blue-50 text-blue-600" },
+    { label: "Published", value: published, icon: IconCircleCheck, tone: "bg-emerald-50 text-emerald-600" },
+    { label: "Drafts", value: drafts, icon: IconNote, tone: "bg-amber-50 text-amber-600" },
+    { label: "Featured", value: featured, icon: IconStar, tone: "bg-violet-50 text-violet-600" },
+  ];
 
   return (
-    <div className="p-8">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
-        <p className="text-slate-500 text-sm mt-1">Welcome back, Deepak!</p>
-      </div>
+    <div className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
+      <PageHeader title="Dashboard" description="Welcome back, Deepak — here's your content at a glance." />
 
       <GenerateContentCta />
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        {[
-          { label: "Total Posts", value: blogs.length, icon: "📝", color: "bg-blue-50 border-blue-200 text-blue-700" },
-          { label: "Published", value: published, icon: "✅", color: "bg-green-50 border-green-200 text-green-700" },
-          { label: "Drafts", value: drafts, icon: "🗒️", color: "bg-amber-50 border-amber-200 text-amber-700" },
-          { label: "Featured", value: featured, icon: "⭐", color: "bg-purple-50 border-purple-200 text-purple-700" },
-        ].map((stat) => (
-          <div key={stat.label} className={`rounded-xl border p-5 ${stat.color}`}>
-            <div className="text-2xl mb-2">{stat.icon}</div>
-            <div className="text-3xl font-bold">{loading ? "—" : stat.value}</div>
-            <div className="text-sm font-medium mt-1 opacity-80">{stat.label}</div>
+      <div className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+        {stats.map(({ label, value, icon: Icon, tone }) => (
+          <div
+            key={label}
+            className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5"
+          >
+            <div className={`mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg ${tone}`}>
+              <Icon size={18} stroke={1.8} />
+            </div>
+            <div className="text-2xl font-bold text-slate-900 sm:text-3xl">
+              {loading ? <span className="text-slate-300">—</span> : value}
+            </div>
+            <div className="mt-0.5 text-xs font-medium text-slate-500 sm:text-sm">{label}</div>
           </div>
         ))}
       </div>
 
-      {/* Quick actions */}
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid gap-4 sm:gap-6 xl:grid-cols-3">
         {/* Recent posts */}
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-bold text-slate-900">Recent Posts</h2>
-            <Link href="/admin/blog" className="text-blue-600 text-xs font-medium hover:underline">
-              View all →
+        <section className="rounded-xl border border-slate-200 bg-white shadow-sm xl:col-span-2">
+          <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3.5 sm:px-5">
+            <h2 className="text-sm font-semibold text-slate-900">Recent Posts</h2>
+            <Link
+              href="/admin/blog"
+              className="flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700"
+            >
+              View all <IconArrowRight size={14} stroke={2} />
             </Link>
           </div>
+
           {loading ? (
-            <div className="space-y-3">
+            <div className="space-y-2 p-4 sm:p-5">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-12 bg-slate-100 rounded-lg animate-pulse" />
+                <div key={i} className="h-14 animate-pulse rounded-lg bg-slate-100" />
               ))}
             </div>
           ) : recent.length === 0 ? (
-            <div className="text-center py-8 text-slate-400 text-sm">
-              <div className="text-3xl mb-2">📭</div>
-              No posts yet.{" "}
-              <Link href="/admin/blog/new" className="text-blue-600 hover:underline">
-                Create your first post
-              </Link>
+            <div className="px-5 py-12 text-center">
+              <IconInbox size={32} stroke={1.5} className="mx-auto mb-2 text-slate-300" />
+              <p className="text-sm text-slate-500">
+                No posts yet.{" "}
+                <Link href="/admin/blog/new" className="font-medium text-blue-600 hover:underline">
+                  Create your first post
+                </Link>
+              </p>
             </div>
           ) : (
-            <div className="space-y-2">
+            <ul className="divide-y divide-slate-100">
               {recent.map((b) => (
-                <Link
-                  key={b.id}
-                  href={`/admin/blog/${b.id}/edit`}
-                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 transition-colors group"
-                >
-                  <span className="text-xl">{b.coverEmoji}</span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-slate-900 line-clamp-1 group-hover:text-blue-600">
-                      {b.title}
-                    </p>
-                    <p className="text-xs text-slate-400">{b.category} · {b.date}</p>
-                  </div>
-                  <span
-                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                      b.status === "published"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-amber-100 text-amber-700"
-                    }`}
+                <li key={b.id}>
+                  <Link
+                    href={`/admin/blog/${b.id}/edit`}
+                    className="group flex items-center gap-3 px-4 py-3 transition-colors hover:bg-slate-50 sm:px-5"
                   >
-                    {b.status}
-                  </span>
-                </Link>
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-base">
+                      {b.coverEmoji}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="line-clamp-1 text-sm font-medium text-slate-900 group-hover:text-blue-600">
+                        {b.title}
+                      </p>
+                      <p className="mt-0.5 truncate text-xs text-slate-400">
+                        {b.category} · {b.date}
+                      </p>
+                    </div>
+                    <span
+                      className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                        b.status === "published"
+                          ? "bg-emerald-50 text-emerald-700"
+                          : "bg-amber-50 text-amber-700"
+                      }`}
+                    >
+                      {b.status}
+                    </span>
+                  </Link>
+                </li>
               ))}
-            </div>
+            </ul>
           )}
-        </div>
+        </section>
 
         {/* Quick actions */}
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
-          <h2 className="font-bold text-slate-900 mb-4">Quick Actions</h2>
-          <div className="space-y-3">
-            <Link
-              href="/admin/blog/new"
-              className="flex items-center gap-3 p-4 bg-blue-600 hover:bg-blue-500 rounded-xl text-white transition-colors"
-            >
-              <span className="text-2xl">✍️</span>
-              <div>
-                <p className="font-semibold text-sm">Write New Post</p>
-                <p className="text-xs text-blue-100">Create from scratch with rich editor</p>
-              </div>
-            </Link>
-            <Link
-              href="/admin/blog/new?tab=extract"
-              className="flex items-center gap-3 p-4 bg-purple-600 hover:bg-purple-500 rounded-xl text-white transition-colors"
-            >
-              <span className="text-2xl">🔗</span>
-              <div>
-                <p className="font-semibold text-sm">Extract from URL</p>
-                <p className="text-xs text-purple-100">Paste URL — AI fills the form</p>
-              </div>
-            </Link>
-            <Link
-              href="/blog"
-              target="_blank"
-              className="flex items-center gap-3 p-4 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-700 transition-colors"
-            >
-              <span className="text-2xl">🌐</span>
-              <div>
-                <p className="font-semibold text-sm">View Public Blog</p>
-                <p className="text-xs text-slate-500">See how your blog looks</p>
-              </div>
-            </Link>
+        <section className="rounded-xl border border-slate-200 bg-white shadow-sm">
+          <div className="border-b border-slate-100 px-4 py-3.5 sm:px-5">
+            <h2 className="text-sm font-semibold text-slate-900">Quick Actions</h2>
           </div>
-        </div>
+          <div className="space-y-2 p-4 sm:p-5">
+            <QuickAction
+              href="/admin/blog/new"
+              icon={IconPencilPlus}
+              title="Write New Post"
+              hint="Create from scratch with the rich editor"
+            />
+            <QuickAction
+              href="/admin/blog/new?tab=extract"
+              icon={IconLink}
+              title="Extract from URL"
+              hint="Paste a URL — AI fills the form"
+            />
+            <QuickAction
+              href="/blog"
+              icon={IconWorld}
+              title="View Public Blog"
+              hint="See how your blog looks"
+              external
+            />
+          </div>
+        </section>
       </div>
     </div>
+  );
+}
+
+function QuickAction({
+  href,
+  icon: Icon,
+  title,
+  hint,
+  external,
+}: {
+  href: string;
+  icon: (p: TablerIconsProps) => JSX.Element;
+  title: string;
+  hint: string;
+  external?: boolean;
+}) {
+  const className =
+    "group flex items-center gap-3 rounded-lg border border-slate-200 p-3 transition-colors hover:border-blue-300 hover:bg-blue-50/60";
+  const body = (
+    <>
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition-colors group-hover:bg-blue-600 group-hover:text-white">
+        <Icon size={18} stroke={1.8} />
+      </span>
+      <span className="min-w-0">
+        <span className="block text-sm font-semibold text-slate-900">{title}</span>
+        <span className="block truncate text-xs text-slate-500">{hint}</span>
+      </span>
+    </>
+  );
+
+  return external ? (
+    <a href={href} target="_blank" rel="noopener noreferrer" className={className}>
+      {body}
+    </a>
+  ) : (
+    <Link href={href} className={className}>
+      {body}
+    </Link>
   );
 }

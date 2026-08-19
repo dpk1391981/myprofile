@@ -24,8 +24,8 @@ export default function EditBlogPage() {
 
   if (loading) {
     return (
-      <div className="p-8">
-        <div className="max-w-5xl mx-auto space-y-4">
+      <div className="p-4 sm:p-6 lg:p-8">
+        <div className="mx-auto max-w-6xl space-y-4">
           <div className="h-8 bg-slate-200 rounded-lg animate-pulse w-48" />
           <div className="h-64 bg-slate-100 rounded-xl animate-pulse" />
           <div className="h-96 bg-slate-100 rounded-xl animate-pulse" />
@@ -36,11 +36,13 @@ export default function EditBlogPage() {
 
   if (error) {
     return (
-      <div className="p-8 text-center">
-        <p className="text-red-500 text-lg font-semibold">{error}</p>
-        <a href="/admin/blog" className="text-blue-600 text-sm mt-2 inline-block hover:underline">
-          ← Back to posts
-        </a>
+      <div className="mx-auto max-w-6xl p-4 sm:p-6 lg:p-8">
+        <div className="rounded-xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
+          <p className="font-semibold text-red-600">{error}</p>
+          <a href="/admin/blog" className="mt-3 inline-block text-sm font-medium text-blue-600 hover:underline">
+            ← Back to posts
+          </a>
+        </div>
       </div>
     );
   }

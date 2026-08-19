@@ -2,6 +2,16 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import {
+  IconPlus,
+  IconSearch,
+  IconEye,
+  IconPencil,
+  IconTrash,
+  IconStarFilled,
+  IconInbox,
+} from "@tabler/icons-react";
+import PageHeader from "@/components/admin/PageHeader";
 
 interface Blog {
   id: string;
@@ -46,9 +56,7 @@ export default function AdminBlogList() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: newStatus }),
     });
-    setBlogs((prev) =>
-      prev.map((b) => (b.id === blog.id ? { ...b, status: newStatus } : b))
-    );
+    setBlogs((prev) => prev.map((b) => (b.id === blog.id ? { ...b, status: newStatus } : b)));
   }
 
   async function deleteBlog(id: string) {
@@ -68,40 +76,49 @@ export default function AdminBlogList() {
     return matchStatus && matchSearch;
   });
 
+  const statusPill = (status: string) =>
+    status === "published"
+      ? "bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+      : "bg-amber-50 text-amber-700 hover:bg-amber-100";
+
   return (
-    <div className="p-8">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">All Posts</h1>
-          <p className="text-slate-500 text-sm mt-1">{blogs.length} total posts</p>
-        </div>
-        <Link
-          href="/admin/blog/new"
-          className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2"
-        >
-          <span>+</span> New Post
-        </Link>
-      </div>
+    <div className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
+      <PageHeader
+        title="All Posts"
+        description={loading ? "Loading…" : `${blogs.length} total ${blogs.length === 1 ? "post" : "posts"}`}
+        actions={
+          <Link
+            href="/admin/blog/new"
+            className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+          >
+            <IconPlus size={16} stroke={2.2} /> New Post
+          </Link>
+        }
+      />
 
       {/* Filters */}
-      <div className="bg-white border border-slate-200 rounded-xl p-4 mb-4 flex flex-col sm:flex-row gap-3">
-        <input
-          type="text"
-          placeholder="Search by title or category..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <div className="flex gap-1.5">
+      <div className="mb-4 flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm sm:flex-row sm:items-center">
+        <div className="relative flex-1">
+          <IconSearch
+            size={16}
+            stroke={2}
+            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+          />
+          <input
+            type="search"
+            placeholder="Search by title or category…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+          />
+        </div>
+        <div className="flex gap-1 rounded-lg bg-slate-100 p-1">
           {(["all", "published", "draft"] as const).map((s) => (
             <button
               key={s}
               onClick={() => setFilter(s)}
-              className={`px-3 py-2 rounded-lg text-xs font-semibold capitalize transition-colors ${
-                filter === s
-                  ? "bg-blue-600 text-white"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              className={`flex-1 whitespace-nowrap rounded-md px-3 py-1.5 text-xs font-semibold capitalize transition-colors sm:flex-none ${
+                filter === s ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-900"
               }`}
             >
               {s}
@@ -110,115 +127,174 @@ export default function AdminBlogList() {
         </div>
       </div>
 
-      {/* Blog Table */}
-      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+      {/* List */}
+      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         {loading ? (
-          <div className="space-y-px">
+          <div className="divide-y divide-slate-100">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-20 bg-slate-50 animate-pulse border-b border-slate-100" />
+              <div key={i} className="h-[72px] animate-pulse bg-slate-50" />
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="text-center py-16 text-slate-400">
-            <div className="text-5xl mb-3">📭</div>
-            <p className="font-medium text-slate-600">No posts found</p>
-            <p className="text-sm mt-1">
-              {search ? "Try a different search term." : "Create your first post!"}
+          <div className="px-6 py-16 text-center">
+            <IconInbox size={40} stroke={1.4} className="mx-auto mb-3 text-slate-300" />
+            <p className="font-medium text-slate-700">No posts found</p>
+            <p className="mt-1 text-sm text-slate-500">
+              {search || filter !== "all" ? "Try a different search or filter." : "Create your first post."}
             </p>
             <Link
               href="/admin/blog/new"
-              className="inline-block mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-500 transition-colors"
+              className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
             >
-              + New Post
+              <IconPlus size={16} stroke={2.2} /> New Post
             </Link>
           </div>
         ) : (
-          <table className="w-full text-sm">
-            <thead className="bg-slate-50 border-b border-slate-200">
-              <tr>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                  Post
-                </th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider hidden md:table-cell">
-                  Category
-                </th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider hidden lg:table-cell">
-                  Date
-                </th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {filtered.map((blog) => (
-                <tr key={blog.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-5 py-4">
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl flex-shrink-0">{blog.coverEmoji}</span>
-                      <div className="min-w-0">
-                        <p className="font-semibold text-slate-900 line-clamp-1">{blog.title}</p>
-                        <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">
-                          /{blog.slug} · {blog.readTime}
-                          {blog.featured && (
-                            <span className="ml-2 text-amber-500">⭐ Featured</span>
-                          )}
-                        </p>
+          <>
+            {/* Desktop table */}
+            <table className="hidden w-full text-sm md:table">
+              <thead className="border-b border-slate-200 bg-slate-50">
+                <tr className="text-left text-[11px] uppercase tracking-wider text-slate-500">
+                  <th className="px-5 py-3 font-semibold">Post</th>
+                  <th className="px-4 py-3 font-semibold">Category</th>
+                  <th className="hidden px-4 py-3 font-semibold lg:table-cell">Date</th>
+                  <th className="px-4 py-3 font-semibold">Status</th>
+                  <th className="px-5 py-3 text-right font-semibold">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {filtered.map((blog) => (
+                  <tr key={blog.id} className="transition-colors hover:bg-slate-50">
+                    <td className="px-5 py-3.5">
+                      <div className="flex items-center gap-3">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-base">
+                          {blog.coverEmoji}
+                        </span>
+                        <div className="min-w-0">
+                          <p className="line-clamp-1 font-medium text-slate-900">{blog.title}</p>
+                          <p className="mt-0.5 flex items-center gap-1.5 truncate text-xs text-slate-400">
+                            /{blog.slug} · {blog.readTime}
+                            {blog.featured && (
+                              <span className="inline-flex items-center gap-0.5 text-amber-500">
+                                <IconStarFilled size={11} /> Featured
+                              </span>
+                            )}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-4 hidden md:table-cell">
-                    <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-md font-medium">
-                      {blog.category}
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <span className="rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-600">
+                        {blog.category}
+                      </span>
+                    </td>
+                    <td className="hidden px-4 py-3.5 text-xs text-slate-500 lg:table-cell">
+                      {blog.date || new Date(blog.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <button
+                        onClick={() => togglePublish(blog)}
+                        title="Toggle published / draft"
+                        className={`rounded-full px-2.5 py-1 text-[11px] font-semibold capitalize transition-colors ${statusPill(blog.status)}`}
+                      >
+                        {blog.status}
+                      </button>
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <div className="flex items-center justify-end gap-1">
+                        <a
+                          href={`/blog/${blog.slug}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title="View post"
+                          className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
+                        >
+                          <IconEye size={17} stroke={1.8} />
+                        </a>
+                        <Link
+                          href={`/admin/blog/${blog.id}/edit`}
+                          title="Edit post"
+                          className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-blue-50 hover:text-blue-600"
+                        >
+                          <IconPencil size={17} stroke={1.8} />
+                        </Link>
+                        <button
+                          onClick={() => deleteBlog(blog.id)}
+                          disabled={deleting === blog.id}
+                          title="Delete post"
+                          className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+                        >
+                          <IconTrash size={17} stroke={1.8} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* Mobile cards — a five-column table is unusable under 768px */}
+            <ul className="divide-y divide-slate-100 md:hidden">
+              {filtered.map((blog) => (
+                <li key={blog.id} className="p-4">
+                  <div className="flex items-start gap-3">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-base">
+                      {blog.coverEmoji}
                     </span>
-                  </td>
-                  <td className="px-4 py-4 text-slate-500 text-xs hidden lg:table-cell">
-                    {blog.date || new Date(blog.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className="px-4 py-4">
+                    <div className="min-w-0 flex-1">
+                      <p className="line-clamp-2 text-sm font-medium text-slate-900">{blog.title}</p>
+                      <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-400">
+                        <span className="rounded bg-slate-100 px-1.5 py-0.5 font-medium text-slate-600">
+                          {blog.category}
+                        </span>
+                        <span>{blog.date || new Date(blog.createdAt).toLocaleDateString()}</span>
+                        {blog.featured && (
+                          <span className="inline-flex items-center gap-0.5 text-amber-500">
+                            <IconStarFilled size={11} /> Featured
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 flex items-center justify-between gap-2">
                     <button
                       onClick={() => togglePublish(blog)}
-                      className={`text-[11px] font-bold px-2.5 py-1 rounded-full transition-colors ${
-                        blog.status === "published"
-                          ? "bg-green-100 text-green-700 hover:bg-green-200"
-                          : "bg-amber-100 text-amber-700 hover:bg-amber-200"
-                      }`}
+                      className={`rounded-full px-2.5 py-1 text-[11px] font-semibold capitalize transition-colors ${statusPill(blog.status)}`}
                     >
-                      {blog.status === "published" ? "✓ Published" : "Draft"}
+                      {blog.status}
                     </button>
-                  </td>
-                  <td className="px-4 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
+                    <div className="flex items-center gap-1">
                       <a
                         href={`/blog/${blog.slug}`}
                         target="_blank"
-                        className="text-xs text-slate-400 hover:text-blue-600 transition-colors px-2 py-1 rounded"
-                        title="View"
+                        rel="noopener noreferrer"
+                        aria-label="View post"
+                        className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
                       >
-                        👁️
+                        <IconEye size={18} stroke={1.8} />
                       </a>
                       <Link
                         href={`/admin/blog/${blog.id}/edit`}
-                        className="text-xs bg-slate-100 hover:bg-blue-100 text-slate-600 hover:text-blue-700 px-3 py-1.5 rounded-lg font-medium transition-colors"
+                        aria-label="Edit post"
+                        className="rounded-lg p-2 text-slate-400 hover:bg-blue-50 hover:text-blue-600"
                       >
-                        Edit
+                        <IconPencil size={18} stroke={1.8} />
                       </Link>
                       <button
                         onClick={() => deleteBlog(blog.id)}
                         disabled={deleting === blog.id}
-                        className="text-xs bg-red-50 hover:bg-red-100 text-red-500 hover:text-red-700 px-3 py-1.5 rounded-lg font-medium transition-colors disabled:opacity-50"
+                        aria-label="Delete post"
+                        className="rounded-lg p-2 text-slate-400 hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
                       >
-                        {deleting === blog.id ? "..." : "Delete"}
+                        <IconTrash size={18} stroke={1.8} />
                       </button>
                     </div>
-                  </td>
-                </tr>
+                  </div>
+                </li>
               ))}
-            </tbody>
-          </table>
+            </ul>
+          </>
         )}
       </div>
     </div>

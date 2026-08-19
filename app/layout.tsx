@@ -3,6 +3,7 @@ import { Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 import "../styles/broadsheet.css";
 import { Footer, Nav } from "@/components";
+import SiteChrome from "@/components/SiteChrome";
 import { Analytics } from "@vercel/analytics/react";
 import Script from "next/script";
 import { NEXT_SEO_DEFAULT, STRUCT_DATA } from "@/app/seo_config";
@@ -91,10 +92,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </Script>
 
       <body className="bs-body">
-        <a href="#main" className="bs-skip">Skip to content</a>
-        <Nav />
-        <main id="main">{children}</main>
-        <Footer />
+        {/* Admin routes opt out of the public masthead/footer — see SiteChrome. */}
+        <SiteChrome nav={<Nav />} footer={<Footer />}>
+          {children}
+        </SiteChrome>
         <Analytics />
       </body>
     </html>
