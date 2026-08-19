@@ -364,22 +364,26 @@ const personSchema = {
     skills: "React.js, Node.js, TypeScript, MongoDB, AI/ML, OpenAI, LangChain, AWS, Docker",
   },
   /*
-    ContactAction, not HireAction.
+    CommunicateAction — verified against schema.org's vocabulary dump, not
+    recalled.
 
-    `HireAction` does not exist in the schema.org vocabulary — it reads like it
-    should (schema.org does define HireAction's cousins, and "hire me" is the
-    obvious intent) but the validator rejects it outright, and a node with an
-    unrecognised @type is discarded rather than partially understood. That cost
-    the whole potentialAction on every page of the site, since this Person node
-    ships in the root layout.
+    This block previously said `HireAction`, then `ContactAction`. NEITHER TYPE
+    EXISTS. Both read exactly like they should, which is the trap: the JSON is
+    valid, every property is right, and a consumer discards the whole node
+    because it cannot resolve the type. Since this Person schema ships from the
+    root layout, that cost the potentialAction on every page of the site.
 
-    ContactAction is the real type that matches what this actually describes:
-    the target is the enquiry page and the result is a ContactPoint. The
-    "available for hire" claim is carried by `seeks` above, which is a genuine
-    Person property and was already correct.
+    `CommunicateAction` (InteractAction → Action) is real, and is the closest
+    honest description of what this is: an invitation to get in touch, whose
+    target is the enquiry page and whose result is a ContactPoint. The
+    "available for work" claim itself is carried by `seeks` above — a genuine
+    Person property that was correct all along.
+
+    Anything added here is now checked by `npm run validate:schema` against
+    scripts/schemaorg-vocab.json, so an invented type fails the run.
   */
   potentialAction: {
-    "@type": "ContactAction",
+    "@type": "CommunicateAction",
     target: {
       "@type": "EntryPoint",
       urlTemplate: `${SITE_URL}/joinme`,
