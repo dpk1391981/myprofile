@@ -76,6 +76,13 @@ export async function GET() {
     `at ${PERSONAL_INFO.currentWork.company}.`;
   const lastBuild = items[0]?.date ? rfc822(items[0].date) : new Date().toUTCString();
 
+  // Contact comes from NEXT_PUBLIC_EMAIL_ID (same source as PERSONAL_INFO.email).
+  // If it is unset, omit the element rather than emit an empty/placeholder address —
+  // a malformed managingEditor fails feed validators.
+  const managingEditor = PERSONAL_INFO.email
+    ? `    <managingEditor>${xml(PERSONAL_INFO.email)} (${xml(PERSONAL_INFO.fullName)})</managingEditor>\n`
+    : "";
+
   const body = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
   <channel>
@@ -84,8 +91,7 @@ export async function GET() {
     <description>${xml(feedDesc)}</description>
     <language>en-in</language>
     <copyright>© ${new Date().getFullYear()} ${xml(PERSONAL_INFO.fullName)}</copyright>
-    <managingEditor>noreply@officialdeepak.in (${xml(PERSONAL_INFO.fullName)})</managingEditor>
-    <lastBuildDate>${lastBuild}</lastBuildDate>
+${managingEditor}    <lastBuildDate>${lastBuild}</lastBuildDate>
     <generator>officialdeepak.in</generator>
     <atom:link href="${SITE_URL}/blog/rss.xml" rel="self" type="application/rss+xml" />
 ${items
