@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { IconLoader2, IconSend } from "@tabler/icons-react";
+import { PERSONAL_INFO } from "@/components/utils/portfolio-data";
 
 type Status = "idle" | "sending" | "sent" | "error";
 
@@ -98,7 +99,9 @@ export default function ContactForm() {
 
       {status === "error" ? (
         <div className="bs-alert bs-alert--error" role="alert">
-          That did not send. Email me directly at hello@officialdeepak.in and it will reach me.
+          {PERSONAL_INFO.email
+            ? `That did not send. Email me directly at ${PERSONAL_INFO.email} and it will reach me.`
+            : "That did not send. Please try again in a moment."}
         </div>
       ) : null}
 
