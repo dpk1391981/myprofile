@@ -275,7 +275,9 @@ export const EXPERIENCES: ExperienceItem[] = [
     company: "Own Products",
     logo: "/assets/images/deepak-kumar-react-developer-india.jpg",
     logoAlt: "Deepak Kumar - Freelance",
-    url: "https://officialdeepak.in",
+    // Own Products has no outside site to link to — send it to the products
+    // section instead of the bare home page.
+    url: "/#products",
     role: "Full Stack Developer & Product Owner",
     startDate: { year: "2024", month: "01", day: "01" },
     endDate: { year: "2025", month: "03", day: "01" },

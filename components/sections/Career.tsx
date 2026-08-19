@@ -1,5 +1,6 @@
 import Image from "next/image";
-import { IconArrowUpRight } from "@tabler/icons-react";
+import Link from "next/link";
+import { IconArrowUpRight, IconArrowRight } from "@tabler/icons-react";
 import { EXPERIENCES } from "../utils/portfolio-data";
 import { totalExperianceYears } from "../utils/date";
 import SectionHead from "./SectionHead";
@@ -44,9 +45,18 @@ export default function Career({ detailed = false }: { detailed?: boolean }) {
                 <div style={{ display: "flex", alignItems: "baseline", gap: 12, flexWrap: "wrap" }}>
                   <h3 style={{ fontSize: 22 }}>{r.company}</h3>
                   {r.url ? (
-                    <a href={r.url} target="_blank" rel="noopener noreferrer" aria-label={`${r.company} website`} style={{ display: "inline-flex", color: "var(--quiet)" }}>
-                      <IconArrowUpRight size={15} />
-                    </a>
+                    // Most entries link out to the employer's site; an entry with
+                    // no outside site points at a section of this one, which must
+                    // not open in a new tab and takes the internal arrow.
+                    r.url.startsWith("/") || r.url.startsWith("#") ? (
+                      <Link href={r.url} aria-label={`${r.company} — see the work`} style={{ display: "inline-flex", color: "var(--quiet)" }}>
+                        <IconArrowRight size={15} />
+                      </Link>
+                    ) : (
+                      <a href={r.url} target="_blank" rel="noopener noreferrer" aria-label={`${r.company} website`} style={{ display: "inline-flex", color: "var(--quiet)" }}>
+                        <IconArrowUpRight size={15} />
+                      </a>
+                    )
                   ) : null}
                   {r.isCurrent ? (
                     <span className="bs-live-flag">Present</span>
