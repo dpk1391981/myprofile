@@ -54,7 +54,6 @@ export const FOOTER_NAV: { title: string; links: { label: string; href: string }
 export const DATELINE = {
   left: "Senior Software Engineer · MERN & Generative AI",
   centre: "New Delhi, India · Remote friendly",
-  right: "Open to senior & AI roles",
 };
 
 // ---------- front page ----------

@@ -98,6 +98,10 @@ body.bs-body h4 {
   flex-wrap: wrap;
 }
 .bs-dateline .bs-live { color: var(--spot); display: inline-flex; align-items: center; gap: 6px; }
+/* Social row in the dateline rail. Reuses .bs-socials for colour and hover;
+   only the gap tightens, so three 16px icons sit at the rail's optical weight
+   instead of deepening it the way the footer's 21px set would. */
+.bs-dateline-social { gap: 13px; }
 
 /* ---------- type ---------- */
 .bs-kicker {

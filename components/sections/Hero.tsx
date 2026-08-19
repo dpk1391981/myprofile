@@ -21,7 +21,19 @@ export default function Hero() {
       <div className="bs-dateline">
         <span>{DATELINE.left}</span>
         <span>{DATELINE.centre}</span>
-        <span className="bs-live">● {DATELINE.right}</span>
+        {/* Social also appears under the portrait further down this column;
+            repeated here so the profiles are reachable before any scroll. */}
+        <span className="bs-socials bs-dateline-social">
+          <a href={PERSONAL_INFO.social.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+            <IconBrandGithub size={16} />
+          </a>
+          <a href={PERSONAL_INFO.social.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+            <IconBrandLinkedin size={16} />
+          </a>
+          <a href={PERSONAL_INFO.social.twitter} target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+            <IconBrandX size={16} />
+          </a>
+        </span>
       </div>
       <div className="bs-rail-thin" />
 
