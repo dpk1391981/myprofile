@@ -196,6 +196,129 @@ function checkPerson(n, page) {
   if (!has(n, "sameAs")) warn(page, "Person has no sameAs — no entity reconciliation signal");
 }
 
+// ── Vocabulary checks ───────────────────────────────────────────────────────
+/*
+  WHY THIS EXISTS. The checks above verify that Google's REQUIRED PROPERTIES are
+  present — they say nothing about whether the vocabulary is real. That gap let
+  two live defects through:
+
+    • `"@type": "HireAction"` — a type that does not exist in schema.org. It
+      reads exactly like it should exist, which is what makes it dangerous: the
+      JSON is valid, every required property is present, and the node is
+      silently discarded by every consumer.
+    • `logo` on a Person — `logo` is defined on Organization and Brand only.
+
+  Neither produces a parse error. Both are only visible if something actually
+  checks the vocabulary, so that is what this section does.
+
+  KNOWN_TYPES is a curated allowlist rather than the full schema.org vocabulary:
+  fetching and caching ~800 types to validate the ~20 this site emits would make
+  the validator depend on a network round trip to do its main job. Anything
+  outside the list is reported rather than assumed wrong — the fix is either to
+  correct the type or to add a legitimate new one here.
+*/
+const KNOWN_TYPES = new Set([
+  // Core things
+  "Thing", "Person", "Organization", "Brand", "Place", "PostalAddress", "Country",
+  "ImageObject", "VideoObject", "AudioObject", "MediaObject",
+  // Creative works
+  "CreativeWork", "Article", "TechArticle", "BlogPosting", "NewsArticle", "Blog",
+  "WebPage", "WebSite", "WebPageElement", "CollectionPage", "ProfilePage",
+  "AboutPage", "ContactPage", "ItemPage", "FAQPage", "QAPage", "SearchResultsPage",
+  "SoftwareApplication", "SoftwareSourceCode", "Course", "Review", "Rating",
+  // Lists and navigation
+  "ItemList", "ListItem", "BreadcrumbList", "SiteNavigationElement",
+  // Q&A
+  "Question", "Answer",
+  // Actions and endpoints
+  "Action", "SearchAction", "ContactAction", "CommunicateAction", "ReadAction",
+  "ViewAction", "EntryPoint",
+  // Employment / credentials
+  "Occupation", "JobPosting", "Demand", "Offer", "EducationalOccupationalCredential",
+  "EducationalOrganization", "CollegeOrUniversity", "ContactPoint",
+  // Speech
+  "SpeakableSpecification",
+  // Structured values
+  "PropertyValue", "QuantitativeValue", "MonetaryAmount", "OpeningHoursSpecification",
+]);
+
+/*
+  Properties whose schema.org DOMAIN does not include the type they were found
+  on. Only the mistakes worth encoding — each of these is a real, easy confusion
+  rather than an exhaustive domain table.
+*/
+const PROPERTY_DOMAINS = [
+  { prop: "logo",            allowed: ["Organization", "Brand", "Place"],
+    note: "Person takes `image`" },
+  { prop: "worksFor",        allowed: ["Person"] },
+  { prop: "jobTitle",        allowed: ["Person"] },
+  { prop: "hasOccupation",   allowed: ["Person"] },
+  { prop: "alumniOf",        allowed: ["Person", "Organization"] },
+  { prop: "employee",        allowed: ["Organization"] },
+  { prop: "founder",         allowed: ["Organization"] },
+  { prop: "headline",        allowed: ["CreativeWork", "Article", "TechArticle", "BlogPosting", "NewsArticle", "WebPage"] },
+  { prop: "wordCount",       allowed: ["Article", "TechArticle", "BlogPosting", "NewsArticle", "CreativeWork"] },
+  { prop: "articleSection",  allowed: ["Article", "TechArticle", "BlogPosting", "NewsArticle"] },
+  { prop: "acceptedAnswer",  allowed: ["Question"] },
+  { prop: "mainEntity",      allowed: ["FAQPage", "QAPage", "WebPage", "CollectionPage", "ProfilePage", "ItemPage"] },
+];
+
+function checkVocabulary(n, page, path = "$") {
+  for (const t of typesOf(n)) {
+    if (typeof t !== "string") { fail(page, `${path} has a non-string @type`); continue; }
+    // A fully-qualified URL type is legitimate and out of this list's scope.
+    if (/^https?:\/\//.test(t)) continue;
+    if (!KNOWN_TYPES.has(t)) {
+      fail(page, `${path} uses "@type": "${t}" — not a schema.org type (a node with an unrecognised type is discarded whole)`);
+    }
+  }
+  const types = typesOf(n).filter((t) => typeof t === "string");
+  for (const rule of PROPERTY_DOMAINS) {
+    if (n[rule.prop] === undefined) continue;
+    if (types.length === 0) continue;
+    if (!types.some((t) => rule.allowed.includes(t))) {
+      const hint = rule.note ? ` — ${rule.note}` : "";
+      fail(page, `${path} sets "${rule.prop}" on ${types.join("/")}, but it is only defined on ${rule.allowed.join(", ")}${hint}`);
+    }
+  }
+  // Recurse into nested nodes — the two defects this section was written for
+  // were both on nested nodes (Person.potentialAction, Article.publisher).
+  for (const [k, v] of Object.entries(n)) {
+    if (k.startsWith("@")) continue;
+    for (const child of Array.isArray(v) ? v : [v]) {
+      if (child && typeof child === "object" && (child["@type"] || Object.keys(child).length)) {
+        if (child["@type"]) checkVocabulary(child, page, `${path}.${k}`);
+      }
+    }
+  }
+}
+
+/*
+  A SearchAction promises Google a working search endpoint. If the target URL
+  ignores its query parameter the sitelinks searchbox is a false claim, so the
+  endpoint is actually exercised rather than taken at face value.
+*/
+async function checkSearchAction(n, page) {
+  const target = typeof n.target === "string" ? n.target : n.target?.urlTemplate;
+  if (!target) return fail(page, "SearchAction has no target");
+  if (!/\{[a-z_]+\}/i.test(target)) {
+    return fail(page, `SearchAction target has no query placeholder: ${target}`);
+  }
+  const probe = target.replace(/\{[a-z_]+\}/i, "zzqqxx-probe");
+  let path;
+  try { path = new URL(probe).pathname + new URL(probe).search; }
+  catch { return fail(page, `SearchAction target is not a valid URL: ${target}`); }
+  try {
+    const res = await fetch(`${BASE}${path}`);
+    const body = (await res.text()).toLowerCase();
+    if (!body.includes("zzqqxx-probe")) {
+      warn(page, `SearchAction target ${path} ignores its query parameter — the sitelinks searchbox will not work`);
+    }
+  } catch (e) {
+    warn(page, `SearchAction target could not be fetched: ${e.message}`);
+  }
+}
+
 // ── Page-level checks ───────────────────────────────────────────────────────
 
 function checkHead(html, page) {
@@ -240,6 +363,9 @@ async function validatePage(path, expected = []) {
   const seen = new Set();
 
   for (const n of nodes) {
+    // Vocabulary first: an unrecognised @type invalidates the node regardless
+    // of whether its required properties are all present.
+    checkVocabulary(n, path);
     for (const t of typesOf(n)) {
       seen.add(t);
       if (["Article", "TechArticle", "BlogPosting", "NewsArticle"].includes(t)) checkArticle(n, path, text);
@@ -247,6 +373,11 @@ async function validatePage(path, expected = []) {
       else if (t === "BreadcrumbList") checkBreadcrumb(n, path);
       else if (t === "ItemList") checkItemList(n, path);
       else if (t === "Person") checkPerson(n, path);
+    }
+    if (n.potentialAction) {
+      for (const a of (Array.isArray(n.potentialAction) ? n.potentialAction : [n.potentialAction])) {
+        if (typesOf(a).includes("SearchAction")) await checkSearchAction(a, path);
+      }
     }
   }
 

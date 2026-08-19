@@ -363,8 +363,23 @@ const personSchema = {
     occupationalCategory: "15-1252.00",
     skills: "React.js, Node.js, TypeScript, MongoDB, AI/ML, OpenAI, LangChain, AWS, Docker",
   },
+  /*
+    ContactAction, not HireAction.
+
+    `HireAction` does not exist in the schema.org vocabulary — it reads like it
+    should (schema.org does define HireAction's cousins, and "hire me" is the
+    obvious intent) but the validator rejects it outright, and a node with an
+    unrecognised @type is discarded rather than partially understood. That cost
+    the whole potentialAction on every page of the site, since this Person node
+    ships in the root layout.
+
+    ContactAction is the real type that matches what this actually describes:
+    the target is the enquiry page and the result is a ContactPoint. The
+    "available for hire" claim is carried by `seeks` above, which is a genuine
+    Person property and was already correct.
+  */
   potentialAction: {
-    "@type": "HireAction",
+    "@type": "ContactAction",
     target: {
       "@type": "EntryPoint",
       urlTemplate: `${SITE_URL}/joinme`,

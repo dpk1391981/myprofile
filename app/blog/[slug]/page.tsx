@@ -279,7 +279,9 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
           "@id":   `${SITE_URL}/#person`,
           name:    PERSONAL_INFO.fullName,
           url:     SITE_URL,
-          logo:    { "@type": "ImageObject", url: `${SITE_URL}${PERSONAL_INFO.profileImage}` },
+          // `image`, not `logo`: logo is defined on Organization and Brand, and
+          // schema.org rejects it on a Person. This publisher is a person.
+          image:   { "@type": "ImageObject", url: `${SITE_URL}${PERSONAL_INFO.profileImage}` },
         },
         image:             { "@type": "ImageObject", url: ogImage, width: 1200, height: 630 },
         mainEntityOfPage:  { "@type": "WebPage", "@id": postUrl },
