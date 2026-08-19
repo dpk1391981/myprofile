@@ -355,7 +355,31 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         <span>{post.category || "Article"}</span>
       </nav>
 
-      <article itemScope itemType="https://schema.org/TechArticle">
+      {/*
+        NO MICRODATA HERE, DELIBERATELY.
+
+        This element used to carry `itemScope itemType="schema.org/TechArticle"`
+        with `itemProp` on the headline, description, author, date and body.
+        That produced a SECOND Article entity on the page alongside the JSON-LD
+        above — and a much worse one. Google's Rich Results Test reported it
+        with four issues, every one of them a limitation of expressing this in
+        HTML attributes:
+
+          • `itemProp="author"` sat on an <a href="/about">, so the parser took
+            the href as the author's `url` and found no name — author became a
+            bare Thing with no `name`.
+          • `<time dateTime="2026-08-19" itemProp="datePublished">` is a date
+            with no time and no offset: "invalid datetime value", "missing a
+            timezone".
+          • No element carried `itemProp="image"`, so the article had no image.
+
+        The JSON-LD has none of those problems — full Person author, a real
+        +05:30 timestamp, an ImageObject. Two competing entities for one article
+        makes Google choose, and the weaker one can suppress the rich result. So
+        the markup describes the article exactly once, in the format Google
+        recommends. Add structured data to the JSON-LD graph above, never here.
+      */}
+      <article>
 
         {/*
           The header now sits inside the grid's main column rather than in its
@@ -372,11 +396,11 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                 {post.category && <span className="blog-category">{post.category}</span>}
                 {post.category && <span className="blog-kicker-sep" aria-hidden="true">/</span>}
                 <span className="bs-eyebrow">
-                  <time dateTime={post.date} itemProp="datePublished">{publishedLabel}</time>
+                  <time dateTime={post.date}>{publishedLabel}</time>
                 </span>
               </div>
 
-              <h1 className="blog-article-title" itemProp="headline">{post.title}</h1>
+              <h1 className="blog-article-title">{post.title}</h1>
 
               {/*
                 The standfirst. Marked `speakable` in the JSON-LD above: it is
@@ -384,7 +408,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                 about" in a single sentence, which is what a voice or answer
                 engine lifts.
               */}
-              <p className="blog-standfirst" itemProp="description">{post.description}</p>
+              <p className="blog-standfirst">{post.description}</p>
 
               <div className="blog-byline">
                 {/*
@@ -404,7 +428,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                   <div style={{ minWidth: 0 }}>
                     <p className="blog-byline-who">
                       By{" "}
-                      <Link href="/about" className="bs-link-plain" itemProp="author">
+                      <Link href="/about" className="bs-link-plain" rel="author">
                         <strong>{PERSONAL_INFO.fullName}</strong>
                       </Link>
                     </p>
@@ -492,7 +516,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
             )}
 
             {/* First half of article body */}
-            <div className="blog-content" itemProp="articleBody"
+            <div className="blog-content"
               dangerouslySetInnerHTML={{ __html: contentFirst }} />
 
             {/*
