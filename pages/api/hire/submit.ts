@@ -195,9 +195,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       company:      company || "",   // honeypot — passed through untouched
     });
 
-    if (!saved?.ok) {
-      // Upstream validation rejected it; hand the field errors back verbatim.
-      return res.status(422).json({ msg: 'Validation failed', data: saved?.errors ?? null });
+    if (!saved.ok) {
+      // Upstream rejected it. Hand the per-field messages back verbatim and
+      // keep the status it used, so the form can tell "your message is too
+      // short" (422) apart from "you have sent too many" (429) instead of
+      // showing one generic failure for both.
+      const status = saved.status === 429 ? 429 : 422;
+      return res.status(status).json({
+        msg: status === 429 ? 'Too many messages' : 'Validation failed',
+        data: null,
+        errors: saved.errors ?? null,
+      });
     }
 
     // Step 4: Notify. Failures here are logged, never surfaced — the enquiry is

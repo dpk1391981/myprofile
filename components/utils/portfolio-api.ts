@@ -68,15 +68,23 @@ type FetchOpts = {
   auth?: boolean;
   revalidate?: number | false;
   timeoutMs?: number;
+  /** Statuses whose JSON body IS the answer rather than a failure. A 422 from
+   *  the contact route carries the per-field messages the sender needs to see;
+   *  throwing on it turns "your message is too short" into "server error". */
+  jsonStatuses?: number[];
 };
 
-async function apiFetch<T>(path: string, opts: FetchOpts = {}): Promise<T> {
+async function apiFetchRaw<T>(
+  path: string,
+  opts: FetchOpts = {}
+): Promise<{ status: number; data: T }> {
   const {
     method = "GET",
     body,
     auth = false,
     revalidate = 300,
     timeoutMs = READ_TIMEOUT_MS,
+    jsonStatuses = [],
   } = opts;
 
   const controller = new AbortController();
@@ -98,14 +106,28 @@ async function apiFetch<T>(path: string, opts: FetchOpts = {}): Promise<T> {
         : { next: { revalidate: revalidate === false ? 0 : revalidate } }),
     });
 
+    // Read the body once — a stream cannot be consumed twice, and both the
+    // error path and the tolerated-status path need it.
+    const raw = await res.text().catch(() => "");
+
     if (!res.ok) {
-      const detail = await res.text().catch(() => "");
-      throw new Error(`${method} ${path} → ${res.status} ${detail.slice(0, 200)}`);
+      if (jsonStatuses.includes(res.status)) {
+        try {
+          return { status: res.status, data: JSON.parse(raw) as T };
+        } catch {
+          // Not the JSON we were promised — fall through and throw.
+        }
+      }
+      throw new Error(`${method} ${path} → ${res.status} ${raw.slice(0, 200)}`);
     }
-    return (await res.json()) as T;
+    return { status: res.status, data: JSON.parse(raw) as T };
   } finally {
     clearTimeout(timer);
   }
+}
+
+async function apiFetch<T>(path: string, opts: FetchOpts = {}): Promise<T> {
+  return (await apiFetchRaw<T>(path, opts)).data;
 }
 
 // ── Reads (degrade to empty) ─────────────────────────────────────────────────
@@ -211,6 +233,41 @@ export async function adminUpsertSeo(
 
 // ── Writes (surface their errors) ────────────────────────────────────────────
 
+export type ContactResult = {
+  ok: boolean;
+  id?: number;
+  /** Per-field messages, already written for a human to read. */
+  errors?: Record<string, string>;
+  /** Upstream HTTP status, so the caller can tell "fix your input" (422) from
+   *  "you are being rate-limited" (429). */
+  status: number;
+};
+
+/** FastAPI's own request-validation failures come back as
+ *  `{detail: [{loc: ["body","email"], msg: "Field required"}, …]}`, not as the
+ *  route's `{errors: {…}}`. Flatten both into one field→message map so callers
+ *  have a single shape to render. */
+function normaliseContactErrors(data: unknown): Record<string, string> | undefined {
+  if (!data || typeof data !== "object") return undefined;
+  const body = data as Record<string, unknown>;
+
+  if (body.errors && typeof body.errors === "object") {
+    return body.errors as Record<string, string>;
+  }
+
+  if (Array.isArray(body.detail)) {
+    const out: Record<string, string> = {};
+    for (const item of body.detail as Record<string, unknown>[]) {
+      const loc = Array.isArray(item?.loc) ? item.loc : [];
+      const field = String(loc[loc.length - 1] ?? "message");
+      out[field] = String(item?.msg ?? "Invalid value");
+    }
+    return Object.keys(out).length ? out : undefined;
+  }
+
+  return undefined;
+}
+
 export async function submitContact(payload: {
   name?: string;
   email: string;
@@ -221,13 +278,28 @@ export async function submitContact(payload: {
   pageUrl?: string;
   source?: string;
   company?: string; // honeypot
-}): Promise<{ ok: boolean; id?: number; errors?: Record<string, string> }> {
-  return apiFetch("/portfolio/contact", {
+}): Promise<ContactResult> {
+  // 422 (validation) and 429 (rate limit) are answers, not outages: both carry
+  // a message the sender must see. Only a genuine failure throws from here.
+  const { status, data } = await apiFetchRaw<{
+    ok?: boolean;
+    id?: number;
+    errors?: Record<string, string>;
+    detail?: unknown;
+  }>("/portfolio/contact", {
     method: "POST",
     body: payload,
     revalidate: false,
     timeoutMs: 15000,
+    jsonStatuses: [422, 429],
   });
+
+  return {
+    ok: status < 400 && data?.ok !== false,
+    id: data?.id,
+    errors: normaliseContactErrors(data),
+    status,
+  };
 }
 
 // ── Admin (all require INTERNAL_KEY) ─────────────────────────────────────────
