@@ -2,7 +2,10 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { IconMenu2, IconX, IconDownload, IconArrowRight } from "@tabler/icons-react";
+import {
+  IconMenu2, IconX, IconDownload, IconArrowRight,
+  IconBrandGithub, IconBrandLinkedin, IconBrandX,
+} from "@tabler/icons-react";
 import { PRIMARY_NAV } from "./utils/site-data";
 import { FOOTER, PERSONAL_INFO } from "./utils/portfolio-data";
 import InkToggle from "./bs/InkToggle";
@@ -116,6 +119,42 @@ const Nav = () => {
         </nav>
 
         <div className="bs-drawer-bottom">
+          {/* The footer's social row repeated here: on mobile the footer is a
+              long scroll away, while the drawer is one tap. Closing on tap so
+              the menu is not left open behind the new tab. */}
+          <div className="bs-drawer-social">
+            <p className="bs-eyebrow">Elsewhere</p>
+            <div className="bs-socials">
+              <a
+                href={PERSONAL_INFO.social.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub"
+                onClick={() => setOpen(false)}
+              >
+                <IconBrandGithub size={22} />
+              </a>
+              <a
+                href={PERSONAL_INFO.social.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn"
+                onClick={() => setOpen(false)}
+              >
+                <IconBrandLinkedin size={22} />
+              </a>
+              <a
+                href={PERSONAL_INFO.social.twitter}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="X (Twitter)"
+                onClick={() => setOpen(false)}
+              >
+                <IconBrandX size={22} />
+              </a>
+            </div>
+          </div>
+
           <a href={FOOTER.resumePath} target="_blank" rel="noopener noreferrer" className="bs-btn bs-btn--outline">
             <IconDownload size={16} /> Download résumé
           </a>

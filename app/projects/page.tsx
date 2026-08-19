@@ -8,6 +8,12 @@ import { getOtherProjects } from "@/components/utils/portfolio-data";
 import { SITE_URL } from "@/components/utils/site-data";
 import { breadcrumbLd, pageMeta } from "@/components/utils/seo";
 
+// The career-length figures (YEARS_WHOLE, yearsExp) are computed from the
+// current date, so a purely static render freezes them at deploy time and the
+// copy understates the experience once an anniversary passes. Re-render daily;
+// no data is fetched, so this only costs a regeneration.
+export const revalidate = 86400;
+
 export const metadata = pageMeta({
   title: "Projects & Products by Deepak Kumar | PlanToday.in, TrendMeToday.com & Enterprise Platforms",
   description:

@@ -478,6 +478,14 @@ a:hover { color: var(--spot-deep); text-decoration: underline; text-underline-of
 .bs-drawer-link--active { color: var(--spot); }
 .bs-drawer-bottom { margin-top: auto; padding: 22px; display: flex; flex-direction: column; gap: 10px; }
 
+/* Social row in the drawer. Icons match the footer's, but the tap targets are
+   padded out to 44px — the drawer is thumb-driven and a bare 22px icon is below
+   a comfortable touch size. The negative margin pulls the first icon back into
+   optical line with the full-width buttons beneath it. */
+.bs-drawer-social { display: flex; flex-direction: column; gap: 6px; padding-bottom: 4px; }
+.bs-drawer-social .bs-socials { gap: 2px; margin-left: -11px; }
+.bs-drawer-social .bs-socials a { padding: 11px; }
+
 /* ---------- footer ---------- */
 .bs-footer { padding: 90px var(--gutter) 56px; max-width: var(--shell); margin: 0 auto; }
 .bs-footer-grid {

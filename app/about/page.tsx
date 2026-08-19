@@ -11,6 +11,12 @@ import { ABOUT_PRINCIPLES, ABOUT_STORY, PROOF, YEARS_WHOLE } from "@/components/
 import { PERSONAL_INFO } from "@/components/utils/portfolio-data";
 import { breadcrumbLd, pageMeta } from "@/components/utils/seo";
 
+// The career-length figures (YEARS_WHOLE, yearsExp) are computed from the
+// current date, so a purely static render freezes them at deploy time and the
+// copy understates the experience once an anniversary passes. Re-render daily;
+// no data is fetched, so this only costs a regeneration.
+export const revalidate = 86400;
+
 export const metadata = pageMeta({
   title: "About Deepak Kumar | Senior Software Engineer in India — MERN & Generative AI",
   description:
