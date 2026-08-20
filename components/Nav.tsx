@@ -36,9 +36,13 @@ const Nav = () => {
     <>
       <header className={`bs-masthead ${scrolled ? "bs-masthead--scrolled" : ""}`} role="banner">
         <div className="bs-masthead-inner">
+          {/* Name, hairline, role — the role in spot colour rather than in the
+              grey it used to share with the nav links. It is the line that
+              says what this site is, and it stays visible on mobile now
+              (stacked under the name) instead of being hidden below 860px. */}
           <Link href="/" className="bs-brand" aria-label="Deepak Kumar — home">
-            {PERSONAL_INFO.fullName}
-            <span className="bs-desktop-only">Sr Software Engineer</span>
+            <span>{PERSONAL_INFO.fullName}</span>
+            <span className="bs-brand-role">Software &amp; AI Engineer</span>
           </Link>
 
           <nav className="bs-nav" aria-label="Main navigation">
@@ -62,7 +66,7 @@ const Nav = () => {
               rel="noopener noreferrer"
               className="bs-btn bs-btn--solid bs-btn--sm bs-desktop-only"
             >
-              <IconDownload size={15} /> Résumé
+              <IconDownload size={15} /> Resume
             </a>
             <button
               type="button"
@@ -71,7 +75,7 @@ const Nav = () => {
               aria-label="Open menu"
               aria-expanded={open}
             >
-              <IconMenu2 size={19} />
+              <IconMenu2 size={21} />
             </button>
           </div>
         </div>
@@ -91,7 +95,14 @@ const Nav = () => {
         aria-hidden={!open}
       >
         <div className="bs-drawer-top">
-          <span style={{ fontSize: 17, fontWeight: 600 }}>{PERSONAL_INFO.fullName}</span>
+          <span style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+            <span style={{ fontSize: 18, fontWeight: 600, letterSpacing: "-.02em" }}>
+              {PERSONAL_INFO.fullName}
+            </span>
+            <span className="bs-brand-role" style={{ paddingLeft: 0, borderLeft: "none" }}>
+              Software &amp; AI Engineer
+            </span>
+          </span>
           <button type="button" className="bs-icon-btn" onClick={() => setOpen(false)} aria-label="Close menu">
             <IconX size={19} />
           </button>
@@ -156,7 +167,7 @@ const Nav = () => {
           </div>
 
           <a href={FOOTER.resumePath} target="_blank" rel="noopener noreferrer" className="bs-btn bs-btn--outline">
-            <IconDownload size={16} /> Download résumé
+            <IconDownload size={16} /> Download resume
           </a>
           <Link href="/contact" className="bs-btn bs-btn--solid">
             Start a conversation

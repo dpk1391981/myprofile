@@ -48,20 +48,32 @@ export default function KeywordLanding({ page }: { page: LandingPage }) {
         </div>
       </PageHeader>
 
+      {/*
+        Side-head, not heading-over-text. Each of these sections was a 24ch
+        headline above a 62ch paragraph above a 72ch list, all hard against the
+        left margin — three sections of that is three screens of half-empty
+        page. The heading now holds its own column and the prose runs beside
+        it, which uses the measure the design already has and cuts the run
+        roughly in half. Below 1024px it stacks back to heading-over-text.
+      */}
       {page.sections.map((s) => (
         <section key={s.heading} className="bs-wrap bs-section">
-          <h2 className="bs-h2" style={{ maxWidth: "24ch" }}>{s.heading}</h2>
-          <p className="bs-body-text bs-measure bs-mt-4" style={{ fontSize: 17 }}>{s.body}</p>
-          {s.bullets?.length ? (
-            <ul className="bs-arrow-list bs-mt-4" style={{ maxWidth: "72ch" }}>
-              {s.bullets.map((b) => (
-                <li key={b}>
-                  <IconCornerDownRight size={15} />
-                  <span>{b}</span>
-                </li>
-              ))}
-            </ul>
-          ) : null}
+          <div className="bs-split bs-sidehead">
+            <h2 className="bs-h2">{s.heading}</h2>
+            <div>
+              <p className="bs-body-text" style={{ fontSize: 17 }}>{s.body}</p>
+              {s.bullets?.length ? (
+                <ul className="bs-arrow-list bs-mt-5">
+                  {s.bullets.map((b) => (
+                    <li key={b}>
+                      <IconCornerDownRight size={15} />
+                      <span>{b}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
+          </div>
         </section>
       ))}
 

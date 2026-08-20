@@ -202,8 +202,8 @@ a:hover { color: var(--spot-deep); text-decoration: underline; text-underline-of
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 38px;
+  height: 38px;
   padding: 0;
   border: 1px solid var(--rule);
   border-radius: 2px;
@@ -261,6 +261,12 @@ a:hover { color: var(--spot-deep); text-decoration: underline; text-underline-of
    track than .bs-split: the headline is set at up to 4.1rem and needs the
    room more than a 380px figure does. */
 .bs-split--head { grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 56px; }
+
+/* Side-head: the heading in its own narrow column with the prose beside it,
+   the way a broadsheet sets a standing section. A run of sections stacked as
+   heading-over-62ch-of-text uses barely half the page width and turns three
+   sections into three screens; this uses the width and reads shorter. */
+.bs-sidehead { grid-template-columns: minmax(0, 1fr) minmax(0, 2.1fr); gap: 48px; }
 
 /* ---------- standing figures in a page head ---------- */
 /* The rule above the figure is the same gesture as a newspaper cut: it says
@@ -452,14 +458,27 @@ a:hover { color: var(--spot-deep); text-decoration: underline; text-underline-of
 .bs-masthead-inner {
   max-width: var(--shell);
   margin: 0 auto;
-  padding: 16px var(--gutter);
+  padding: 15px var(--gutter);
+  display: flex;
+  /* Centre, not baseline: the brand is two lines on a phone, and baseline
+     alignment hung the nav off the first of them. */
+  align-items: center;
+  gap: 36px;
+}
+
+/*
+  The brand is a name and a title, set as a masthead sets one: the name in the
+  page's own weight, then a hairline, then the role in the spot colour and the
+  same uppercase micro-setting the kickers use. It read as one grey run of text
+  before, at 13px, which made the title look like an afterthought rather than
+  the thing a recruiter is scanning for.
+*/
+.bs-brand {
   display: flex;
   align-items: baseline;
-  gap: 40px;
-}
-.bs-brand {
+  gap: 11px;
   color: var(--ink);
-  font-size: 20px;
+  font-size: 21px;
   font-weight: 600;
   letter-spacing: -.02em;
   margin-right: auto;
@@ -467,19 +486,40 @@ a:hover { color: var(--spot-deep); text-decoration: underline; text-underline-of
   white-space: nowrap;
 }
 .bs-brand:hover { color: var(--ink); text-decoration: none; }
-.bs-brand span { color: var(--quiet); font-size: 13px; font-weight: 400; margin-left: 10px; letter-spacing: 0; }
-.bs-nav { display: flex; align-items: baseline; gap: 26px; }
+.bs-brand:hover .bs-brand-role { color: var(--spot-deep); }
+.bs-brand-role {
+  padding-left: 11px;
+  border-left: 1px solid var(--rule);
+  color: var(--spot);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  transition: color .18s ease;
+}
+
+.bs-nav { display: flex; align-items: center; gap: 30px; }
 .bs-navlink {
+  position: relative;
   color: var(--quiet);
-  font-size: 13.5px;
+  font-size: 15px;
+  font-weight: 500;
   letter-spacing: .01em;
   text-decoration: none;
   white-space: nowrap;
-  padding-bottom: 2px;
-  border-bottom: 1px solid transparent;
+  padding-bottom: 6px;
+  /* Transparent rule of the same weight as the active one: the link cannot
+     shift by 1px when it becomes current. */
+  border-bottom: 2px solid transparent;
+  transition: color .18s ease, border-color .18s ease;
 }
-.bs-navlink:hover { color: var(--spot); text-decoration: none; }
-.bs-navlink--active { color: var(--ink); border-bottom-color: var(--spot); }
+.bs-navlink:hover { color: var(--ink); text-decoration: none; border-bottom-color: var(--hair); }
+.bs-navlink--active,
+.bs-navlink--active:hover {
+  color: var(--ink);
+  font-weight: 600;
+  border-bottom-color: var(--spot);
+}
 .bs-masthead-actions { display: flex; align-items: center; gap: 12px; }
 .bs-burger { display: none; }
 
@@ -634,7 +674,10 @@ a:hover { color: var(--spot-deep); text-decoration: underline; text-underline-of
 /* ---------- responsive ---------- */
 @media (max-width: 1024px) {
   :root { --gutter: 28px; }
-  .bs-split, .bs-split--wide, .bs-split--cta, .bs-split--head { grid-template-columns: minmax(0, 1fr); gap: 44px; }
+  /* Stacked, the heading sits over its prose again — it is a heading, not a
+     margin note, and 44px of gap between the two would read as a gap. */
+  .bs-sidehead { gap: 18px; }
+  .bs-split, .bs-split--wide, .bs-split--cta, .bs-split--head, .bs-sidehead { grid-template-columns: minmax(0, 1fr); gap: 44px; }
   /* Stacked, the figure is no longer balancing a column of type — it is an
      illustration under the lede, and a full-width one would push the first
      section of the page off the screen entirely. */
@@ -647,8 +690,20 @@ a:hover { color: var(--spot-deep); text-decoration: underline; text-underline-of
   .bs-nav { display: none; }
   .bs-desktop-only { display: none; }
   .bs-burger { display: inline-flex; }
-  .bs-brand { white-space: normal; }
-  .bs-masthead-inner { gap: 16px; }
+  /* Name over role rather than side by side: on a 390px screen the two on one
+     line either wrap mid-title or push the burger off the edge. */
+  .bs-brand {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+    font-size: 19px;
+    line-height: 1.15;
+    white-space: normal;
+  }
+  .bs-brand-role { padding-left: 0; border-left: none; font-size: 10.5px; }
+  .bs-masthead-inner { gap: 16px; padding: 12px var(--gutter); }
+  .bs-icon-btn { width: 42px; height: 42px; }
+  .bs-drawer-link { padding: 17px 0; font-size: 18px; }
   .bs-ledger-head { display: none; }
   .bs-ledger-row { grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 24px 0; }
   .bs-role { grid-template-columns: minmax(0, 1fr); gap: 16px; }
@@ -1300,7 +1355,12 @@ a.blog-tag:hover { border-color: var(--spot); color: var(--spot); text-decoratio
 @media (max-width: 520px) {
   .bs-actions { gap: 10px; }
   .bs-actions .bs-btn { flex: 1 1 100%; justify-content: center; }
-  .bs-brand span { display: none; }
+  /* This used to read `.bs-brand span { display: none }`, from when the brand
+     was a bare text node plus one span for the role. The brand is now two
+     spans, so that rule blanked the masthead entirely below 520px — no name,
+     no title, just the two icon buttons. The role is worth its one line on a
+     phone; only the hairline before it goes. */
+  .bs-brand { font-size: 18px; }
   .bs-inline-meta { gap: 12px 20px; }
   .bs-dl-row dd { font-size: 20px; }
   .bs-faq-q { font-size: 17px; }

@@ -36,7 +36,7 @@ export default function HireCta() {
 
           <div className="bs-actions bs-mt-5">
             <a href={FOOTER.resumePath} target="_blank" rel="noopener noreferrer" className="bs-btn bs-btn--solid">
-              <IconDownload size={17} /> Download résumé (PDF)
+              <IconDownload size={17} /> Download resume (PDF)
             </a>
             <Link href="/contact" className="bs-btn bs-btn--outline">
               <IconMail size={17} /> Start a conversation

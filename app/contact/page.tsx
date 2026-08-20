@@ -152,7 +152,7 @@ export default function ContactPage() {
 
             <div className="bs-actions bs-mt-5">
               <a href={FOOTER.resumePath} target="_blank" rel="noopener noreferrer" className="bs-btn bs-btn--outline">
-                <IconDownload size={16} /> Download résumé
+                <IconDownload size={16} /> Download resume
               </a>
             </div>
 
@@ -177,11 +177,14 @@ export default function ContactPage() {
           title="Four things worth sending."
           lede="If your message is one of these, you will get a considered reply rather than a template."
         />
-        <div className="bs-cols bs-mt-6">
+        {/* 2x2. `.bs-cols` auto-fits, which fitted three across and left the
+            fourth alone on a second row — "four things" should look like four
+            things. Same grid as the About principles. */}
+        <div className="bs-split bs-split--even bs-mt-6">
           {CONTACT_REASONS.map((r) => (
-            <div key={r.title}>
+            <div key={r.title} style={{ borderTop: "1px solid var(--hair)", paddingTop: 18 }}>
               <h3 className="bs-h4">{r.title}</h3>
-              <p className="bs-quiet bs-mt-2" style={{ fontSize: 15, lineHeight: 1.7 }}>{r.body}</p>
+              <p className="bs-quiet bs-mt-2" style={{ fontSize: 15.5, lineHeight: 1.7 }}>{r.body}</p>
             </div>
           ))}
         </div>

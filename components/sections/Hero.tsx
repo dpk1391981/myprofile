@@ -60,7 +60,7 @@ export default function Hero() {
               rel="noopener noreferrer"
               className="bs-btn bs-btn--solid"
             >
-              <IconDownload size={17} /> Download résumé
+              <IconDownload size={17} /> Download resume
             </a>
             <Link href="/contact" className="bs-btn bs-btn--outline">
               <IconCalendarEvent size={17} /> Book a 20-min call
