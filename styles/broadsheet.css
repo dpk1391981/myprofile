@@ -679,10 +679,33 @@ a:hover { color: var(--spot-deep); text-decoration: underline; text-underline-of
 }
 .blog-article-main { min-width: 0; }
 .blog-article-sidebar { min-width: 0; }
+/* The rail is sticky, but it is also taller than most viewports once the
+   contents, related, share, CTA and ad cards are stacked. A plain
+   `position: sticky; top: 92px` pins it from the first scroll and then
+   strands everything below the fold — the CTA and the ad were unreachable
+   on a 900px-tall window. Giving the rail its own viewport-height scroll
+   region keeps every card reachable while it stays pinned, and sticky is
+   still bounded by `.blog-article-grid`, so the rail rides up and out of
+   the way when the article ends instead of colliding with the footer.
+
+   The negative right margin lets the scrollbar sit in the 64px gutter, so
+   the cards keep their full 300px width and one left edge with the prose. */
 .blog-article-sidebar-inner {
   position: sticky; top: 92px;
   display: flex; flex-direction: column; gap: 34px;
+  max-height: calc(100dvh - 112px);
+  overflow-y: auto;
+  margin-right: -12px;
+  padding-right: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--hair) transparent;
 }
+.blog-article-sidebar-inner::-webkit-scrollbar { width: 6px; }
+.blog-article-sidebar-inner::-webkit-scrollbar-track { background: transparent; }
+.blog-article-sidebar-inner::-webkit-scrollbar-thumb {
+  background: var(--hair); border-radius: 3px;
+}
+.blog-article-sidebar-inner:hover::-webkit-scrollbar-thumb { background: var(--quiet); }
 
 /* ---------- masthead of the article ---------- */
 .blog-article-head { padding-top: 8px; }
@@ -1092,7 +1115,11 @@ a.blog-tag:hover { border-color: var(--spot); color: var(--spot); text-decoratio
 /* ---------- responsive ---------- */
 @media (max-width: 1024px) {
   .blog-article-grid { grid-template-columns: minmax(0, 1fr); gap: 48px; }
-  .blog-article-sidebar-inner { position: static; }
+  .blog-article-sidebar-inner {
+    position: static;
+    max-height: none; overflow-y: visible;
+    margin-right: 0; padding-right: 0;
+  }
   .blog-content, .blog-faq, .blog-source, .blog-ad-article, .blog-ad-mid-article { max-width: none; }
   .blog-lead { grid-template-columns: minmax(0, 1fr); gap: 30px; }
 }
