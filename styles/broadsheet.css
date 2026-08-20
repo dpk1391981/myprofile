@@ -678,7 +678,14 @@ a:hover { color: var(--spot-deep); text-decoration: underline; text-underline-of
   align-items: start;
 }
 .blog-article-main { min-width: 0; }
-.blog-article-sidebar { min-width: 0; }
+/* `align-items: start` on the grid shrink-wraps every column to its own
+   content. That is right for the main column but it silently killed the
+   sticky rail: a sticky element can only travel inside its parent's box,
+   and a shrink-wrapped sidebar is exactly as tall as the rail inside it,
+   so there was zero travel distance and the rail simply scrolled away.
+   `align-self: stretch` gives the column the full height of the grid row
+   — the article's height — which is the runway the sticky needs. */
+.blog-article-sidebar { min-width: 0; align-self: stretch; }
 /* The rail is sticky, but it is also taller than most viewports once the
    contents, related, share, CTA and ad cards are stacked. A plain
    `position: sticky; top: 92px` pins it from the first scroll and then
@@ -695,17 +702,23 @@ a:hover { color: var(--spot-deep); text-decoration: underline; text-underline-of
   display: flex; flex-direction: column; gap: 34px;
   max-height: calc(100dvh - 112px);
   overflow-y: auto;
-  margin-right: -12px;
-  padding-right: 12px;
+  margin-right: -14px;
+  padding-right: 14px;
+  /* The rail's scrollbar is furniture, not content: a permanent grey track
+     down the right edge read as a second page scrollbar. It stays invisible
+     and only fades in as a hairline while the pointer is over the rail. */
   scrollbar-width: thin;
-  scrollbar-color: var(--hair) transparent;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color .18s ease;
 }
-.blog-article-sidebar-inner::-webkit-scrollbar { width: 6px; }
+.blog-article-sidebar-inner:hover { scrollbar-color: var(--hair) transparent; }
+.blog-article-sidebar-inner::-webkit-scrollbar { width: 5px; }
 .blog-article-sidebar-inner::-webkit-scrollbar-track { background: transparent; }
 .blog-article-sidebar-inner::-webkit-scrollbar-thumb {
-  background: var(--hair); border-radius: 3px;
+  background: transparent; border-radius: 3px; transition: background .18s ease;
 }
-.blog-article-sidebar-inner:hover::-webkit-scrollbar-thumb { background: var(--quiet); }
+.blog-article-sidebar-inner:hover::-webkit-scrollbar-thumb { background: var(--hair); }
+.blog-article-sidebar-inner::-webkit-scrollbar-thumb:hover { background: var(--quiet); }
 
 /* ---------- masthead of the article ---------- */
 .blog-article-head { padding-top: 8px; }
