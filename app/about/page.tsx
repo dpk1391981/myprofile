@@ -1,7 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
 import { IconArrowUpRight } from "@tabler/icons-react";
 import PageHeader from "@/components/bs/PageHeader";
+import { CurrentlyBlock, PortraitFigure } from "@/components/bs/HeadFigure";
 import Jsonld from "@/components/bs/Jsonld";
 import Capabilities from "@/components/sections/Capabilities";
 import Credentials from "@/components/sections/Credentials";
@@ -47,12 +47,34 @@ export default function AboutPage() {
         crumbs={[{ label: "Home", href: "/" }, { label: "About" }]}
         dateline={["Profile", "New Delhi, India", `${YEARS_WHOLE} years in production`]}
         kicker="About"
-        title="Nine years of shipping things that other people depend on."
-        lede={`I am a Senior Software Engineer in New Delhi. I build on the MERN stack and Next.js, add Generative AI where it earns its place, and I have spent most of my career inside production systems with real users attached to them.`}
-      />
-
-      <section className="bs-wrap bs-section--tight" style={{ paddingTop: 44 }}>
-        <div className="bs-proof">
+        /* "Nine" was typed by hand and had already gone stale — the rest of
+           the page computes the figure from the career start date, and the
+           dateline two lines up was reading 9+ while the headline said nine.
+           "Systems … depend on" is also the claim this page has to justify:
+           production software with users attached, not a list of tools. */
+        title={`${YEARS_WHOLE} years building the systems other people depend on.`}
+        /* A sentence longer than it needs to be for its own sake — the head is
+           a two-column grid and the portrait beside it is taller than a short
+           lede, so the extra line is what brings the two columns level. It
+           earns its place: it is the answer to "doing what, right now?". */
+        lede={`I am a Senior Software Engineer in New Delhi. I build on the MERN stack and Next.js, add Generative AI where it earns its place, and I have spent most of my career inside production systems with real users attached to them. Right now that means editorial AI tooling and election-night dashboards at India Today Group — and four products of my own that I run end to end.`}
+        figure={
+          <PortraitFigure caption="New Delhi, 2025. Building editorial AI tooling at India Today Group.">
+            <CurrentlyBlock
+              company={PERSONAL_INFO.currentWork.company}
+              role={PERSONAL_INFO.currentWork.role}
+              logo={PERSONAL_INFO.currentWork.logo}
+              url={PERSONAL_INFO.currentWork.url}
+              cta={{ label: "Full career history", href: "/experience" }}
+            />
+          </PortraitFigure>
+        }
+      >
+        {/* The proof figures used to be a band of their own below the head,
+            which left the headline column empty for the height of the portrait
+            beside it. In the head they fill that column and the page starts a
+            screen earlier. */}
+        <div className="bs-proof bs-proof--half bs-mt-6">
           {PROOF.map((f) => (
             <div key={f.label}>
               <p className="bs-proof-value">{f.value}</p>
@@ -60,50 +82,30 @@ export default function AboutPage() {
             </div>
           ))}
         </div>
-      </section>
+      </PageHeader>
 
+      {/*
+        Four story blocks in a 2x2 grid, not one long column beside a sidebar.
+        Stacked, the four ran to about two and a half screens of single-column
+        prose; paired, they fit in one, and the reader can see all four
+        headings at once and pick. The rule above each block is what keeps
+        them reading as four separate pieces rather than one wrapped one.
+
+        The sidebar that used to sit here is gone: the employer, the city and
+        the link through to the full record now sit under the portrait in the
+        head (CurrentlyBlock), and the rest of it — a timezone and a
+        certification abbreviation — was paying rent on a whole column.
+      */}
       <section className="bs-wrap bs-section" id="story">
-        <div className="bs-split">
-          <div>
-            {ABOUT_STORY.map((block) => (
-              <div key={block.heading} className="bs-mt-6" style={{ marginTop: 0, paddingTop: 34 }}>
-                <h2 className="bs-h3">{block.heading}</h2>
-                {block.paras.map((p) => (
-                  <p key={p.slice(0, 40)} className="bs-body-text bs-measure bs-mt-3">{p}</p>
-                ))}
-              </div>
-            ))}
-          </div>
-
-          <aside>
-            <figure className="bs-halftone" style={{ width: "100%", aspectRatio: "4 / 5", position: "relative" }}>
-              <Image
-                src="/assets/images/deepak-kumar-react-developer-india.jpg"
-                alt="Portrait of Deepak Kumar, senior full stack and JavaScript developer in New Delhi, India"
-                fill
-                sizes="(max-width: 1024px) 100vw, 360px"
-                style={{ objectFit: "cover", objectPosition: "top center" }}
-              />
-            </figure>
-            <figcaption className="bs-figcaption">
-              New Delhi, India — available on-site across Delhi NCR or fully remote.
-            </figcaption>
-
-            <div className="bs-mt-5">
-              <p className="bs-list-head">At a glance</p>
-              <dl className="bs-dl">
-                <div className="bs-dl-row"><dt>Based in</dt><dd style={{ fontSize: 17 }}>New Delhi</dd></div>
-                <div className="bs-dl-row"><dt>Timezone</dt><dd style={{ fontSize: 17 }}>IST +5:30</dd></div>
-                <div className="bs-dl-row"><dt>Current role</dt><dd style={{ fontSize: 17 }}>India Today</dd></div>
-                <div className="bs-dl-row"><dt>Certification</dt><dd style={{ fontSize: 17 }}>AWS SAA</dd></div>
-              </dl>
-              <div className="bs-actions bs-mt-4">
-                <Link href="/experience" className="bs-link">
-                  Full career history <IconArrowUpRight size={16} />
-                </Link>
-              </div>
+        <div className="bs-split bs-split--even">
+          {ABOUT_STORY.map((block) => (
+            <div key={block.heading} style={{ borderTop: "1px solid var(--rule)", paddingTop: 22 }}>
+              <h2 className="bs-h3">{block.heading}</h2>
+              {block.paras.map((p) => (
+                <p key={p.slice(0, 40)} className="bs-body-text bs-mt-3">{p}</p>
+              ))}
             </div>
-          </aside>
+          ))}
         </div>
       </section>
 
@@ -112,11 +114,15 @@ export default function AboutPage() {
           kicker="How I think about the work"
           title="Four rules I actually follow."
         />
-        <div className="bs-cols bs-mt-6">
+        {/* 2x2, matching the story grid above. `.bs-cols` auto-fits, which put
+            three rules on one line and left the fourth stranded on a line of
+            its own — four items read as four when they are laid out as two
+            pairs. */}
+        <div className="bs-split bs-split--even bs-mt-6">
           {ABOUT_PRINCIPLES.map((p) => (
-            <div key={p.title}>
+            <div key={p.title} style={{ borderTop: "1px solid var(--hair)", paddingTop: 18 }}>
               <h3 className="bs-h4">{p.title}</h3>
-              <p className="bs-quiet bs-mt-2" style={{ fontSize: 15, lineHeight: 1.7 }}>{p.body}</p>
+              <p className="bs-quiet bs-mt-2" style={{ fontSize: 15.5, lineHeight: 1.7 }}>{p.body}</p>
             </div>
           ))}
         </div>

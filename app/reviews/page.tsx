@@ -1,4 +1,5 @@
 import PageHeader from "@/components/bs/PageHeader";
+import { ReferencesFigure } from "@/components/bs/HeadFigure";
 import Jsonld from "@/components/bs/Jsonld";
 import Recommendations from "@/components/sections/Recommendations";
 import HireCta from "@/components/sections/HireCta";
@@ -40,6 +41,7 @@ export default function ReviewsPage() {
         kicker="Recommendations"
         title="What the people who shipped with me say."
         lede="Written on LinkedIn by colleagues who worked with me directly — each links back to the profile that wrote it."
+        figure={<ReferencesFigure people={REVIEWS} />}
       />
 
       <Recommendations full />

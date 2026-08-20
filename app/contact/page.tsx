@@ -10,6 +10,7 @@ import {
   IconPhone,
 } from "@tabler/icons-react";
 import PageHeader from "@/components/bs/PageHeader";
+import { ReplyFigure } from "@/components/bs/HeadFigure";
 import Jsonld from "@/components/bs/Jsonld";
 import ContactForm from "@/components/sections/ContactForm";
 import Faq from "@/components/sections/Faq";
@@ -83,6 +84,18 @@ export default function ContactPage() {
         kicker="Get in touch"
         title="Tell me what you are building."
         lede="Hiring for a senior role, or need something built? Send the details below. Every message reaches my inbox directly and I reply within 24 hours on working days."
+        figure={
+          <ReplyFigure
+            /* City and timezone are already in the rail above and in the
+               direct-lines panel below — three copies of the same fact on one
+               screen. These rows say what those two do not. */
+            rows={[
+              { label: "Open to", value: "Full-time & contract" },
+              { label: "Working", value: "Delhi NCR or remote" },
+              { label: "First step", value: "A 20-minute call" },
+            ]}
+          />
+        }
       />
 
       <section className="bs-wrap bs-section--tight" style={{ paddingTop: 56 }}>

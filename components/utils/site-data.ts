@@ -410,7 +410,10 @@ export const LANDING_PAGES: LandingPage[] = [
       { value: "Prod", label: "AI shipped to readers" },
       { value: "RAG", label: "On Atlas Vector Search" },
       { value: "80%", label: "Faster podcast production" },
-      { value: "MCA", label: "AI & ML postgraduate" },
+      // Was "MCA / AI & ML postgraduate". The degree is still in progress, and
+      // a proof tile is the most emphatic claim a page makes — see the note in
+      // components/bs/HeadFigure.tsx. This one is finished work.
+      { value: "9+ yrs", label: "In production" },
     ],
     sections: [
       {
@@ -565,7 +568,7 @@ export const LANDING_PAGES: LandingPage[] = [
       `Senior software developer in India, ${YEARS_WHOLE} years across news media, healthtech, adtech and real estate — MERN, Next.js, AWS and Generative AI. New Delhi or remote.`,
     kicker: "Full stack · Cloud · Generative AI",
     lede:
-      "Nine years, seven companies, four industries and seventeen shipped products. If you are looking for a software developer in India who has run systems under genuine load rather than only in staging, this is the record.",
+      `${YEARS_WHOLE} years, seven companies, four industries and seventeen shipped products. If you are looking for a software developer in India who has run systems under genuine load rather than only in staging, this is the record.`,
     keywords: [
       "software developer in India",
       "software engineer in India",
@@ -716,7 +719,7 @@ export const LANDING_PAGES: LandingPage[] = [
       {
         question: "What full-stack JavaScript experience does he have?",
         answer:
-          "Nine years across the whole stack: React and Next.js in the browser, Node.js, Express and NestJS on the server, MongoDB and MySQL for data, Redis for caching and pub/sub, and real-time delivery through server-sent events, Socket.io and WebRTC.",
+          `${YEARS_WHOLE} years across the whole stack: React and Next.js in the browser, Node.js, Express and NestJS on the server, MongoDB and MySQL for data, Redis for caching and pub/sub, and real-time delivery through server-sent events, Socket.io and WebRTC.`,
       },
       {
         question: "Can he join an existing JavaScript team?",

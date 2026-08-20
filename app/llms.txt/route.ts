@@ -169,7 +169,7 @@ export async function GET() {
 
   lines.push("## Education & Certifications");
   lines.push("");
-  lines.push("- MCA (Master of Computer Applications) — AI & Machine Learning, JAIN (Deemed-to-be University), 2023–2025");
+  lines.push("- MCA (Master of Computer Applications) — AI & Machine Learning, JAIN (Deemed-to-be University), since 2023, in progress");
   lines.push("- Bachelor of Commerce — University of Delhi (2013–2017)");
   lines.push("- AWS Solutions Architect Associate (SAA-C03) — Udemy coursework, 2023");
   lines.push("- MERN Stack Front To Back certification");

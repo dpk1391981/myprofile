@@ -312,7 +312,7 @@ export const EDUCATION: EducationItem[] = [
     title: "MCA — Master of Computer Applications",
     subtitle: "Artificial Intelligence & Machine Learning",
     institution: "JAIN (Deemed-to-be University)",
-    dateLabel: "Jun 2023 - Jun 2025",
+    dateLabel: "Jun 2023 - in progress",
     logo: "/assets/projects/jain-deemed.png",
     logoAlt: "Jain University",
     type: "degree",

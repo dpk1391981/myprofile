@@ -257,6 +257,33 @@ a:hover { color: var(--spot-deep); text-decoration: underline; text-underline-of
 .bs-cols--wide { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 48px; }
 .bs-cols--quotes { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 56px; }
 
+/* The inner-page head (components/bs/PageHeader.tsx). Slightly wider left
+   track than .bs-split: the headline is set at up to 4.1rem and needs the
+   room more than a 380px figure does. */
+.bs-split--head { grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 56px; }
+
+/* ---------- standing figures in a page head ---------- */
+/* The rule above the figure is the same gesture as a newspaper cut: it says
+   "this is a figure, not the start of the article". */
+.bs-headfig { max-width: 400px; }
+.bs-headfig .bs-headfig-box {
+  border-top: 2px solid var(--ink);
+  padding-top: 20px;
+}
+/* height:auto with the viewBox is what makes these scale rather than clip.
+   The SVG root keeps its default overflow:hidden on purpose: a shape painted
+   past the viewBox joins the page's scrollable overflow, which on a phone is
+   a horizontal scrollbar for the sake of half a pixel of hairline. */
+/* Direct child only. As `.bs-headfig svg` this also caught the icons inside
+   the HTML figures — a 15px LinkedIn mark was being blown up to the width of
+   its column. */
+.bs-headfig > .bs-headfig-box > svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  color: var(--ink);
+}
+
 /* ---------- imagery: newsprint dot screen ---------- */
 .bs-halftone {
   position: relative;
@@ -292,6 +319,12 @@ a:hover { color: var(--spot-deep); text-decoration: underline; text-underline-of
   padding-top: 26px;
   border-top: 1px solid var(--hair);
 }
+/* Inside a page head the proof band shares its row with the portrait, so it
+   gets half the width and twice the rows. Four figures across a 620px column
+   put "Daily users served" on two lines under a 34px number; 2x2 keeps every
+   label on one line and fills the column the headline left short. */
+.bs-proof--half { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 32px; }
+
 .bs-proof-value {
   font-size: 34px;
   font-weight: 600;
@@ -601,7 +634,11 @@ a:hover { color: var(--spot-deep); text-decoration: underline; text-underline-of
 /* ---------- responsive ---------- */
 @media (max-width: 1024px) {
   :root { --gutter: 28px; }
-  .bs-split, .bs-split--wide, .bs-split--cta { grid-template-columns: minmax(0, 1fr); gap: 44px; }
+  .bs-split, .bs-split--wide, .bs-split--cta, .bs-split--head { grid-template-columns: minmax(0, 1fr); gap: 44px; }
+  /* Stacked, the figure is no longer balancing a column of type — it is an
+     illustration under the lede, and a full-width one would push the first
+     section of the page off the screen entirely. */
+  .bs-headfig { max-width: 340px; }
   .bs-section { padding-top: 84px; }
   .bs-footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px; }
 }
@@ -620,6 +657,10 @@ a:hover { color: var(--spot-deep); text-decoration: underline; text-underline-of
 
 @media (max-width: 640px) {
   :root { --gutter: 20px; }
+  /* On a phone the figure is the full column, capped only by the gutter. Any
+     narrower and the labels inside the viewBox scale down past legibility. */
+  .bs-headfig { max-width: 100%; }
+  .bs-headfig .bs-headfig-box { padding-top: 16px; }
   body { font-size: 15.5px; }
   .bs-section { padding-top: 68px; }
   .bs-dateline { gap: 6px 14px; font-size: 10px; }

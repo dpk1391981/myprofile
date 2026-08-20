@@ -1,10 +1,11 @@
 import PageHeader from "@/components/bs/PageHeader";
+import { StackFigure } from "@/components/bs/HeadFigure";
 import Jsonld from "@/components/bs/Jsonld";
 import Capabilities from "@/components/sections/Capabilities";
 import HireCta from "@/components/sections/HireCta";
 import SectionHead from "@/components/sections/SectionHead";
 import { SKILLS_CATEGORIES, SKILL_TAGS } from "@/components/utils/portfolio-data";
-import { YEARS_WHOLE } from "@/components/utils/site-data";
+import { CAPABILITIES, YEARS_WHOLE } from "@/components/utils/site-data";
 import { breadcrumbLd, pageMeta } from "@/components/utils/seo";
 
 // The career-length figures (YEARS_WHOLE, yearsExp) are computed from the
@@ -46,6 +47,7 @@ export default function SkillsPage() {
         kicker="Skills"
         title="The stack, and how deep each part goes."
         lede="Not a list of everything I have ever opened — the tools I have shipped production systems with, grouped by where they sit in the stack."
+        figure={<StackFigure layers={CAPABILITIES.map((c) => c.title)} />}
       />
 
       <Capabilities detailed />

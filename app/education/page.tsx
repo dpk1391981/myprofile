@@ -1,4 +1,5 @@
 import PageHeader from "@/components/bs/PageHeader";
+import { RecordFigure } from "@/components/bs/HeadFigure";
 import Jsonld from "@/components/bs/Jsonld";
 import Credentials from "@/components/sections/Credentials";
 import HireCta from "@/components/sections/HireCta";
@@ -12,9 +13,9 @@ import { breadcrumbLd, pageMeta } from "@/components/utils/seo";
 export const revalidate = 86400;
 
 export const metadata = pageMeta({
-  title: "Education & Certifications | Deepak Kumar — MCA in AI/ML",
+  title: "Education & Certifications | Deepak Kumar — Degrees & AWS",
   description:
-    "The credentials behind the work — an MCA in AI & Machine Learning (JAIN University), a B.Com from the University of Delhi, and AWS Solutions Architect study.",
+    "The credentials behind the work — a B.Com from the University of Delhi, a computer science diploma, AWS Solutions Architect coursework, and an MCA in AI & ML under way.",
   path: "/education",
   keywords: [
     "Deepak Kumar education",
@@ -37,10 +38,20 @@ export default function EducationPage() {
 
       <PageHeader
         crumbs={[{ label: "Home", href: "/" }, { label: "Education" }]}
-        dateline={["Credentials", "Delhi, India", "AWS Certified SA Associate"]}
+        dateline={["Credentials", "Delhi, India", "AWS SA Associate coursework"]}
         kicker="Education & certification"
         title="Degrees, diplomas and the certifications that stuck."
-        lede="A commerce degree, a computer science diploma and a postgraduate qualification in AI and machine learning — plus the AWS certification I use most days."
+        lede="A commerce degree, a computer science diploma and AWS Solutions Architect coursework — plus a postgraduate qualification in AI and machine learning still under way."
+        figure={
+          <RecordFigure
+            rows={[
+              { kind: "Degree", title: "B.Com", where: "University of Delhi", when: "2017" },
+              { kind: "Diploma", title: "Computer science / IT", where: "Board of Technical Education", when: "2016" },
+              { kind: "Coursework", title: "AWS Solutions Architect Associate", where: "SAA-C03 course", when: "2023" },
+              { kind: "Postgraduate", title: "MCA — AI & machine learning", where: "JAIN University", when: "since 2023", status: "In progress" },
+            ]}
+          />
+        }
       />
 
       <Credentials />

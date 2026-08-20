@@ -12,6 +12,7 @@ import { BLOG_POSTS, PERSONAL_INFO } from "@/components/utils/portfolio-data";
 import { IconArrowRight, IconRss } from "@tabler/icons-react";
 import { listAllPosts, getSeoConfig } from "@/components/utils/portfolio-api";
 import AdSlot from "@/components/blog/AdSlot";
+import { ArchiveFigure } from "@/components/bs/HeadFigure";
 import { POSTS_PER_PAGE, pageCount, indexPath } from "@/components/utils/blog-pagination";
 
 const SLOT_TOP    = process.env.NEXT_PUBLIC_ADSENSE_SLOT_BLOG_TOP    ?? "0000000000";
@@ -68,6 +69,14 @@ async function getAllPosts(): Promise<IndexPost[]> {
   return [...dbPosts, ...staticPosts].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
+}
+
+/** "2026-08-14" → "Aug 2026". A bare ISO date in a figure reads as data the
+ *  reader has to parse; the month is the part that answers "is this alive?". */
+function formatMonth(iso: string): string {
+  const d = new Date(`${iso}T00:00:00Z`);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("en-GB", { month: "short", year: "numeric", timeZone: "UTC" });
 }
 
 const matchesTopic = (p: IndexPost, topic: string) =>
@@ -369,20 +378,37 @@ export default async function BlogIndexView(
         </div>
         <div className="bs-rail-thin" />
 
+        {/* Two columns, the same head shape the other inner pages use — see
+            components/bs/PageHeader.tsx. Single-column, the right third of the
+            index was empty paper down to the first article. */}
         <div style={{ paddingTop: 52 }}>
-          {/* The H1 carries the same term as the <title> on purpose. It read
-              "Thoughts on code, architecture and AI." — true, and invisible to
-              anyone searching for a tech blog. The voice is unchanged; the
-              noun is now the one people actually type. */}
-          <p className="bs-kicker">Tech blog · India{page > 1 ? ` · page ${page}` : ""}</p>
-          <h1 className="bs-h1 bs-mt-2" style={{ maxWidth: "20ch" }}>
-            Tech blogs on code, architecture and AI.
-          </h1>
-          <p className="bs-lede bs-mt-4" style={{ maxWidth: "58ch" }}>
-            Deep dives into React.js, AI and ML integration, MERN stack patterns, and lessons
-            from building production applications at scale in India — written by{" "}
-            {PERSONAL_INFO.fullName}.
-          </p>
+          <div className="bs-split bs-split--head">
+            <div>
+              {/* The H1 carries the same term as the <title> on purpose. It read
+                  "Thoughts on code, architecture and AI." — true, and invisible to
+                  anyone searching for a tech blog. The voice is unchanged; the
+                  noun is now the one people actually type. */}
+              <p className="bs-kicker">Tech blog · India{page > 1 ? ` · page ${page}` : ""}</p>
+              <h1 className="bs-h1 bs-mt-2" style={{ maxWidth: "20ch" }}>
+                Tech blogs on code, architecture and AI.
+              </h1>
+              <p className="bs-lede bs-mt-4" style={{ maxWidth: "58ch" }}>
+                Deep dives into React.js, AI and ML integration, MERN stack patterns, and lessons
+                from building production applications at scale in India — written by{" "}
+                {PERSONAL_INFO.fullName}.
+              </p>
+            </div>
+            <div>
+              <ArchiveFigure
+                articles={allPosts.length}
+                /* The rail's count, not every distinct tag: "74 topics" across
+                   18 articles is a tagging artefact, and it is not a number
+                   the reader can see anywhere on the page. */
+                topics={topics.length}
+                latest={latestDate ? formatMonth(latestDate) : undefined}
+              />
+            </div>
+          </div>
         </div>
 
         {/* Topic rail — a filtered view of the same list, one URL per topic. */}

@@ -1,5 +1,6 @@
 import { YEARS_WHOLE } from "@/components/utils/site-data";
 import PageHeader from "@/components/bs/PageHeader";
+import { TimelineFigure } from "@/components/bs/HeadFigure";
 import Jsonld from "@/components/bs/Jsonld";
 import Career from "@/components/sections/Career";
 import SelectedWork from "@/components/sections/SelectedWork";
@@ -46,6 +47,7 @@ export default function ExperiencePage() {
         kicker="Career history"
         title={`Where the ${YEARS_WHOLE} years went.`}
         lede="From a Delhi advertising agency writing PHP to architecting Generative AI features at India Today Group — every role, what it involved and what came out of it."
+        figure={<TimelineFigure roles={EXPERIENCES} />}
       />
 
       <Career detailed />

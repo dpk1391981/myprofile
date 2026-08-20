@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { IconArrowUpRight, IconCornerDownRight } from "@tabler/icons-react";
 import PageHeader from "../bs/PageHeader";
+import { PortraitFigure } from "../bs/HeadFigure";
 import Jsonld from "../bs/Jsonld";
 import Faq from "./Faq";
 import HireCta from "./HireCta";
@@ -28,10 +29,16 @@ export default function KeywordLanding({ page }: { page: LandingPage }) {
         kicker={page.kicker}
         title={page.h1}
         lede={page.lede}
-      />
-
-      <section className="bs-wrap bs-section--tight" style={{ paddingTop: 44 }}>
-        <div className="bs-proof">
+        /* A hire page is read by someone deciding whether to write to a
+           person, so the figure here is the person — same portrait, caption,
+           and profile links as /about. The stack terms come from the page's
+           own kicker, so each landing page captions itself. */
+        figure={<PortraitFigure caption={`Deepak Kumar, New Delhi. ${page.kicker}.`} />}
+      >
+        {/* In the head rather than in a band under it: the portrait is taller
+            than the headline and lede together, so this column was ending
+            half a screen early on every one of these pages. */}
+        <div className="bs-proof bs-proof--half bs-mt-6">
           {page.proof.map((f) => (
             <div key={f.label}>
               <p className="bs-proof-value">{f.value}</p>
@@ -39,7 +46,7 @@ export default function KeywordLanding({ page }: { page: LandingPage }) {
             </div>
           ))}
         </div>
-      </section>
+      </PageHeader>
 
       {page.sections.map((s) => (
         <section key={s.heading} className="bs-wrap bs-section">

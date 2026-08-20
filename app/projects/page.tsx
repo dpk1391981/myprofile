@@ -1,5 +1,6 @@
 import { IconArrowUpRight, IconCornerDownRight } from "@tabler/icons-react";
 import PageHeader from "@/components/bs/PageHeader";
+import { ShippedFigure } from "@/components/bs/HeadFigure";
 import Jsonld from "@/components/bs/Jsonld";
 import Products from "@/components/sections/Products";
 import HireCta from "@/components/sections/HireCta";
@@ -62,6 +63,7 @@ export default function ProjectsPage() {
         kicker="Projects & products"
         title="Everything I have shipped, and what it did."
         lede="Four products I own end to end, then the client and employer work — news media, healthcare, adtech, real estate and real-time communication. Numbers attached where numbers exist."
+        figure={<ShippedFigure shipped={17} owned={4} />}
       />
 
       <Products heading={false} />

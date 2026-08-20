@@ -6,6 +6,13 @@ export interface Crumb { label: string; href?: string }
 /**
  * The front-page furniture reused as an inner-page head: breadcrumb,
  * the thick–thin rail around a dateline, then the headline.
+ *
+ * `figure` puts a standing figure in a right-hand column, the way the front
+ * page carries the portrait beside its headline. Without it the head is one
+ * column of type ending at 58ch, and the right third of every inner page was
+ * empty paper. It is optional so a page with nothing worth drawing can still
+ * use the single-column head rather than filling the slot with decoration —
+ * see components/bs/HeadFigure.tsx for what belongs there.
  */
 export default function PageHeader({
   crumbs,
@@ -13,6 +20,7 @@ export default function PageHeader({
   kicker,
   title,
   lede,
+  figure,
   children,
 }: {
   crumbs: Crumb[];
@@ -20,8 +28,20 @@ export default function PageHeader({
   kicker: string;
   title: React.ReactNode;
   lede?: React.ReactNode;
+  figure?: React.ReactNode;
   children?: React.ReactNode;
 }) {
+  const body = (
+    <>
+      <p className="bs-kicker">{kicker}</p>
+      <h1 className="bs-h1 bs-mt-2" style={{ maxWidth: "20ch" }}>{title}</h1>
+      {lede ? (
+        <p className="bs-lede bs-mt-4" style={{ maxWidth: "58ch" }}>{lede}</p>
+      ) : null}
+      {children}
+    </>
+  );
+
   return (
     <header className="bs-wrap" style={{ paddingTop: 26 }}>
       <nav className="bs-breadcrumb" aria-label="Breadcrumb">
@@ -41,13 +61,17 @@ export default function PageHeader({
       </div>
       <div className="bs-rail-thin" />
 
+      {/* One column when there is no figure: the grid would otherwise leave a
+          1fr track of empty paper, which is the problem this replaces. */}
       <div style={{ paddingTop: 52 }}>
-        <p className="bs-kicker">{kicker}</p>
-        <h1 className="bs-h1 bs-mt-2" style={{ maxWidth: "20ch" }}>{title}</h1>
-        {lede ? (
-          <p className="bs-lede bs-mt-4" style={{ maxWidth: "58ch" }}>{lede}</p>
-        ) : null}
-        {children}
+        {figure ? (
+          <div className="bs-split bs-split--head">
+            <div>{body}</div>
+            <div>{figure}</div>
+          </div>
+        ) : (
+          body
+        )}
       </div>
     </header>
   );
