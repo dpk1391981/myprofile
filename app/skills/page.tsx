@@ -14,9 +14,9 @@ import { breadcrumbLd, pageMeta } from "@/components/utils/seo";
 export const revalidate = 86400;
 
 export const metadata = pageMeta({
-  title: "Skills & Tech Stack | Deepak Kumar — React, Node.js, TypeScript, AWS & AI",
+  title: "Skills & Tech Stack | Deepak Kumar — React, Node.js & AI",
   description:
-    `The full technical stack of Deepak Kumar, a senior JavaScript developer in India with ${YEARS_WHOLE} years in production — React.js, Next.js, TypeScript, Angular, Node.js, Express, NestJS, MongoDB, MySQL, Redis, DynamoDB, AWS, Docker, and Generative AI with OpenAI, LangChain and RAG pipelines.`,
+    `The stack behind ${YEARS_WHOLE} years in production — React, Next.js, TypeScript, Angular, Node.js, NestJS, MongoDB, MySQL, AWS, Docker, OpenAI, LangChain and RAG.`,
   path: "/skills",
   keywords: [
     "Deepak Kumar skills",

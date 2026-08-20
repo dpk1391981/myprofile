@@ -15,9 +15,9 @@ import { breadcrumbLd, pageMeta } from "@/components/utils/seo";
 export const revalidate = 86400;
 
 export const metadata = pageMeta({
-  title: "Projects & Products by Deepak Kumar | PlanToday.in, TrendMeToday.com & Enterprise Platforms",
+  title: "Projects & Products by Deepak Kumar | PlanToday, TrendMeToday",
   description:
-    "Seventeen products shipped by Deepak Kumar — PlanToday.in, an AI-powered wedding and event vendor marketplace; TrendMeToday.com, real-time trend intelligence with 0–100 heat scoring; plus a live election dashboard serving millions of daily users, AI podcast generation and clinical software for Clove Dental.",
+    "17 products shipped — PlanToday.in, an AI vendor marketplace; TrendMeToday.com trend intelligence; and a live election dashboard at national news scale.",
   path: "/projects",
   keywords: [
     "Deepak Kumar projects",

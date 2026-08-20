@@ -12,9 +12,9 @@ import { breadcrumbLd, pageMeta } from "@/components/utils/seo";
 export const revalidate = 86400;
 
 export const metadata = pageMeta({
-  title: "Recommendations | Deepak Kumar — References from Colleagues & Leads",
+  title: "Recommendations | Deepak Kumar — Colleague References",
   description:
-    "LinkedIn recommendations for Deepak Kumar from the engineers and analysts who shipped alongside him at Instant Systems Inc and Teamwork Arts — on technical depth, problem solving and how he works inside a team.",
+    "LinkedIn recommendations for Deepak Kumar, written by the engineers and analysts who shipped alongside him at Instant Systems Inc and Teamwork Arts.",
   path: "/reviews",
   keywords: [
     "Deepak Kumar reviews",

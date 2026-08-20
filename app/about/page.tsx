@@ -18,9 +18,9 @@ import { breadcrumbLd, pageMeta } from "@/components/utils/seo";
 export const revalidate = 86400;
 
 export const metadata = pageMeta({
-  title: "About Deepak Kumar | Senior Software Engineer in India — MERN & Generative AI",
+  title: "About Deepak Kumar | Senior Software Engineer in India",
   description:
-    `About Deepak Kumar — a senior software developer in India with ${YEARS_WHOLE} years across news media, healthtech, adtech and real estate. React.js, Next.js, Node.js, MongoDB and Generative AI with OpenAI and LangChain. Currently at India Today Group, and running four products of his own.`,
+    `About Deepak Kumar — senior software engineer in New Delhi, ${YEARS_WHOLE} years across news media, healthtech and adtech. React, Next.js, Node.js and Generative AI.`,
   path: "/about",
   keywords: [
     "about Deepak Kumar",

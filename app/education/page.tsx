@@ -12,9 +12,9 @@ import { breadcrumbLd, pageMeta } from "@/components/utils/seo";
 export const revalidate = 86400;
 
 export const metadata = pageMeta({
-  title: "Education & Certifications | Deepak Kumar — MCA (AI/ML), AWS coursework",
+  title: "Education & Certifications | Deepak Kumar — MCA in AI/ML",
   description:
-    "The academic and professional credentials of Deepak Kumar — an MCA in Artificial Intelligence & Machine Learning from JAIN University, a Bachelor of Commerce from the University of Delhi, a Junior Engineering diploma in Computer Science, and AWS Solutions Architect Associate (SAA-C03) and MERN Stack coursework.",
+    "The credentials behind the work — an MCA in AI & Machine Learning (JAIN University), a B.Com from the University of Delhi, and AWS Solutions Architect study.",
   path: "/education",
   keywords: [
     "Deepak Kumar education",

@@ -386,9 +386,9 @@ export const LANDING_PAGES: LandingPage[] = [
     slug: "ai-engineer-in-india",
     keyword: "AI engineer in India",
     h1: "AI engineer in India — Deepak Kumar",
-    title: "AI Engineer in India | Deepak Kumar — Generative AI, RAG & LLM Developer",
+    title: "AI Engineer in India | Deepak Kumar — Generative AI & RAG",
     description:
-      "Deepak Kumar is an AI engineer in India building Generative AI in production — OpenAI and LangChain, RAG pipelines on MongoDB Atlas Vector Search, semantic search and voice automation, currently shipping to readers at India Today Group (Aaj Tak). Based in New Delhi, available on-site or remote.",
+      "AI engineer in India shipping Generative AI in production — OpenAI, LangChain and RAG on MongoDB Atlas Vector Search, live to readers at India Today Group.",
     kicker: "Generative AI · RAG · LLM applications",
     lede:
       "I build AI features that reach real users, not demos that die in a notebook. Article generation, semantic search and voice automation, all running in production at a national news organisation.",
@@ -473,9 +473,9 @@ export const LANDING_PAGES: LandingPage[] = [
     slug: "react-developer-in-india",
     keyword: "React developer in India",
     h1: "React developer in India — Deepak Kumar",
-    title: "React Developer in India | Deepak Kumar — Senior React.js Engineer, New Delhi",
+    title: "React Developer in India | Deepak Kumar — React.js Engineer",
     description:
-      `Deepak Kumar is a senior React developer in India with ${YEARS_WHOLE} years building production React.js and Next.js applications — including the live election dashboard serving millions of daily users at India Today Group. Available for senior roles and contract work, Delhi NCR or remote.`,
+      `Senior React developer in India, ${YEARS_WHOLE} years of production React.js and Next.js — including the election dashboard serving millions daily at India Today.`,
     kicker: "React.js · Next.js · TypeScript",
     lede:
       "I have written React for production since 2017 — component libraries, editorial dashboards, real-time result screens and two marketplaces of my own. If you are hiring a React developer in India, this page is the short version of what that has actually involved.",
@@ -560,9 +560,9 @@ export const LANDING_PAGES: LandingPage[] = [
     slug: "software-developer-in-india",
     keyword: "software developer in India",
     h1: "Software developer in India — Deepak Kumar",
-    title: "Software Developer in India | Deepak Kumar — Senior Software Engineer, New Delhi",
+    title: "Software Developer in India | Deepak Kumar — Senior Engineer",
     description:
-      `Deepak Kumar is a senior software developer in India with ${YEARS_WHOLE} years across news media, healthtech, adtech and real estate — MERN stack, Next.js, AWS and Generative AI. Available for senior roles and contract work from New Delhi or remote.`,
+      `Senior software developer in India, ${YEARS_WHOLE} years across news media, healthtech, adtech and real estate — MERN, Next.js, AWS and Generative AI. New Delhi or remote.`,
     kicker: "Full stack · Cloud · Generative AI",
     lede:
       "Nine years, seven companies, four industries and seventeen shipped products. If you are looking for a software developer in India who has run systems under genuine load rather than only in staging, this is the record.",
@@ -647,9 +647,9 @@ export const LANDING_PAGES: LandingPage[] = [
     slug: "javascript-developer-in-india",
     keyword: "JavaScript developer in India",
     h1: "JavaScript developer in India — Deepak Kumar",
-    title: "JavaScript Developer in India | Deepak Kumar — Senior JS & TypeScript Engineer",
+    title: "JavaScript Developer in India | Deepak Kumar — TypeScript",
     description:
-      `Deepak Kumar is a senior JavaScript developer in India — ${YEARS_WHOLE} years of JavaScript and TypeScript across React, Next.js, Node.js, Express and NestJS, from real-time election pipelines to AI-powered marketplaces. Based in New Delhi, available on-site or remote.`,
+      `Senior JavaScript developer in India — ${YEARS_WHOLE} years of JS and TypeScript across React, Next.js, Node.js and NestJS, from real-time pipelines to AI marketplaces.`,
     kicker: "JavaScript · TypeScript · Node.js",
     lede:
       `JavaScript on both sides of the wire since 2017 — browser, server, and the streaming layer in between. If you are hiring a JavaScript developer in India, here is what ${YEARS_WHOLE} years of it has produced.`,
@@ -734,9 +734,9 @@ export const LANDING_PAGES: LandingPage[] = [
     slug: "full-stack-developer-in-india",
     keyword: "full stack developer in India",
     h1: "Full stack developer in India — Deepak Kumar",
-    title: "Full Stack Developer in India | Deepak Kumar — MERN & Next.js Engineer, Delhi",
+    title: "Full Stack Developer in India | Deepak Kumar — MERN & Next.js",
     description:
-      `Deepak Kumar is a full stack developer in India with ${YEARS_WHOLE} years on the MERN stack, Next.js, NestJS and AWS — plus Generative AI with OpenAI and LangChain. Owns four products end to end. Hire him in Delhi NCR or fully remote.`,
+      `Full stack developer in India, ${YEARS_WHOLE} years on the MERN stack, Next.js, NestJS and AWS, plus Generative AI with OpenAI and LangChain. Delhi NCR or fully remote.`,
     kicker: "MERN · Next.js · NestJS · AWS",
     lede:
       "Product, schema, API, front end, SEO and deploy. I have carried all six on my own products and inside teams of thirty, which is the only honest definition of full stack I know.",

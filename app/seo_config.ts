@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { totalExperianceYears } from "@/components/utils/date";
+import { careerYears, totalExperianceYears } from "@/components/utils/date";
 import { FAQS } from "@/components/utils/portfolio-data";
 import crypto from "crypto";
 
@@ -8,11 +8,30 @@ const SITE_URL = (process.env.NEXT_PUBLIC_WEB_SITE || "https://officialdeepak.in
 
 const yearsExp = totalExperianceYears();
 
+/*
+  TWO DESCRIPTIONS, ON PURPOSE.
+
+  `metaDescription` is what goes in <meta name="description"> and og:description.
+  A SERP snippet renders roughly 155–160 characters and drops the rest, so the
+  long version below was being cut mid-sentence — everything after "…AWS, OpenAI
+  and LangChain." never reached a reader, and the call to action at the end of
+  it never appeared at all. This one ends before the cut.
+
+  `description` stays long because the Person schema is not a snippet: it is
+  the entity summary Google reads to work out who this is, where nothing is
+  truncated and every extra fact (employer, city, products, availability) is
+  another edge in the knowledge graph.
+*/
+const metaDescription = `Deepak Kumar — senior software and AI engineer in India, ${careerYears()} years building React, Next.js, Node.js and AI products. At India Today Group.`;
+
 const description = `Deepak Kumar is a senior software engineer and AI engineer in India with ${yearsExp} building scalable web applications, Generative AI products and enterprise platforms — React.js, Next.js, Node.js, TypeScript, MongoDB, AWS, OpenAI and LangChain. Currently at India Today Group (Aaj Tak) in New Delhi, running four products of his own. Available for senior roles and contract work, Delhi NCR or fully remote.`;
 
 // The home page targets the broad, high-intent terms — a specific technology
 // (React, JavaScript, full stack) gets its own landing page instead.
-const title = "Software & AI Engineer in India | Deepak Kumar — Senior Full Stack Developer";
+// 76 characters was about a line and a half of a SERP title; Google renders
+// ~60 and rewrites the rest. The two terms worth ranking for — the role and
+// the country — now both fit, and the name still lands inside the cut.
+const title = "Software & AI Engineer in India | Deepak Kumar";
 
 function getGravatarUrl(email: string, size = 120): string {
   if (email) {
@@ -34,7 +53,7 @@ const gravatarFallback = getGravatarUrl(GLOBAL_EMAIL);
 export const NEXT_SEO_DEFAULT: Metadata = {
   title,
   applicationName: "Deepak Kumar — Software & AI Engineer",
-  description,
+  description: metaDescription,
   keywords: [
     // ---- Primary targets: broad, high-intent terms for the home page ----
     "software engineer in India",
@@ -199,7 +218,7 @@ export const NEXT_SEO_DEFAULT: Metadata = {
   openGraph: {
     url: SITE_URL,
     title,
-    description,
+    description: metaDescription,
     type: "profile",
     firstName: "Deepak",
     lastName: "Kumar",

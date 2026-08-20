@@ -14,9 +14,9 @@ import { breadcrumbLd, pageMeta } from "@/components/utils/seo";
 export const revalidate = 86400;
 
 export const metadata = pageMeta({
-  title: `Experience | Deepak Kumar — ${YEARS_WHOLE} years as a Software Engineer in India`,
+  title: `Experience | Deepak Kumar — ${YEARS_WHOLE} Years as a Software Engineer`,
   description:
-    `The full career history of Deepak Kumar — ${YEARS_WHOLE} years across India Today Group, Instant Systems Inc (Clove Dental, Humanize, SYNQY Corporation, Ceekr), Phoenix Media and Galaxy Tourism. Node.js, React.js, Next.js, NestJS, MongoDB, MySQL, AWS and Generative AI, with the responsibilities and results for each role.`,
+    `${YEARS_WHOLE} years of career history — India Today Group, Instant Systems (Clove Dental, Humanize, SYNQY, Ceekr) and Phoenix Media. React, Node.js, AWS and AI.`,
   path: "/experience",
   keywords: [
     "Deepak Kumar experience",

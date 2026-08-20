@@ -25,9 +25,9 @@ import { breadcrumbLd, faqLd, pageMeta } from "@/components/utils/seo";
 export const revalidate = 86400;
 
 export const metadata = pageMeta({
-  title: "Contact Deepak Kumar | Hire a React & Full Stack Developer in India",
+  title: "Contact Deepak Kumar | Hire a React & AI Developer in India",
   description:
-    "Contact Deepak Kumar — senior software engineer in New Delhi, India. Available for senior full-stack and AI engineering roles across Delhi NCR or fully remote, and for contract work: MVP builds, AI features, architecture reviews. Replies within 24 hours.",
+    "Contact Deepak Kumar — senior software engineer in New Delhi. Open to full-stack and AI roles across Delhi NCR or remote, and to contract work. Replies in 24h.",
   path: "/contact",
   keywords: [
     "contact Deepak Kumar",

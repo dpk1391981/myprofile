@@ -76,24 +76,47 @@ const matchesTopic = (p: IndexPost, topic: string) =>
 
 // ── Metadata ──────────────────────────────────────────────────────────────
 
+/*
+  The head term this index is written for is "tech blogs in India" — the query
+  a reader types, not the word an engineer would pick for their own archive
+  ("engineering notes", "writing"). The stack terms that follow are what the
+  articles are actually about, so the title earns the click for the long tail
+  ("react blog india", "langchain tutorial") as well as the head.
+
+  These live at module scope because the <title> and the CollectionPage
+  JSON-LD `name` below are the same claim in two formats: when they drifted
+  apart, the page told Google one thing in the head and another in the graph.
+  Anything the admin sets in the SEO panel overrides them, per field.
+*/
+const DEFAULT_INDEX_TITLE =
+  `Tech Blogs in India | ${PERSONAL_INFO.fullName} — React, AI & Node.js`;
+const DEFAULT_INDEX_DESC =
+  `Tech blogs from India by ${PERSONAL_INFO.fullName} — React.js, Next.js and Node.js, ` +
+  `AI/ML with OpenAI and LangChain, MERN architecture and system design.`;
+const DEFAULT_INDEX_KEYWORDS = [
+  // Head terms first: this is the order a human scans, and the order that
+  // makes the intent of the page obvious to an answer engine reading them.
+  "tech blogs in India", "tech blog India", "Indian tech blog",
+  "software engineering blog India", "best tech blogs for developers",
+  // The subjects the archive actually has depth in.
+  "React blog", "React performance", "Next.js blog", "Node.js blog",
+  "JavaScript blog India", "TypeScript blog", "MERN stack blog",
+  "AI ML blog India", "LangChain tutorial", "OpenAI tutorial", "RAG tutorial",
+  "Generative AI tutorial", "system design blog India",
+  // Brand.
+  "Deepak Kumar blog", "India Today engineering",
+];
+
 export async function buildBlogIndexMetadata(
   { page = 1, topic = "" }: { page?: number; topic?: string }
 ): Promise<Metadata> {
   const cfg = await getBlogIndexSeo();
   topic = topic.trim();
 
-  const title = cfg?.pageTitle ||
-    `Blog | ${PERSONAL_INFO.fullName} — React, AI/ML, Full Stack Engineering`;
-  const description = cfg?.metaDescription ||
-    `Technical blog by ${PERSONAL_INFO.fullName} — in-depth articles on React.js performance, AI/ML integration with LangChain & OpenAI, MERN stack architecture, and building scalable web applications at India Today Group.`;
-  const keywords: string[] = cfg?.keywords?.length
-    ? cfg.keywords
-    : ["React blog", "JavaScript blog", "AI ML blog", "LangChain tutorial", "OpenAI tutorial",
-       "MERN stack blog", "Next.js blog", "web development blog", "Deepak Kumar blog",
-       "software engineering articles", "India Today engineering", "React performance",
-       "RAG tutorial", "Generative AI tutorial", "Node.js blog", "TypeScript blog",
-       "full stack developer blog", "software engineer blog India"];
-  const ogTitle       = cfg?.ogTitle       || `Engineering Blog | ${PERSONAL_INFO.fullName}`;
+  const title       = cfg?.pageTitle      || DEFAULT_INDEX_TITLE;
+  const description = cfg?.metaDescription || DEFAULT_INDEX_DESC;
+  const keywords: string[] = cfg?.keywords?.length ? cfg.keywords : DEFAULT_INDEX_KEYWORDS;
+  const ogTitle     = cfg?.ogTitle        || `Tech Blogs in India | ${PERSONAL_INFO.fullName}`;
   const ogDescription = cfg?.ogDescription || description;
   // The blog's own share card, not the site-wide portrait one: a link to
   // /blog previews as the page it opens. See scripts/og-blog.html.
@@ -127,14 +150,30 @@ export async function buildBlogIndexMetadata(
     ? `${SITE_URL}${path}${query}`
     : cfg?.canonicalUrl || `${SITE_URL}/blog`;
 
+  /*
+    Page 2+ gets its own shorter title rather than the page-1 title with a
+    suffix bolted on: the full one is already close to the ~60 characters
+    Google renders, so " — Page 4" only pushed the brand off the end of the
+    SERP line. An admin-set title is still honoured — it is a deliberate
+    choice, and silently replacing it on the archive pages would be surprising.
+  */
   const pageSuffix = page > 1 ? ` — Page ${page}` : "";
   const pageTitle = filtered
-    ? `${topic} articles${pageSuffix} | ${PERSONAL_INFO.fullName}`
-    : `${title}${pageSuffix}`;
+    ? `${topic} Tech Blogs${pageSuffix} | ${PERSONAL_INFO.fullName}`
+    : page > 1
+      ? (cfg?.pageTitle
+          ? `${cfg.pageTitle}${pageSuffix}`
+          : `Tech Blogs in India — Page ${page} | ${PERSONAL_INFO.fullName}`)
+      : title;
 
   return {
     title: pageTitle,
-    description: page > 1 ? `Page ${page} of the archive. ${description}` : description,
+    // Same reasoning as the title: a prefixed sentence pushed the real
+    // description past the ~160 characters a SERP shows, so the archive pages
+    // get their own, already short enough to survive intact.
+    description: page > 1
+      ? `Page ${page} of the tech blog archive — React, Next.js, Node.js, AI/ML and system design articles by ${PERSONAL_INFO.fullName}.`
+      : description,
     keywords,
     authors:      [{ name: PERSONAL_INFO.fullName, url: SITE_URL }],
     creator:      PERSONAL_INFO.fullName,
@@ -234,8 +273,8 @@ export default async function BlogIndexView(
   // Only indexable posts are described. Markup that recommends a URL the same
   // site tells Google to drop is a contradiction, and the ItemList is the part
   // an answer engine is most likely to quote.
-  const pageTitle = cfg?.pageTitle || `Blog | ${PERSONAL_INFO.fullName}`;
-  const pageDesc  = cfg?.metaDescription || "";
+  const pageTitle = cfg?.pageTitle || DEFAULT_INDEX_TITLE;
+  const pageDesc  = cfg?.metaDescription || DEFAULT_INDEX_DESC;
   const listable  = matching.filter((p) => !p.noIndex);
 
   const author = {
@@ -324,20 +363,25 @@ export default async function BlogIndexView(
 
         <div className="bs-rail-thick" style={{ marginTop: 16 }} />
         <div className="bs-dateline">
-          <span>Engineering notes</span>
+          <span>Tech blog</span>
           <span>React · AI · Architecture</span>
           <span className="bs-live">{allPosts.length} article{allPosts.length === 1 ? "" : "s"}</span>
         </div>
         <div className="bs-rail-thin" />
 
         <div style={{ paddingTop: 52 }}>
-          <p className="bs-kicker">Engineering blog{page > 1 ? ` · page ${page}` : ""}</p>
+          {/* The H1 carries the same term as the <title> on purpose. It read
+              "Thoughts on code, architecture and AI." — true, and invisible to
+              anyone searching for a tech blog. The voice is unchanged; the
+              noun is now the one people actually type. */}
+          <p className="bs-kicker">Tech blog · India{page > 1 ? ` · page ${page}` : ""}</p>
           <h1 className="bs-h1 bs-mt-2" style={{ maxWidth: "20ch" }}>
-            Thoughts on code, architecture and AI.
+            Tech blogs on code, architecture and AI.
           </h1>
           <p className="bs-lede bs-mt-4" style={{ maxWidth: "58ch" }}>
             Deep dives into React.js, AI and ML integration, MERN stack patterns, and lessons
-            from building production applications at scale — written by {PERSONAL_INFO.fullName}.
+            from building production applications at scale in India — written by{" "}
+            {PERSONAL_INFO.fullName}.
           </p>
         </div>
 
