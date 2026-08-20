@@ -45,7 +45,15 @@ export default function ExperiencePage() {
         crumbs={[{ label: "Home", href: "/" }, { label: "Experience" }]}
         dateline={["Career", `Since December 2016`, `${EXPERIENCES.length} employers`]}
         kicker="Career history"
-        title={`Where the ${YEARS_WHOLE} years went.`}
+        /* "9+ years" is one word here. Left to wrap, the 20ch measure broke it
+           as "Where the 9+ / years went." — the number stranded at the end of a
+           line, away from its unit. `.bs-h1-accent` is nowrap and spot-coloured,
+           the same treatment the front-page headline gives the same figure. */
+        title={
+          <>
+            Where the <span className="bs-h1-accent">{YEARS_WHOLE} years</span> went.
+          </>
+        }
         lede="From a Delhi advertising agency writing PHP to architecting Generative AI features at India Today Group — every role, what it involved and what came out of it."
         figure={<TimelineFigure roles={EXPERIENCES} />}
       />

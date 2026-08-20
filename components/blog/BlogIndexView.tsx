@@ -12,7 +12,7 @@ import { BLOG_POSTS, PERSONAL_INFO } from "@/components/utils/portfolio-data";
 import { IconArrowRight, IconRss } from "@tabler/icons-react";
 import { listAllPosts, getSeoConfig } from "@/components/utils/portfolio-api";
 import AdSlot from "@/components/blog/AdSlot";
-import { ArchiveFigure } from "@/components/bs/HeadFigure";
+import { TopicsFigure } from "@/components/bs/HeadFigure";
 import { POSTS_PER_PAGE, pageCount, indexPath } from "@/components/utils/blog-pagination";
 
 const SLOT_TOP    = process.env.NEXT_PUBLIC_ADSENSE_SLOT_BLOG_TOP    ?? "0000000000";
@@ -243,14 +243,39 @@ export default async function BlogIndexView(
     in the rail the moment something is published under it. Counted so the
     rail shows where the blog actually has depth.
   */
-  const topicCounts = new Map<string, number>();
+  /*
+    Counted case-insensitively. Posts carry both "React" and "react", and both
+    "Node.js" and "node.js", so the rail was listing the same subject twice and
+    splitting its count between the two spellings — "Node.js 7" next to
+    "node.js 4" when the blog has eleven. `matchesTopic` already compares
+    without case, so a merged entry filters exactly as its halves did.
+
+    The label shown is the most-used spelling, ties going to the one that reads
+    as a proper noun (the capitalised one sorts first).
+  */
+  const topicCounts = new Map<string, { count: number; labels: Map<string, number> }>();
   for (const p of allPosts) {
     for (const t of [p.category, ...p.tags].filter(Boolean)) {
-      const key = String(t).trim();
-      if (key) topicCounts.set(key, (topicCounts.get(key) ?? 0) + 1);
+      const label = String(t).trim();
+      if (!label) continue;
+      const key = label.toLowerCase();
+      const entry = topicCounts.get(key) ?? { count: 0, labels: new Map<string, number>() };
+      entry.count += 1;
+      entry.labels.set(label, (entry.labels.get(label) ?? 0) + 1);
+      topicCounts.set(key, entry);
     }
   }
-  const topics = Array.from(topicCounts.entries())
+  const topics: [string, number][] = Array.from(topicCounts.values())
+    .map(({ count, labels }) => {
+      const capitalised = (x: string) => (x[0] === x[0].toUpperCase() ? 1 : 0);
+      const label = Array.from(labels.entries()).sort(
+        (a, b) =>
+          b[1] - a[1] ||
+          capitalised(b[0]) - capitalised(a[0]) ||
+          a[0].localeCompare(b[0])
+      )[0][0];
+      return [label, count] as [string, number];
+    })
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
     .slice(0, 12);
 
@@ -357,7 +382,7 @@ export default async function BlogIndexView(
       <script type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
 
-      <header className="bs-wrap" style={{ paddingTop: 26 }}>
+      <header className="bs-wrap bs-head-top">
         <nav className="bs-breadcrumb" aria-label="Breadcrumb">
           <Link href="/">Home</Link>
           <span aria-hidden="true">·</span>
@@ -381,7 +406,7 @@ export default async function BlogIndexView(
         {/* Two columns, the same head shape the other inner pages use — see
             components/bs/PageHeader.tsx. Single-column, the right third of the
             index was empty paper down to the first article. */}
-        <div style={{ paddingTop: 52 }}>
+        <div className="bs-head-body">
           <div className="bs-split bs-split--head">
             <div>
               {/* The H1 carries the same term as the <title> on purpose. It read
@@ -399,12 +424,10 @@ export default async function BlogIndexView(
               </p>
             </div>
             <div>
-              <ArchiveFigure
+              <TopicsFigure
+                topics={topics}
+                totalTopics={topicCounts.size}
                 articles={allPosts.length}
-                /* The rail's count, not every distinct tag: "74 topics" across
-                   18 articles is a tagging artefact, and it is not a number
-                   the reader can see anywhere on the page. */
-                topics={topics.length}
                 latest={latestDate ? formatMonth(latestDate) : undefined}
               />
             </div>

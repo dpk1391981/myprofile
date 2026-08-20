@@ -16,7 +16,7 @@ export default function Hero() {
   const [ledeBefore, ledeAfter] = HERO.lede.split("India Today Group");
 
   return (
-    <section className="bs-wrap" id="top" style={{ paddingTop: 26 }}>
+    <section className="bs-wrap bs-head-top" id="top">
       <div className="bs-rail-thick" />
       <div className="bs-dateline">
         <span>{DATELINE.left}</span>
@@ -37,7 +37,7 @@ export default function Hero() {
       </div>
       <div className="bs-rail-thin" />
 
-      <div className="bs-split" style={{ paddingTop: 56 }}>
+      <div className="bs-split bs-head-body">
         <div>
           <h1 className="bs-h1" style={{ maxWidth: "22ch" }}>
             {HERO.headlineParts.lead}{" "}

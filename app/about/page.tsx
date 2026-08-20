@@ -52,7 +52,12 @@ export default function AboutPage() {
            dateline two lines up was reading 9+ while the headline said nine.
            "Systems … depend on" is also the claim this page has to justify:
            production software with users attached, not a list of tools. */
-        title={`${YEARS_WHOLE} years building the systems other people depend on.`}
+        title={
+          <>
+            <span className="bs-h1-accent">{YEARS_WHOLE} years</span> building the systems other
+            people depend on.
+          </>
+        }
         /* A sentence longer than it needs to be for its own sake — the head is
            a two-column grid and the portrait beside it is taller than a short
            lede, so the extra line is what brings the two columns level. It

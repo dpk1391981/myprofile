@@ -43,7 +43,7 @@ export default function PageHeader({
   );
 
   return (
-    <header className="bs-wrap" style={{ paddingTop: 26 }}>
+    <header className="bs-wrap bs-head-top">
       <nav className="bs-breadcrumb" aria-label="Breadcrumb">
         {crumbs.map((c, i) => (
           <span key={c.label} style={{ display: "inline-flex", gap: 8 }}>
@@ -63,7 +63,7 @@ export default function PageHeader({
 
       {/* One column when there is no figure: the grid would otherwise leave a
           1fr track of empty paper, which is the problem this replaces. */}
-      <div style={{ paddingTop: 52 }}>
+      <div className="bs-head-body">
         {figure ? (
           <div className="bs-split bs-split--head">
             <div>{body}</div>

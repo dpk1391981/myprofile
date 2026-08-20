@@ -536,79 +536,120 @@ export function CurrentlyBlock({
   );
 }
 
-/* ── /blog — the archive ─────────────────────────────────────────────── */
+/* ── /blog — what the blog covers ────────────────────────────────────── */
 
 /**
- * A broadsheet page drawn small, then the numbers under it. The blog index is
- * the one page whose subject *is* a page, so the figure can be literal: this
- * is what the reader is about to scroll through.
+ * The subjects the archive has depth in, as a bar chart of real counts.
+ *
+ * This replaced a drawn broadsheet page — a masthead rule, two headline bars
+ * and two columns of grey rules standing in for body copy. On paper it was a
+ * newspaper; on screen it was a loading skeleton, which is the one thing a
+ * finished page must never look like. Grey bars where text belongs read as
+ * "not ready yet" no matter what shape they are in.
+ *
+ * FOUR ROWS, FIXED. The tag list grows with every post, so a figure that grew
+ * with it would drift taller than the headline it sits beside and would need
+ * re-tuning every few months. Four leaders plus a count of the rest holds its
+ * height for good, and the full list is one scroll below in the topic rail.
+ *
+ * Bars are proportional to the leader, not to the total: with a long tail of
+ * one-post tags, scaling to the sum leaves every bar a stub.
  */
-export function ArchiveFigure({
-  articles,
+const TOPIC_ROWS = 4;
+
+export function TopicsFigure({
   topics,
+  totalTopics,
+  articles,
   latest,
 }: {
+  topics: [string, number][];
+  /** Every distinct topic, not just the ones passed in — drives "+N more". */
+  totalTopics: number;
   articles: number;
-  topics: number;
   latest?: string;
 }) {
-  const rows = [
-    { label: "Articles", value: String(articles) },
-    { label: "Topics", value: String(topics) },
-    ...(latest ? [{ label: "Latest", value: latest }] : []),
-  ];
-  const pageH = 186;
-  const height = pageH + 26 + rows.length * 34;
-
-  // Two columns of body copy, drawn as rules. Ragged lengths and a short last
-  // line per column, so it reads as set type rather than as a placeholder.
-  const colW = (FIG_W - 24) / 2;
-  const lines = [1, 0.94, 1, 0.88, 1, 0.72];
+  const rows = topics.slice(0, TOPIC_ROWS);
+  const max = Math.max(1, ...rows.map(([, n]) => n));
+  const more = Math.max(0, totalTopics - rows.length);
 
   return (
-    <Figure
-      title={`Blog archive: ${articles} articles across ${topics} topics`}
-      caption={`${articles} articles across ${topics} topics — every one of them reachable from this page.`}
-      height={height}
-    >
-      <rect x="0" y="0" width={FIG_W} height={pageH} fill={SURFACE} stroke={HAIR} strokeWidth="1" />
+    <figure className="bs-figure bs-headfig">
+      <div className="bs-headfig-box">
+        <p className="bs-eyebrow">What it covers</p>
 
-      {/* Masthead: the same thick–thin rail the real page runs under. */}
-      <rect x="16" y="16" width={FIG_W - 32} height="5" fill={INK} />
-      <rect x="16" y="27" width={FIG_W - 32} height="1" fill={RULE} />
+        <ul style={{ listStyle: "none", margin: "16px 0 0", padding: 0, display: "grid", gap: 13 }}>
+          {rows.map(([name, count]) => (
+            <li key={name}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "baseline",
+                  justifyContent: "space-between",
+                  gap: 12,
+                }}
+              >
+                <span style={{ fontSize: 15, fontWeight: 600 }}>{name}</span>
+                <span className="bs-small bs-quiet">
+                  {count} article{count === 1 ? "" : "s"}
+                </span>
+              </div>
+              {/* A track under every bar, so a small count still reads as a
+                  share of something rather than as a stray dash. */}
+              <div style={{ height: 6, background: "var(--hair)", marginTop: 7 }}>
+                <div
+                  style={{
+                    height: "100%",
+                    width: `${Math.round((count / max) * 100)}%`,
+                    background: "var(--spot)",
+                  }}
+                />
+              </div>
+            </li>
+          ))}
+        </ul>
 
-      {/* Headline, two decks. */}
-      <rect x="16" y="42" width={FIG_W - 90} height="13" fill={INK} opacity=".82" />
-      <rect x="16" y="61" width={FIG_W - 150} height="13" fill={INK} opacity=".82" />
-      <rect x="16" y="86" width="54" height="6" fill={SPOT} />
+        {more > 0 ? (
+          <p className="bs-small bs-quiet" style={{ margin: "13px 0 0" }}>
+            {/* Not "below": the rail under the headline shows the top twelve,
+                not all of them. This is the size of the whole tag set. */}
+            + {more} more topic{more === 1 ? "" : "s"} in the archive
+          </p>
+        ) : null}
 
-      {[0, 1].map((col) =>
-        lines.map((w, i) => (
-          <rect
-            key={`${col}-${i}`}
-            x={16 + col * (colW + 8)}
-            y={104 + i * 13}
-            width={(colW - 16) * w}
-            height="6"
-            fill={RULE}
-          />
-        ))
-      )}
-
-      {rows.map((r, i) => {
-        const y = pageH + 44 + i * 34;
-        return (
-          <g key={r.label}>
-            <line x1="0" y1={y - 20} x2={FIG_W} y2={y - 20} stroke={HAIR} strokeWidth="1" />
-            <text x="0" y={y} style={label()}>
-              {r.label.toUpperCase()}
-            </text>
-            <text x={FIG_W} y={y} textAnchor="end" style={{ fontSize: 13.5, fill: INK }}>
-              {r.value}
-            </text>
-          </g>
-        );
-      })}
-    </Figure>
+        {/* Both figures on one line. Stacked as two definition rows they cost
+            twice the height for two short facts, and left the column longer
+            than the headline beside it. */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "baseline",
+            justifyContent: "space-between",
+            gap: 16,
+            marginTop: 18,
+            paddingTop: 14,
+            borderTop: "1px solid var(--rule)",
+            fontSize: 11,
+            letterSpacing: ".12em",
+            textTransform: "uppercase",
+            color: "var(--quiet)",
+          }}
+        >
+          <span>
+            <strong style={{ color: "var(--ink)", fontSize: 15, letterSpacing: 0 }}>{articles}</strong>{" "}
+            articles
+          </span>
+          {latest ? (
+            <span>
+              Latest ·{" "}
+              <strong style={{ color: "var(--ink)", fontSize: 13, letterSpacing: 0 }}>{latest}</strong>
+            </span>
+          ) : null}
+        </div>
+      </div>
+      <figcaption className="bs-figcaption">
+        Where the archive has depth — every article is reachable from this page.
+      </figcaption>
+    </figure>
   );
 }

@@ -80,6 +80,16 @@ body.bs-body h4 {
 .bs-section--tight { padding-top: 72px; }
 .bs-section--first { padding-top: 0; }
 
+/*
+  Head spacing. These were inline `paddingTop` values on the hero and the page
+  head, which meant they could not respond: on a phone the masthead, the rails
+  and 56px of air pushed the headline down so far that the first call to action
+  sat below the fold on a 6" screen. Same rhythm on a desktop, about half of it
+  on a phone.
+*/
+.bs-head-top { padding-top: 26px; }
+.bs-head-body { padding-top: 56px; }
+
 /* ---------- press furniture: the one place rules print ---------- */
 .bs-rail-thick { height: 5px; background: var(--ink); }
 .bs-rail-thin { height: 1px; background: var(--ink); }
@@ -394,6 +404,40 @@ a:hover { color: var(--spot-deep); text-decoration: underline; text-underline-of
   border-top: 1px solid var(--hair);
   align-items: start;
 }
+
+/*
+  The lead role. On the front page the current job is the one a reader is
+  actually looking for, so it keeps the full width and gets the heavier rule
+  and larger name; the rest of the record follows as a 2x2 of cards. Five
+  full-width rows in a row left the right third of each one empty and buried
+  the current job in a list of equals.
+*/
+.bs-role--lead { border-top: 3px solid var(--ink); padding-top: 26px; }
+.bs-role--lead .bs-role-company { font-size: 26px; }
+
+/* One past role. A card, not a row: at half width the text sets to a natural
+   measure instead of stopping two thirds of the way across the page. */
+.bs-rolecard {
+  border-top: 1px solid var(--rule);
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.bs-rolecard-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--quiet);
+}
+.bs-rolecard-top .bs-rolecard-tenure { color: var(--spot); white-space: nowrap; }
+.bs-rolecard-head { display: flex; align-items: center; gap: 12px; }
+.bs-role-company { font-size: 22px; letter-spacing: -.015em; }
+.bs-rolecard .bs-role-company { font-size: 19px; }
 
 /* ---------- listed rows (education, services) ---------- */
 .bs-list-head {
@@ -712,6 +756,11 @@ a:hover { color: var(--spot-deep); text-decoration: underline; text-underline-of
 
 @media (max-width: 640px) {
   :root { --gutter: 20px; }
+  .bs-head-top { padding-top: 14px; }
+  .bs-head-body { padding-top: 26px; }
+  /* The headline is the tallest thing above the fold; a slightly tighter
+     leading buys back most of a line without changing its size. */
+  .bs-h1 { line-height: .98; }
   /* On a phone the figure is the full column, capped only by the gutter. Any
      narrower and the labels inside the viewBox scale down past legibility. */
   .bs-headfig { max-width: 100%; }
