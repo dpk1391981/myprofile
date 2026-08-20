@@ -5,6 +5,7 @@ import "../styles/broadsheet.css";
 import { Footer, Nav } from "@/components";
 import SiteChrome from "@/components/SiteChrome";
 import { Analytics } from "@vercel/analytics/react";
+import GoogleAnalytics from "@/components/Analytics";
 import Script from "next/script";
 import { NEXT_SEO_DEFAULT, STRUCT_DATA } from "@/app/seo_config";
 import ThemeScript from "@/components/bs/ThemeScript";
@@ -77,26 +78,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       )}
 
-      <Script
-        async
-        src="https://www.googletagmanager.com/gtag/js?id=G-YXZRZVFV9F"
-        strategy="afterInteractive"
-      />
-      <Script id="google-analytics" strategy="afterInteractive">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-YXZRZVFV9F');
-        `}
-      </Script>
-
       <body className="bs-body">
         {/* Admin routes opt out of the public masthead/footer — see SiteChrome. */}
         <SiteChrome nav={<Nav />} footer={<Footer />}>
           {children}
         </SiteChrome>
         <Analytics />
+        {/* GA4, public routes only — the admin panel is the site owner's own
+            sessions, not traffic. See components/Analytics.tsx. */}
+        <GoogleAnalytics />
       </body>
     </html>
   );
