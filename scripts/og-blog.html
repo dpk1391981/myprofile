@@ -1,0 +1,110 @@
+<!doctype html>
+<!--
+  Source for public/assets/images/og-blog.png — the blog's share card.
+
+  Set in the site's own face (Source Serif 4, pulled from the Next build
+  output) on the broadsheet palette, so a link to the blog previews as the
+  page it opens rather than as the generic portrait card every other route
+  shares.
+
+  Regenerate after a design change (run `npm run build` first so the font
+  file below exists):
+
+    google-chrome --headless --disable-gpu --no-sandbox --hide-scrollbars \
+      --allow-file-access-from-files --virtual-time-budget=3000 \
+      --screenshot=/tmp/shot.png --window-size=1200,900 \
+      file://$PWD/scripts/og-blog.html
+    python3 -c "from PIL import Image; \
+      Image.open('/tmp/shot.png').convert('RGB').crop((0,0,1200,630)) \
+        .quantize(colors=200, dither=Image.NONE) \
+        .save('public/assets/images/og-blog.png', optimize=True)"
+
+  The card is a fixed-size element inside a taller window on purpose: headless
+  Chrome stops painting short of the requested window height, which silently
+  drops anything sitting near the bottom of the card.
+-->
+<meta charset="utf-8">
+<title>og-blog</title>
+<style>
+  /* Source Serif 4, the site's own face, taken from the build output so the
+     card is set in the same type as the page it represents. */
+  @font-face {
+    font-family: "SourceSerif";
+    font-style: normal;
+    font-weight: 200 900;
+    font-display: block;
+    src: url("file:///var/www/html/myprofile/.next/static/media/97ac91773d3121b2-s.p.woff2") format("woff2");
+  }
+  :root {
+    --paper: #f3f2f2;
+    --ink: #201e1d;
+    --quiet: #6b6866;
+    --spot: #0088b0;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1200px; background: var(--paper); }
+  /* The card is a fixed-size element inside a taller page: headless Chrome
+     stops painting some way short of the requested window height, so the
+     screenshot is taken large and cropped back to 1200x630. */
+  .card {
+    width: 1200px; height: 630px;
+    position: relative;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "SourceSerif", Georgia, serif;
+    -webkit-font-smoothing: antialiased;
+    padding: 52px 72px;
+  }
+  .rail-thick { height: 7px; background: var(--ink); }
+  .rail-thin  { height: 2px; background: var(--ink); }
+  .dateline {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 11px 2px;
+    font-size: 18px; letter-spacing: .13em; text-transform: uppercase;
+    color: var(--quiet);
+  }
+  .dateline .spot { color: var(--spot); }
+
+  .kicker {
+    margin-top: 64px;
+    font-size: 19px; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--spot);
+  }
+  h1 {
+    margin-top: 22px;
+    font-size: 76px; line-height: 1.0; letter-spacing: -.032em; font-weight: 600;
+    max-width: 17ch;
+  }
+  .lede {
+    margin-top: 26px; font-size: 25px; line-height: 1.5; color: var(--quiet);
+    max-width: 780px;
+  }
+
+  /* Absolutely positioned: the footer sits on the bottom margin regardless of
+     how many lines the headline takes. */
+  .foot { position: absolute; left: 72px; right: 72px; bottom: 46px; }
+  .footrule { height: 2px; background: var(--ink); opacity: .16; }
+  .who { margin-top: 20px; font-size: 0; }
+  .name { font-size: 29px; font-weight: 600; letter-spacing: -.015em; }
+  .role { font-size: 21px; color: var(--quiet); margin-left: 16px; }
+</style>
+<div class="card">
+<div class="rail-thick"></div>
+<div class="dateline">
+  <span>Engineering blog</span>
+  <span>React &middot; AI &middot; Architecture</span>
+  <span class="spot">officialdeepak.in</span>
+</div>
+<div class="rail-thin"></div>
+
+<p class="kicker">Engineering notes</p>
+<h1>Thoughts on code, architecture and AI.</h1>
+<p class="lede">Deep dives into React performance, AI&thinsp;/&thinsp;ML engineering and MERN architecture &mdash; from production systems at scale.</p>
+
+<div class="foot">
+  <div class="footrule"></div>
+  <div class="who">
+    <span class="name">Deepak Kumar</span><span class="role">Software &amp; AI Engineer &middot; India Today Group</span>
+  </div>
+</div>
+</div>

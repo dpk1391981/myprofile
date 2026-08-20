@@ -46,7 +46,17 @@ function rfc822(dateStr: string): string {
 export async function GET() {
   const { posts } = await listPosts({ limit: MAX_ITEMS });
 
-  const fromDb = posts.map((p) => ({
+  /*
+    A feed is a syndication signal: every item in it is a URL this site is
+    asking readers and aggregators to pick up. Posts flagged noindex are asking
+    for the opposite, so they are dropped here rather than published to the one
+    channel that pushes them outward.
+  */
+  const indexable = posts.filter(
+    (p) => !p.noIndex && !(p.robots || "").includes("noindex")
+  );
+
+  const fromDb = indexable.map((p) => ({
     slug: p.slug,
     title: p.title,
     description: p.description,

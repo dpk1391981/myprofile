@@ -46,6 +46,10 @@ export type PortfolioPost = {
   publishedAt: string | null;
   sourceUrl: string;
   sourceTitle: string;
+  /** Meta-robots directive for the post's own page. Present on listings too, so
+   *  the index and the feed can agree with what the article page will emit. */
+  robots?: string;
+  noIndex?: boolean;
   // Present only on the single-post endpoint
   content?: string;
   seoTitle?: string;
@@ -54,8 +58,6 @@ export type PortfolioPost = {
   seoKeywords?: string[];
   ogImage?: string;
   canonicalUrl?: string;
-  robots?: string;
-  noIndex?: boolean;
   sources?: string[];
   faq?: { question: string; answer: string }[];
   schemaJsonLd?: Record<string, unknown> | null;
@@ -154,6 +156,32 @@ export async function listPosts(params: {
     console.error("[portfolio-api] listPosts failed:", (err as Error).message);
     return { posts: [], total: 0 };
   }
+}
+
+/**
+ * Every published post, not just the first page.
+ *
+ * `listPosts` is capped at the API's maximum page size (100). That was fine
+ * while the blog was small and quietly wrong once it was not: post 101 would
+ * have appeared in the sitemap and nowhere else, with no internal link pointing
+ * at it — the slowest possible path into the index. This walks the pages until
+ * the reported total is covered, bounded by MAX_PAGES so a bad `total` cannot
+ * spin the render.
+ */
+const PAGE = 100;
+const MAX_PAGES = 20;
+
+export async function listAllPosts(): Promise<PortfolioPost[]> {
+  const first = await listPosts({ limit: PAGE, offset: 0 });
+  const out = [...first.posts];
+  const pages = Math.min(Math.ceil((first.total || 0) / PAGE), MAX_PAGES);
+
+  for (let i = 1; i < pages; i++) {
+    const next = await listPosts({ limit: PAGE, offset: i * PAGE });
+    if (!next.posts.length) break; // Upstream disagrees with its own total.
+    out.push(...next.posts);
+  }
+  return out;
 }
 
 export async function getPost(

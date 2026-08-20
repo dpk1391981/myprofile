@@ -142,9 +142,29 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const description = post.seoDescription || post.description;
   const kwSet = new Set([post.focusKeyword, ...post.seoKeywords, ...post.tags, ...defaultKws, PERSONAL_INFO.fullName, "blog", "tutorial"].filter(Boolean));
   const keywords = Array.from(kwSet);
-  const ogImage     = post.ogImage || defaults?.ogImage || `${SITE_URL}/assets/images/og-default.png`;
-  const canonical   = post.canonicalUrl || `${SITE_URL}/blog/${post.slug}`;
-  const robots      = post.noIndex ? "noindex, nofollow" : (post.robots || "index, follow");
+  // Per-post image first, then whatever the admin set as the blog default, then
+  // the blog's own card — the site-wide portrait card is the wrong fallback for
+  // an article. See scripts/og-blog.html.
+  const ogImage     = post.ogImage || defaults?.ogImage || `${SITE_URL}/assets/images/og-blog.png`;
+  /*
+    A canonical is a redirect for indexers: whatever URL goes here is the one
+    that can rank, and this one is copied straight out of the admin editor. An
+    empty, relative or mistyped value would quietly hand the article's ranking
+    to another site, so only an absolute URL on this origin is honoured — the
+    self-referencing default is used for anything else.
+  */
+  const ownCanonical = `${SITE_URL}/blog/${post.slug}`;
+  const canonical    = post.canonicalUrl?.startsWith(`${SITE_URL}/`)
+    ? post.canonicalUrl
+    : ownCanonical;
+
+  /*
+    `noindex, follow`, not `noindex, nofollow`. Keeping a page out of the index
+    is a statement about that page; it is not a reason to stop crawlers reading
+    its links to /blog, /joinme and the related articles. `nofollow` here threw
+    away the internal linking of every suppressed post.
+  */
+  const robots      = post.noIndex ? "noindex, follow" : (post.robots || "index, follow");
   const [ri, rf]    = robots.split(",").map((s: string) => s.trim());
 
   return {
@@ -158,8 +178,11 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       title:         post.seoTitle || post.title,
       description,
       type:          "article",
-      publishedTime: post.date + "T00:00:00+05:30",
-      modifiedTime:  post.updatedAt,
+      publishedTime: isoStamp(post.date),
+      // og:article:modified_time is an ISO 8601 *timestamp*. The static
+      // fallback posts carry a bare "YYYY-MM-DD", which several validators
+      // reject outright and Google reads inconsistently.
+      modifiedTime:  isoStamp(post.updatedAt || post.date),
       authors:       [PERSONAL_INFO.fullName],
       tags:          [...post.tags, ...(post.seoKeywords || [])],
       url:           canonical,
@@ -205,7 +228,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
   const related = await getRelated(post.slug, post.tags, (post as any).related ?? []);
 
   const postUrl   = `${SITE_URL}/blog/${post.slug}`;
-  const ogImage   = post.ogImage || defaults?.ogImage || `${SITE_URL}/assets/images/og-default.png`;
+  const ogImage   = post.ogImage || defaults?.ogImage || `${SITE_URL}/assets/images/og-blog.png`;
   const wordCount = countWords(post.content);
   const readMins  = parseInt(post.readTime) || Math.max(1, Math.round(wordCount / 225));
   const faq: { question: string; answer: string }[] = (post as any).faq ?? [];
@@ -253,8 +276,8 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         name:         post.seoTitle || post.title,
         description:  post.seoDescription || post.description,
         url:          postUrl,
-        datePublished: post.date + "T00:00:00+05:30",
-        dateModified:  post.updatedAt || post.date + "T00:00:00+05:30",
+        datePublished: isoStamp(post.date),
+        dateModified:  isoStamp(post.updatedAt || post.date),
         // One Person, referenced by a stable @id, so this article's author
         // resolves to the same entity the site-wide Person schema in
         // app/seo_config.ts already describes rather than looking like a
@@ -760,6 +783,33 @@ function TocList({ headings }: { headings: Heading[] }) {
       ))}
     </ol>
   );
+}
+
+/**
+ * A date-or-timestamp string as a full, offset-qualified ISO 8601 timestamp.
+ *
+ * Three shapes arrive here and all three end up in `datePublished`,
+ * `dateModified` and the OpenGraph article tags:
+ *
+ *   "2026-03-01"                  the static fallback posts — a bare date
+ *   "2026-08-18T18:30:33.240095"  MySQL via the agent service — no offset
+ *   "2026-08-18T18:30:33+05:30"   already complete
+ *
+ * The first two are ambiguous to a consumer: a timestamp with no offset is
+ * read as UTC by some validators and as local time by others, which is how a
+ * post published this evening ends up dated tomorrow. Everything is normalised
+ * to IST, the timezone the site actually publishes in.
+ */
+const IST = "+05:30";
+
+function isoStamp(value: string): string {
+  if (!value) return "";
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return `${value}T00:00:00${IST}`;
+
+  // Microseconds are valid but noisy, and no consumer reads past seconds.
+  const trimmed = value.replace(/\.\d+/, "");
+  const hasOffset = /(Z|[+-]\d{2}:?\d{2})$/.test(trimmed);
+  return hasOffset ? trimmed : `${trimmed}${IST}`;
 }
 
 function formatDate(dateStr: string): string {

@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { BLOG_POSTS } from "@/components/utils/portfolio-data";
 import { sitemapPosts } from "@/components/utils/portfolio-api";
+import { pageCount, indexPath } from "@/components/utils/blog-pagination";
 
 const SITE_URL = (process.env.NEXT_PUBLIC_WEB_SITE || "https://officialdeepak.in").replace(/\/+$/, "");
 
@@ -34,8 +35,9 @@ const STATIC_ROUTES: { path: string; priority: number; changeFrequency: Metadata
   { path: "/ai-engineer-in-india",          priority: 0.95, changeFrequency: "weekly" },
 ];
 // Deliberately absent: /success (noindex — a form receipt), /moved (a redirect
-// notice), /admin (disallowed in robots.ts), and /blog?topic=… (canonicalised
-// back to /blog; see app/blog/page.tsx).
+// notice), /admin (disallowed in robots.ts), /blog?topic=… (noindex, follow —
+// see components/blog/BlogIndexView.tsx), and any post flagged noindex (the
+// agent service filters those out of /blogs/sitemap).
 
 // Pull published blog posts from the content API (gracefully degrades to an
 // empty list if the agent service is unavailable — the static routes and the
@@ -95,6 +97,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }];
 
+  /*
+    The archive pages. /blog is the entry point but only lists the newest
+    slice; the numbered pages are where the older articles are linked from, so
+    a crawler that never sees them treats the archive as orphaned.
+
+    The count is derived from the posts this file lists — which excludes any
+    post flagged noindex, so it can only ever run SHORT of the real archive,
+    never past its end into a 404.
+  */
+  const archivePages: MetadataRoute.Sitemap = Array.from(
+    { length: pageCount(merged.length) - 1 },
+    (_, i) => ({
+      url: `${SITE_URL}${indexPath(i + 2)}`,
+      lastModified: newestPost ?? now,
+      changeFrequency: "weekly" as const,
+      priority: 0.4,
+    })
+  );
+
   const blogEntries: MetadataRoute.Sitemap = merged
     // Newest first, so a crawler reading the file top-down meets fresh URLs
     // before the archive.
@@ -108,5 +129,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: i < 5 ? 0.85 : 0.7,
     }));
 
-  return [...staticEntries, ...blogIndex, ...blogEntries];
+  return [...staticEntries, ...blogIndex, ...archivePages, ...blogEntries];
 }
