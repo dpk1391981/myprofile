@@ -8,6 +8,7 @@ import {
   IconPlus, IconBook, IconLoader2, IconAlertTriangle, IconWorld, IconPencil,
 } from "@tabler/icons-react";
 import PageHeader from "@/components/admin/PageHeader";
+import { usePolling } from "@/components/books/usePolling";
 import { formatISTDate } from "@/components/utils/date";
 
 type BookRow = {
@@ -60,14 +61,10 @@ export default function AdminBooksList() {
   }, []);
 
   // A run commits after every chapter, so polling shows real progress. Only
-  // poll while something is actually moving — an idle list must not sit there
-  // hitting the API every five seconds forever.
+  // while something is actually moving, and only while the tab is visible — an
+  // idle or backgrounded list must not sit there hitting the API forever.
   const active = books.some((b) => b.status === "generating" || b.status === "outlining");
-  useEffect(() => {
-    if (!active) return;
-    const t = setInterval(load, 5000);
-    return () => clearInterval(t);
-  }, [active]);
+  usePolling(load, active, 8000);
 
   return (
     <div>

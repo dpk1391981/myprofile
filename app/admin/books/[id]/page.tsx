@@ -18,6 +18,7 @@ import {
 } from "@tabler/icons-react";
 import PageHeader from "@/components/admin/PageHeader";
 import BookForm, { type BookBriefValues } from "@/components/books/BookForm";
+import { usePolling } from "@/components/books/usePolling";
 import { formatISTDate } from "@/components/utils/date";
 
 const WORDS_PER_PAGE = 350; // matches WORDS_PER_PAGE in agents/book_author.py
@@ -83,14 +84,12 @@ export default function AdminBookDetail({ params }: { params: { id: string } }) 
 
   useEffect(() => { load(); }, [load]);
 
-  // Poll only while a run is moving. The agent commits after every chapter, so
-  // these numbers are the real state of the book, not a progress animation.
+  // Poll only while a run is moving, and only while this tab is visible. The
+  // agent commits after every chapter, so these numbers are the real state of
+  // the book rather than a progress animation — and a chapter takes ~2 minutes,
+  // so 8s is well inside the resolution anyone can perceive.
   const running = book?.status === "generating" || book?.status === "outlining";
-  useEffect(() => {
-    if (!running) return;
-    const t = setInterval(load, 5000);
-    return () => clearInterval(t);
-  }, [running, load]);
+  usePolling(load, running, 8000);
 
   async function call(label: string, url: string, init?: RequestInit) {
     setBusy(label); setError(""); setNotice(""); setCanOverride(false);
