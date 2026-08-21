@@ -2278,9 +2278,21 @@ button.blog-share-btn { cursor: pointer; font: inherit; padding: 0; appearance: 
   margin: 0 auto;
   padding: 0 var(--gutter);
 }
-/* The column keeps its own padding on a phone via .bk-shell; inside the grid
-   the grid supplies it, so the shell must not add a second gutter. */
-.bk-readgrid > .bk-readcol { min-width: 0; padding: 0; max-width: none; }
+/*
+  The column keeps its own padding on a phone via .bk-shell; inside the grid
+  the grid supplies it, so the shell must not add a second gutter.
+
+  `margin: 0` IS THE LOAD-BEARING DECLARATION HERE, and leaving it out is what
+  broke this layout on every width. `.bk-shell` sets `margin: 0 auto` to centre
+  itself when it is the page. An AUTO MARGIN ON A GRID ITEM OPTS THAT ITEM OUT
+  OF STRETCH: instead of filling its track the item is sized to fit-content and
+  the auto margins absorb what is left. With real prose that fit-content width
+  is wider than the track, so the reading column overflowed into the rail on a
+  desktop and past the right edge of the viewport on a phone — a column
+  measured 810px inside a 608px track. Resetting the margin restores stretch
+  and the item is exactly its track again.
+*/
+.bk-readgrid > .bk-readcol { min-width: 0; padding: 0; margin: 0; max-width: none; }
 
 .bk-rail {
   position: sticky;
