@@ -616,8 +616,14 @@ function toBriefValues(b: any): BookBriefValues {
  * Deliberately a range — how many sections need expanding is the variable.
  */
 function estimateCost(targetWords: number, chapters: number) {
-  const SECTIONS_PER_CHAPTER = 4;      // _plan_sections floors at 4
-  const sections = Math.max(1, chapters) * SECTIONS_PER_CHAPTER;
+  // Section COUNT is derived from the chapter target, exactly as
+  // _plan_sections does it — one call produces ~600 words (measured), so the
+  // number of calls, not the per-call target, is what scales a chapter. A fixed
+  // sections-per-chapter here would understate a long book.
+  const SECTION_WORDS = 600;          // SECTION_TARGET_WORDS in book_author.py
+  const perChapter = Math.max(1, Math.round(targetWords / Math.max(1, chapters)));
+  const sectionsPerChapter = Math.max(3, Math.min(9, Math.ceil(perChapter / SECTION_WORDS)));
+  const sections = Math.max(1, chapters) * sectionsPerChapter;
 
   // gpt-4o: $2.50/M in, $10/M out. gpt-4o-mini: $0.15/M in, $0.60/M out.
   const outTokens = targetWords * 1.35;             // words -> tokens, incl. markup
@@ -627,7 +633,10 @@ function estimateCost(targetWords: number, chapters: number) {
   // (length, specificity floor, repetition ceiling, banned phrases) on the
   // first attempt. That rewrite rate is the price of the quality bar and it is
   // most of the difference between this estimate and a naive one.
-  const REWRITE_RATE = 0.45;
+  // Down from 0.45: per-section targets now sit inside the range a model
+  // actually delivers, so the length gate rarely fires. Specificity is what
+  // still sends sections back.
+  const REWRITE_RATE = 0.35;
   const proseOut = outTokens * (1 + REWRITE_RATE);
   const proseIn = sections * inPerSection * (1 + REWRITE_RATE);
   const prose = proseIn * 2.5e-6 + proseOut * 10e-6;
