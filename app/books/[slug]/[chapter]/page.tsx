@@ -5,6 +5,8 @@ import { getChapter, listBooks, getBook } from "@/components/utils/books-api";
 import { pageMeta, breadcrumbLd } from "@/components/utils/seo";
 import { SITE_URL } from "@/components/utils/site-data";
 import { chapterLd } from "@/components/books/book-seo";
+import { prepareChapter } from "@/components/books/chapter-html";
+import ReadingProgress from "@/components/books/ReadingProgress";
 
 /**
  * One chapter, one URL — the page that does the ranking.
@@ -83,8 +85,14 @@ export default async function ChapterPage(
   const { book, chapter, prev, next } = data;
   const toc = book.toc || [];
 
+  // Heading ids + the visible ¶ affordance, so every section inside a chapter
+  // is directly linkable and the contents rail below has somewhere to point.
+  const { html, headings } = prepareChapter(chapter.html);
+
   return (
-    <main className="mx-auto max-w-3xl px-5 py-12 sm:py-16">
+    <main className="bk-shell" style={{ paddingTop: 44, paddingBottom: 80 }}>
+      <ReadingProgress />
+
       <script type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(chapterLd(book, chapter)) }} />
       <script type="application/ld+json"
@@ -97,91 +105,102 @@ export default async function ChapterPage(
           ])),
         }} />
 
-      <nav aria-label="Breadcrumb" className="mb-8 text-sm text-slate-500">
-        <Link href="/books" className="hover:text-slate-900">Books</Link>
-        <span className="mx-2">/</span>
-        <Link href={`/books/${book.slug}`} className="hover:text-slate-900">{book.title}</Link>
+      <nav aria-label="Breadcrumb" className="bs-small bs-quiet" style={{ marginBottom: 30 }}>
+        <Link href="/books" className="bs-link-plain">Books</Link>
+        <span style={{ margin: "0 8px" }}>/</span>
+        <Link href={`/books/${book.slug}`} className="bs-link-plain">{book.title}</Link>
       </nav>
 
-      <header className="border-b border-slate-200 pb-6">
-        <p className="text-sm font-medium text-slate-500">
+      {/* ── Chapter opener ────────────────────────────────────────────────── */}
+      <header>
+        <p className="bk-chapter-num">
           Chapter {chapter.ordinal} of {toc.length}
         </p>
-        <h1 className="mt-2 text-3xl font-bold leading-tight tracking-tight text-slate-900 sm:text-4xl">
-          {chapter.heading}
-        </h1>
-        {chapter.summary && (
-          <p className="mt-3 text-lg leading-relaxed text-slate-600">{chapter.summary}</p>
-        )}
-        <p className="mt-4 text-sm text-slate-500">
+        <h1 className="bk-chapter-title">{chapter.heading}</h1>
+        {chapter.summary && <p className="bk-chapter-standfirst">{chapter.summary}</p>}
+        <p className="bk-chapter-meta">
           From{" "}
-          <Link href={`/books/${book.slug}`} className="font-medium text-slate-900 hover:underline">
-            {book.title}
-          </Link>{" "}
-          by {book.authorName || "Deepak Kumar"} · {chapter.wordCount.toLocaleString()} words · free to read
+          <Link href={`/books/${book.slug}`} className="bs-link">{book.title}</Link>
+          {" "}by {book.authorName || "Deepak Kumar"} · {chapter.wordCount.toLocaleString()} words · free to read
         </p>
       </header>
 
-      <article
-        className="prose prose-slate mt-8 max-w-none prose-headings:font-semibold prose-headings:tracking-tight prose-a:text-slate-900 prose-pre:bg-slate-900 prose-pre:text-slate-100"
-        dangerouslySetInnerHTML={{ __html: chapter.html }}
-      />
+      <div className="bs-rail-thin" style={{ margin: "30px 0 38px" }} />
 
-      {/* ── Neighbour links ─────────────────────────────────────────────── */}
-      <nav aria-label="Chapter navigation"
-           className="mt-12 grid gap-3 border-t border-slate-200 pt-8 sm:grid-cols-2">
-        {prev ? (
-          <Link href={`/books/${book.slug}/${prev.ordinal}`}
-                className="rounded-xl border border-slate-200 p-4 transition-colors hover:border-slate-400">
-            <span className="text-xs text-slate-500">← Chapter {prev.ordinal}</span>
-            <span className="mt-1 block font-medium text-slate-900">{prev.heading}</span>
+      {/* ── In this chapter ───────────────────────────────────────────────
+          Only when there is enough structure for it to help. A rail listing two
+          headings is furniture, not navigation. */}
+      {headings.length >= 3 && (
+        <nav aria-label="In this chapter"
+             style={{ marginBottom: 40, padding: "18px 20px", background: "var(--surface)", borderRadius: 2 }}>
+          <p className="bs-eyebrow" style={{ marginBottom: 10 }}>In this chapter</p>
+          <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
+            {headings.map((h) => (
+              <li key={h.id} style={{ padding: "4px 0", paddingLeft: h.level === 3 ? 16 : 0 }}>
+                <a href={`#${h.id}`} className="bs-link-plain" style={{ fontSize: 15.5 }}>
+                  {h.text}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
+
+      <article className="bk-prose" dangerouslySetInnerHTML={{ __html: html }} />
+
+      {/* ── Previous / next ───────────────────────────────────────────────── */}
+      <nav aria-label="Chapter navigation" className="bk-pager" style={{ marginTop: 56 }}>
+        {prev && (
+          <Link href={`/books/${book.slug}/${prev.ordinal}`} className="bk-pager-link">
+            <span className="bk-pager-kicker">← Chapter {prev.ordinal}</span>
+            <p className="bk-pager-title">{prev.heading}</p>
           </Link>
-        ) : <div />}
+        )}
         {next && (
-          <Link href={`/books/${book.slug}/${next.ordinal}`}
-                className="rounded-xl border border-slate-200 p-4 text-right transition-colors hover:border-slate-400 sm:col-start-2">
-            <span className="text-xs text-slate-500">Chapter {next.ordinal} →</span>
-            <span className="mt-1 block font-medium text-slate-900">{next.heading}</span>
+          <Link href={`/books/${book.slug}/${next.ordinal}`} className="bk-pager-link bk-pager-link--next">
+            <span className="bk-pager-kicker">Chapter {next.ordinal} →</span>
+            <p className="bk-pager-title">{next.heading}</p>
           </Link>
         )}
       </nav>
 
-      {/* ── Download CTA — the gate, placed where intent is highest ──────
-          At the END of a chapter the reader has just got value, which is the
-          only moment an email request is a fair trade rather than a toll. */}
-      <aside className="mt-10 rounded-2xl border border-slate-300 bg-slate-50 p-6">
-        <h2 className="text-lg font-semibold text-slate-900">
-          Want the whole book in one file?
-        </h2>
-        <p className="mt-1.5 text-sm text-slate-600">
-          All {toc.length} chapters, {book.pages} pages, printable and yours to keep.
-          Confirm an email address and it is free.
+      {/* ── The gate, at the end of the chapter ───────────────────────────
+          Placed here because this is the moment the reader has just been given
+          something. An email asked for before that is a toll; asked for after,
+          it is a fair trade. */}
+      <aside style={{ marginTop: 48, padding: "24px 26px", border: "1px solid var(--rule)", borderRadius: 2 }}>
+        <p className="bs-eyebrow">Free book</p>
+        <p className="bs-h4" style={{ margin: "8px 0 6px", fontSize: 19 }}>
+          Want all {toc.length} chapters in one file?
         </p>
-        <Link href={`/books/${book.slug}#get`}
-              className="mt-4 inline-flex items-center rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-slate-800">
+        <p className="bs-small bs-quiet" style={{ margin: "0 0 16px" }}>
+          {book.pages} pages, printable and yours to keep. One confirmed email, no payment.
+        </p>
+        <Link href={`/books/${book.slug}#get`} className="bs-btn bs-btn--solid bs-btn--sm">
           Get the full book
         </Link>
       </aside>
 
-      {/* ── Full contents — every chapter links to every other ───────────
-          Flat internal linking: any chapter a crawler lands on exposes the
-          whole book in one hop. */}
-      <section className="mt-12 border-t border-slate-200 pt-8" aria-labelledby="contents">
-        <h2 id="contents" className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-          All chapters
-        </h2>
-        <ol className="mt-4 space-y-1.5">
+      {/* ── All chapters ──────────────────────────────────────────────────
+          Flat internal linking: any chapter a crawler or a reader lands on
+          exposes the whole book in one hop. */}
+      <section aria-labelledby="contents" style={{ marginTop: 56 }}>
+        <div className="bs-rail-thin" style={{ marginBottom: 20 }} />
+        <p className="bs-eyebrow" id="contents" style={{ marginBottom: 12 }}>All chapters</p>
+        <ol className="bk-toc">
           {toc.map((c) => (
-            <li key={c.ordinal} className="flex gap-3 text-sm">
-              <span className="w-5 shrink-0 tabular-nums text-slate-400">{c.ordinal}</span>
-              {c.ordinal === chapter.ordinal ? (
-                <span className="font-medium text-slate-900">{c.heading}</span>
-              ) : (
-                <Link href={`/books/${book.slug}/${c.ordinal}`}
-                      className="text-slate-600 hover:text-slate-900 hover:underline">
-                  {c.heading}
-                </Link>
-              )}
+            <li key={c.ordinal}
+                className={`bk-toc-item${c.ordinal === chapter.ordinal ? " bk-toc-item--current" : ""}`}>
+              <span className="bk-toc-num">{c.ordinal}</span>
+              <div style={{ minWidth: 0 }}>
+                {c.ordinal === chapter.ordinal ? (
+                  <span className="bk-toc-link">{c.heading}</span>
+                ) : (
+                  <Link href={`/books/${book.slug}/${c.ordinal}`} className="bk-toc-link">
+                    {c.heading}
+                  </Link>
+                )}
+              </div>
             </li>
           ))}
         </ol>

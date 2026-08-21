@@ -15,8 +15,38 @@
  * which is correct either way.
  */
 
-import { useState } from "react";
-import { IconLoader2, IconMailCheck, IconAlertTriangle, IconLock } from "@tabler/icons-react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { IconLoader2, IconMailCheck, IconAlertTriangle, IconLock, IconBookmark } from "@tabler/icons-react";
+
+/**
+ * Where a confirmed reader's token is remembered.
+ *
+ * Set on confirmation and read here so someone who already signed up is not
+ * asked to sign up again every time they open a book page — being re-pitched
+ * something you already own is the fastest way to feel like a lead rather than
+ * a reader. localStorage rather than a cookie: it never needs to reach the
+ * server, and the page must render correctly when it is missing (private
+ * window, cleared data, a different device), which is why every read is
+ * wrapped and falls back to showing the form.
+ */
+const TOKEN_KEY = "books.readToken";
+
+export function rememberReadToken(token: string) {
+  try {
+    window.localStorage.setItem(TOKEN_KEY, token);
+  } catch {
+    /* storage blocked — the emailed link still works, so this is not fatal */
+  }
+}
+
+function readStoredToken(): string {
+  try {
+    return window.localStorage.getItem(TOKEN_KEY) || "";
+  } catch {
+    return "";
+  }
+}
 
 export default function EmailGate({
   slug,
@@ -31,6 +61,11 @@ export default function EmailGate({
   const [name, setName] = useState("");
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [message, setMessage] = useState("");
+  // Read after mount, never during render: localStorage does not exist on the
+  // server, and reading it during render would desync the markup Next
+  // prerendered from what the browser paints.
+  const [savedToken, setSavedToken] = useState("");
+  useEffect(() => setSavedToken(readStoredToken()), []);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -52,6 +87,31 @@ export default function EmailGate({
       setState("error");
       setMessage(err.message || "Could not sign you up. Try again in a moment.");
     }
+  }
+
+  // Already confirmed on this device — offer the copy rather than the form.
+  if (savedToken && state === "idle") {
+    return (
+      <div className="rounded-2xl border border-slate-300 bg-white p-6">
+        <div className="flex items-center gap-2 text-slate-900">
+          <IconBookmark size={18} />
+          <h3 className="text-lg font-semibold">You already have this book</h3>
+        </div>
+        <p className="mt-1.5 text-sm text-slate-600">
+          Your email is confirmed, so the printable copy is ready whenever you want it.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <Link href={`/books/${slug}/read?token=${encodeURIComponent(savedToken)}`}
+                className="bs-btn bs-btn--solid bs-btn--sm">
+            Open the printable copy
+          </Link>
+          <button type="button" onClick={() => setSavedToken("")}
+                  className="bs-btn bs-btn--outline bs-btn--sm">
+            Use a different email
+          </button>
+        </div>
+      </div>
+    );
   }
 
   if (state === "sent") {

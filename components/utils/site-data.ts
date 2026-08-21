@@ -22,6 +22,7 @@ export const PRIMARY_NAV = [
   { label: "Skills", href: "/skills" },
   { label: "About", href: "/about" },
   { label: "Blog", href: "/blog" },
+  { label: "Books", href: "/books" },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -46,6 +47,14 @@ export const FOOTER_NAV: { title: string; links: { label: string; href: string }
       { label: "JavaScript developer in India", href: "/javascript-developer-in-india" },
       { label: "Full stack developer in India", href: "/full-stack-developer-in-india" },
       { label: "AI engineer in India", href: "/ai-engineer-in-india" },
+    ],
+  },
+  {
+    title: "Writing",
+    links: [
+      { label: "Blog", href: "/blog" },
+      { label: "Free books", href: "/books" },
+      { label: "RSS feed", href: "/blog/rss.xml" },
     ],
   },
 ];

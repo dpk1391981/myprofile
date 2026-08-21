@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { confirmSubscription } from "@/components/utils/books-api";
+import RememberToken from "@/components/books/RememberToken";
 
 /**
  * The confirm link from the delivery email.
@@ -35,14 +36,20 @@ export default async function ConfirmPage(
           Your email is confirmed. <strong>{result.title}</strong> is yours — and every book
           published after it.
         </p>
+        <RememberToken token={result.readToken} />
         <div className="mt-6 flex flex-wrap gap-3">
           <Link href={`/books/${result.slug}/read?token=${encodeURIComponent(result.readToken)}`}
-                className="rounded-lg bg-slate-900 px-5 py-3 text-sm font-medium text-white hover:bg-slate-800">
+                className="bs-btn bs-btn--solid">
             Open the printable copy
           </Link>
-          <Link href={`/books/${result.slug}`}
-                className="rounded-lg border border-slate-300 px-5 py-3 text-sm font-medium hover:bg-slate-50">
-            Read online instead
+          {/*
+            Chapter 1, NOT /books/{slug}. The landing page carries the signup
+            form, so sending a reader who has just confirmed back to it asked
+            them to subscribe a second time — the one thing a confirmation page
+            must never do. Someone who clicked "read online" wants the text.
+          */}
+          <Link href={`/books/${result.slug}/1`} className="bs-btn bs-btn--outline">
+            Start reading chapter 1
           </Link>
         </div>
         <p className="mt-6 text-sm text-slate-500">

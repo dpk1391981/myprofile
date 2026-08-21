@@ -8,6 +8,7 @@ import {
 } from "@tabler/icons-react";
 import { getPost as apiGetPost, getSeoConfig } from "@/components/utils/portfolio-api";
 import AdSlot from "@/components/blog/AdSlot";
+import BookPromo from "@/components/books/BookPromo";
 import ReadingProgress from "@/components/blog/ReadingProgress";
 import { withHeadingAnchors, countWords, type Heading } from "@/components/utils/article-html";
 import {
@@ -763,6 +764,11 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                   ))}
                 </div>
               </div>
+
+              {/* Books — an editorial link from the part of the site that has
+                  crawl equity into the part that needs it. Renders nothing
+                  until a book is published. */}
+              <BookPromo />
 
               {/* CTA */}
               <div className="blog-cta">

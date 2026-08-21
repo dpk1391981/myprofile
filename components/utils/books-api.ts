@@ -391,11 +391,19 @@ export async function adminPublishBook(
 ): Promise<AdminBook & { detail?: string }> {
   const { status, data } = await apiFetchRaw<AdminBook & { detail?: string }>(
     `/books/admin/books/${id}/publish?publish=${publish}&allow_flagged=${allowFlagged}`,
-    { method: "POST", auth: true, jsonStatuses: [409] }
+    { method: "POST", auth: true, jsonStatuses: [409, 422] }
   );
+  // 409 — chapters flagged for review. A judgement call, so it is overridable.
   if (status === 409) {
     const err: any = new Error(data.detail || "Chapters are flagged for review");
     err.needsAcknowledgement = true;
+    throw err;
+  }
+  // 422 — the book is under the page floor. NOT overridable, and the message
+  // carries the real page count, so it must not be flattened into a 502.
+  if (status === 422) {
+    const err: any = new Error(data.detail || "This book is too short to publish");
+    err.tooShort = true;
     throw err;
   }
   return data;

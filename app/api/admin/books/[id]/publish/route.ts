@@ -38,6 +38,11 @@ export async function POST(req: Request, { params }: { params: { id: string } })
         { status: 409 }
       );
     }
+    // Under the page floor. Forwarded as 422 with its message intact: it names
+    // the actual page count, which is the whole point of the check.
+    if (err?.tooShort) {
+      return NextResponse.json({ error: err.message, tooShort: true }, { status: 422 });
+    }
     return NextResponse.json({ error: err.message }, { status: 502 });
   }
 }

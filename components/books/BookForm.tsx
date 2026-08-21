@@ -67,6 +67,12 @@ export const EMPTY_BRIEF: BookBriefValues = {
 
 const WORDS_PER_PAGE = 350; // must match WORDS_PER_PAGE in agents/book_author.py
 
+// Mirrors MIN_BOOK_PAGES / MAX_BOOK_PAGES in agents/book_author.py. The server
+// enforces both — this is here so the number is visible while you type rather
+// than arriving as a rejection after you press save.
+const MIN_PAGES = 20;
+const MAX_PAGES = 600;
+
 function Field({
   label,
   hint,
@@ -115,6 +121,13 @@ export default function BookForm({
     setError("");
     if (v.title.trim().length < 3) {
       setError("Give the book a title first.");
+      return;
+    }
+    if (pages < MIN_PAGES) {
+      setError(
+        `A book needs at least ${MIN_PAGES} pages (${(MIN_PAGES * WORDS_PER_PAGE).toLocaleString()} words). ` +
+        `${pages} pages is a long article, and it will be refused at publish.`
+      );
       return;
     }
     setSaving(true);
@@ -249,7 +262,8 @@ export default function BookForm({
                    onChange={(e) => set("target_chapters", Number(e.target.value) || 1)} />
           </Field>
           <Field label="Total words">
-            <input type="number" min={2000} max={250000} step={1000} className={input}
+            <input type="number" min={MIN_PAGES * WORDS_PER_PAGE} max={MAX_PAGES * WORDS_PER_PAGE}
+                   step={1000} className={input}
                    value={v.target_words}
                    onChange={(e) => set("target_words", Number(e.target.value) || 2000)} />
           </Field>
@@ -267,6 +281,18 @@ export default function BookForm({
           {wordsPerChapter < 900 && (
             <span className="mt-1 block text-amber-700">
               Under ~900 words a chapter reads as a blog post. Use fewer chapters.
+            </span>
+          )}
+          {pages < MIN_PAGES && (
+            <span className="mt-1 block font-medium text-red-700">
+              Below the {MIN_PAGES}-page minimum. A book this short cannot be published —
+              it reads as an article, and stores pull titles for it.
+            </span>
+          )}
+          {pages > MAX_PAGES && (
+            <span className="mt-1 block font-medium text-red-700">
+              Over the {MAX_PAGES}-page ceiling. If that was not a typo, raise
+              BOOKS_MAX_PAGES on the server.
             </span>
           )}
         </p>

@@ -1438,3 +1438,279 @@ a.blog-tag:hover { border-color: var(--spot); color: var(--spot); text-decoratio
   .bs-faq-q { font-size: 17px; }
   .bs-list-row { gap: 11px; }
 }
+
+/* ============================================================================
+   BOOKS — the reading surface
+   ============================================================================
+   These extend the broadsheet system rather than replacing it: same tokens,
+   same serif, same rules. What differs is that a book is read in long sittings
+   and an article is not, so the measure is narrower, the leading is looser and
+   the vertical rhythm is bigger. Everything here is scoped under .bk- so it
+   cannot touch .blog-content or .bs-prose.
+   ========================================================================== */
+
+/* The page column. 34rem at 19px ≈ 66 characters, which is the measure typeset
+   books have converged on for a reason — much past 75 and the eye loses the
+   line return, much under 45 and it breaks every clause. */
+.bk-shell {
+  max-width: 38rem;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+@media (max-width: 640px) {
+  /* The gutter halves on a phone: 40px of margin on a 360px screen leaves a
+     33-character measure, which reads like a newspaper column. */
+  .bk-shell { padding: 0 20px; }
+}
+
+/* ---------- chapter opener ---------- */
+.bk-chapter-num {
+  font-family: var(--serif);
+  font-size: 13px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--quiet);
+  margin: 0 0 14px;
+}
+.bk-chapter-title {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: clamp(30px, 6.2vw, 44px);
+  line-height: 1.12;
+  letter-spacing: -.015em;
+  margin: 0;
+  overflow-wrap: break-word;   /* a long identifier in a heading must not push the page wide */
+}
+.bk-chapter-standfirst {
+  font-family: var(--serif);
+  font-size: clamp(17px, 3.4vw, 20px);
+  line-height: 1.55;
+  color: var(--quiet);
+  margin: 18px 0 0;
+}
+.bk-chapter-meta {
+  font-size: 13.5px;
+  color: var(--quiet);
+  margin: 22px 0 0;
+}
+
+/* ---------- the prose ---------- */
+.bk-prose {
+  font-family: var(--serif);
+  font-size: 19px;
+  line-height: 1.75;
+  color: var(--ink);
+}
+@media (max-width: 640px) {
+  /* 17px at 1.72 keeps roughly the same words-per-line on a phone as 19px does
+     on a desktop, which is what makes the two feel like the same book. */
+  .bk-prose { font-size: 17px; line-height: 1.72; }
+}
+.bk-prose p { margin: 0 0 1.35em; }
+
+/*
+  The opening paragraph of a chapter runs full out — no indent — and every
+  paragraph after it is separated by space rather than indentation. Mixing the
+  two (indent AND space) is the single most common way web "book" typography
+  reads as amateur.
+*/
+.bk-prose > h2:first-child { margin-top: 0; }
+
+.bk-prose h2 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: clamp(22px, 4.4vw, 27px);
+  line-height: 1.25;
+  letter-spacing: -.01em;
+  margin: 2.2em 0 .7em;
+  overflow-wrap: break-word;
+}
+.bk-prose h3 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: clamp(18px, 3.6vw, 21px);
+  line-height: 1.3;
+  margin: 1.9em 0 .55em;
+  overflow-wrap: break-word;
+}
+.bk-prose h4 {
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: .01em;
+  margin: 1.7em 0 .5em;
+}
+
+.bk-prose ul, .bk-prose ol { margin: 0 0 1.35em; padding-left: 1.4em; }
+.bk-prose li { margin: 0 0 .5em; }
+.bk-prose li::marker { color: var(--quiet); }
+
+.bk-prose blockquote {
+  margin: 1.8em 0;
+  padding-left: 1.1em;
+  border-left: 2px solid var(--spot);
+  color: var(--quiet);
+  font-style: italic;
+}
+.bk-prose blockquote p:last-child { margin-bottom: 0; }
+
+.bk-prose a { color: var(--spot); text-underline-offset: 2px; }
+.bk-prose hr { border: 0; border-top: 1px solid var(--hair); margin: 2.6em 0; }
+.bk-prose img { max-width: 100%; height: auto; }
+.bk-prose strong { font-weight: 600; }
+
+/* ---------- code ----------
+   THIS IS THE MOBILE BUG. Code is the one element that legitimately cannot
+   wrap, so it must scroll inside its own box. Without min-width:0 on the
+   container a <pre> in a grid or flex child refuses to shrink and pushes the
+   whole page wide instead — which is exactly what put `import React, {
+   useState } from 'react'` off the right edge of the phone screen.
+*/
+.bk-prose pre {
+  background: var(--surface);
+  border-left: 2px solid var(--spot);
+  border-radius: 2px;
+  padding: 16px 18px;
+  margin: 0 0 1.5em;
+  font-size: 13.5px;
+  line-height: 1.62;
+  overflow-x: auto;                 /* scroll the code, never the page */
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+  min-width: 0;
+}
+@media (max-width: 640px) {
+  /*
+    Full-bleed on a phone: the code box breaks the 20px gutter and runs edge to
+    edge, which buys ~40px of line before the horizontal scroll starts. That is
+    two or three more tokens per line, and it is the difference between reading
+    a snippet and swiping through it.
+  */
+  .bk-prose pre {
+    margin-left: -20px;
+    margin-right: -20px;
+    border-left: 0;
+    border-top: 1px solid var(--hair);
+    border-bottom: 1px solid var(--hair);
+    border-radius: 0;
+    padding: 14px 20px;
+    font-size: 12.5px;
+  }
+}
+.bk-prose pre code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  background: transparent;
+  padding: 0;
+  font-size: inherit;
+  white-space: pre;                 /* never wrap code — scroll it */
+}
+/* Inline code DOES wrap: an unbreakable `someVeryLongIdentifier` mid-sentence
+   would otherwise widen the paragraph and reintroduce the same overflow. */
+.bk-prose :not(pre) > code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .86em;
+  background: var(--surface);
+  padding: 2px 6px;
+  border-radius: 2px;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* Tables scroll in their own box for the same reason code does. */
+.bk-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  margin: 0 0 1.5em;
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+.bk-prose th, .bk-prose td {
+  border-bottom: 1px solid var(--hair);
+  padding: 9px 14px 9px 0;
+  text-align: left;
+}
+.bk-prose th { font-weight: 600; }
+
+/* ---------- anchored headings ----------
+   Every h2/h3 in a chapter carries an id, so any section is directly linkable.
+   The ¶ mark appears on hover on a pointer device and is always present (but
+   transparent) so it never shifts the text when it appears.
+*/
+.bk-prose h2, .bk-prose h3 { scroll-margin-top: 90px; position: relative; }
+.bk-anchor {
+  position: absolute;
+  left: -0.85em;
+  top: 0;
+  color: var(--spot);
+  opacity: 0;
+  text-decoration: none;
+  font-weight: 400;
+  transition: opacity .12s ease;
+}
+.bk-prose h2:hover .bk-anchor,
+.bk-prose h3:hover .bk-anchor,
+.bk-anchor:focus-visible { opacity: 1; }
+@media (max-width: 900px) {
+  /* No hover on touch, and no room in the gutter — the heading is still
+     linkable, the affordance is just not drawn. */
+  .bk-anchor { display: none; }
+}
+
+/* ---------- contents ---------- */
+.bk-toc { margin: 0; padding: 0; list-style: none; counter-reset: bk-toc; }
+.bk-toc-item { display: flex; gap: 14px; padding: 11px 0; border-bottom: 1px solid var(--hair); }
+.bk-toc-item:last-child { border-bottom: 0; }
+.bk-toc-num {
+  flex: 0 0 1.6rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--quiet);
+  font-size: 14px;
+  padding-top: 2px;
+}
+.bk-toc-link {
+  color: var(--ink);
+  text-decoration: none;
+  font-family: var(--serif);
+  font-size: 17px;
+  line-height: 1.4;
+}
+.bk-toc-link:hover { color: var(--spot); text-decoration: underline; text-underline-offset: 2px; }
+.bk-toc-summary { margin: 5px 0 0; font-size: 14.5px; line-height: 1.5; color: var(--quiet); }
+.bk-toc-item--current .bk-toc-link { color: var(--spot); font-weight: 600; }
+
+/* ---------- chapter footer navigation ---------- */
+.bk-pager { display: grid; gap: 12px; grid-template-columns: 1fr; }
+@media (min-width: 700px) { .bk-pager { grid-template-columns: 1fr 1fr; } }
+.bk-pager-link {
+  display: block;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: 15px 17px;
+  text-decoration: none;
+  color: var(--ink);
+  transition: border-color .15s ease;
+  min-width: 0;
+}
+.bk-pager-link:hover { border-color: var(--spot); }
+.bk-pager-link--next { text-align: right; grid-column: -2; }
+.bk-pager-kicker { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--quiet); }
+.bk-pager-title { font-family: var(--serif); font-size: 16.5px; line-height: 1.35; margin: 5px 0 0; overflow-wrap: break-word; }
+
+/* ---------- reading progress ---------- */
+.bk-progress {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--spot);
+  transform-origin: 0 50%;
+  z-index: 60;
+  pointer-events: none;
+}
+
+/* ---------- print: the copy people keep ---------- */
+@media print {
+  .bk-prose { font-size: 11pt; line-height: 1.55; }
+  .bk-prose pre { font-size: 8.5pt; border-left: 1px solid #999; background: #f6f6f6; }
+  .bk-shell { max-width: none; padding: 0; }
+}

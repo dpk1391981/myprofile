@@ -53,6 +53,11 @@ export default function AdminBookDetail({ params }: { params: { id: string } }) 
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
+  // Whether the current error is one a human may override. Flagged chapters are
+  // a judgement call; a book under the page floor is not, and offering "publish
+  // anyway" there would undo the check. Held as state rather than sniffed out
+  // of the message text, which breaks the moment the wording changes.
+  const [canOverride, setCanOverride] = useState(false);
   const [notice, setNotice] = useState("");
   const [tab, setTab] = useState<"outline" | "chapters" | "brief" | "kdp">("outline");
   const [open, setOpen] = useState<number | null>(null);
@@ -83,7 +88,7 @@ export default function AdminBookDetail({ params }: { params: { id: string } }) 
   }, [running, load]);
 
   async function call(label: string, url: string, init?: RequestInit) {
-    setBusy(label); setError(""); setNotice("");
+    setBusy(label); setError(""); setNotice(""); setCanOverride(false);
     try {
       const res = await fetch(url, { method: "POST", ...init });
       const data = await res.json();
@@ -96,7 +101,10 @@ export default function AdminBookDetail({ params }: { params: { id: string } }) 
       return data;
     } catch (err: any) {
       setError(err.message);
-      if (err.needsAcknowledgement) return { needsAcknowledgement: true };
+      if (err.needsAcknowledgement) {
+        setCanOverride(true);
+        return { needsAcknowledgement: true };
+      }
       return null;
     } finally {
       setBusy("");
@@ -220,7 +228,7 @@ export default function AdminBookDetail({ params }: { params: { id: string } }) 
             <IconAlertTriangle size={18} className="mt-0.5 shrink-0" />
             <div>
               <p>{error}</p>
-              {/^\d+ chapter/.test(error) && (
+              {canOverride && (
                 <button onClick={() => publish(true)}
                         className="mt-2 rounded-lg bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700">
                   I have read them — publish anyway
@@ -538,25 +546,46 @@ function toBriefValues(b: any): BookBriefValues {
 }
 
 /**
- * Rough run cost and wall time, from the same constants the agent uses.
+ * Rough run cost and wall time, modelled on what the agent actually does.
  *
  * Shown because "Generate" is the button that spends money, and a number on the
  * button is the difference between a considered click and a surprised one.
- * Deliberately a range: output length per chapter is the variable, and the
- * editorial pass adds a second and sometimes a third call per chapter.
+ *
+ * The model must match agents/book_author.py's structure or it lies: generation
+ * is one call per SECTION (~4 per chapter), not one per chapter, plus an
+ * expansion pass over the short ones, one mini critique per chapter, and one
+ * call for the front/back matter. A per-chapter estimate understates a 100-page
+ * book by about 4x.
+ *
+ * Deliberately a range — how many sections need expanding is the variable.
  */
 function estimateCost(targetWords: number, chapters: number) {
-  const outTokens = targetWords * 1.35;              // words → tokens, prose+markup
-  // Chapter prose on the premium model; each chapter is also read back by the
-  // mini critic, and roughly half get one revision.
-  const proseOut = outTokens * 1.5;                  // 1 draft + ~0.5 revisions
-  const proseIn = chapters * 2500 * 1.5;             // brief + digest per call
-  const proseCost = (proseIn * 2.5e-6) + (proseOut * 10e-6);
-  const miniCost = ((outTokens * 1.5) * 0.15e-6) + (chapters * 900 * 0.6e-6);
-  const total = proseCost + miniCost;
+  const SECTIONS_PER_CHAPTER = 4;      // _plan_sections floors at 4
+  const sections = Math.max(1, chapters) * SECTIONS_PER_CHAPTER;
+
+  // gpt-4o: $2.50/M in, $10/M out. gpt-4o-mini: $0.15/M in, $0.60/M out.
+  const outTokens = targetWords * 1.35;             // words -> tokens, incl. markup
+  const inPerSection = 1500;                        // brief + continuity digest
+
+  // Prose: every section once, plus an expansion pass over roughly a fifth.
+  const proseOut = outTokens * 1.2;
+  const proseIn = sections * inPerSection * 1.2;
+  const prose = proseIn * 2.5e-6 + proseOut * 10e-6;
+
+  // Critic reads each finished chapter back on the mini model.
+  const critic = (chapters * 4000) * 0.15e-6 + (chapters * 900) * 0.6e-6;
+
+  // Front matter, back matter and store metadata: one premium call.
+  const matter = 3000 * 2.5e-6 + 4000 * 10e-6;
+
+  const total = prose + critic + matter;
+
+  // ~20s per section call, ~8s per critique, plus the configured pauses.
+  const seconds = sections * 21 + chapters * 9 + 40;
+
   return {
     lo: total.toFixed(2),
-    hi: (total * 1.8).toFixed(2),
-    mins: Math.max(3, Math.round(chapters * 1.6)),   // ~1.6 min/chapter incl. critic
+    hi: (total * 1.6).toFixed(2),
+    mins: Math.max(3, Math.round(seconds / 60)),
   };
 }

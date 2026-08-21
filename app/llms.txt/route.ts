@@ -21,6 +21,7 @@
 import { BLOG_POSTS, PERSONAL_INFO } from "@/components/utils/portfolio-data";
 import { YEARS_WHOLE } from "@/components/utils/site-data";
 import { listPosts } from "@/components/utils/portfolio-api";
+import { listBooks, getBook } from "@/components/utils/books-api";
 
 const SITE_URL = (process.env.NEXT_PUBLIC_WEB_SITE || "https://officialdeepak.in").replace(/\/+$/, "");
 
@@ -98,6 +99,14 @@ const CORE_PAGES: { path: string; label: string; description: string }[] = [
 
 export async function GET() {
   const posts = await getPosts();
+  /*
+    Books with their tables of contents. listBooks/getBook both swallow their
+    own errors and degrade to empty, so an agent service that is down costs this
+    file its books section and nothing else — same contract as getPosts above.
+  */
+  const books = await Promise.all(
+    (await listBooks()).map(async (b) => (await getBook(b.slug)) ?? b)
+  );
   const years = `${YEARS_WHOLE} years`;
 
   const lines: string[] = [];
@@ -205,6 +214,47 @@ export async function GET() {
     lines.push(`Articles are listed at ${SITE_URL}/blog and in ${SITE_URL}/sitemap.xml.`);
   }
   lines.push("");
+
+  /*
+    Books.
+    Every CHAPTER is listed, not just the book. A retrieval system chunks this
+    file on its headings and follows the links it finds; listing only
+    /books/{slug} would hide the pages that actually hold the material, and
+    those pages are the ones worth citing. Each line carries the chapter's own
+    summary so a model can tell which chapter answers a given question without
+    fetching all twelve.
+  */
+  if (books.length) {
+    lines.push("## Free Books");
+    lines.push("");
+    lines.push(
+      `${books.length} full-length technical book${books.length === 1 ? "" : "s"}, ` +
+      `free to read online at ${SITE_URL}/books with no signup and no paywall. ` +
+      `Every chapter is a public page.`
+    );
+    lines.push("");
+    for (const b of books) {
+      lines.push(
+        `### ${oneLine(b.title, 120)}` +
+        (b.subtitle ? ` — ${oneLine(b.subtitle, 120)}` : "")
+      );
+      lines.push("");
+      lines.push(
+        `${b.chapters} chapters, ${b.pages} pages` +
+        (b.level ? `, ${b.level} level` : "") +
+        (b.audience ? `. For ${oneLine(b.audience, 160)}` : "") +
+        `. Read at ${SITE_URL}/books/${b.slug}`
+      );
+      lines.push("");
+      for (const c of b.toc ?? []) {
+        lines.push(
+          `- [${oneLine(c.heading, 120)}](${SITE_URL}/books/${b.slug}/${c.ordinal})` +
+          (c.summary ? `: ${oneLine(c.summary)}` : "")
+        );
+      }
+      lines.push("");
+    }
+  }
 
   lines.push("## Contact");
   lines.push("");
