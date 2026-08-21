@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { BLOG_POSTS } from "@/components/utils/portfolio-data";
 import { sitemapPosts } from "@/components/utils/portfolio-api";
 import { pageCount, indexPath } from "@/components/utils/blog-pagination";
+import { listBooks, getBook } from "@/components/utils/books-api";
 
 const SITE_URL = (process.env.NEXT_PUBLIC_WEB_SITE || "https://officialdeepak.in").replace(/\/+$/, "");
 
@@ -52,6 +53,52 @@ function toDate(value: string | undefined, fallback: Date): Date {
   if (!value) return fallback;
   const d = new Date(value);
   return Number.isNaN(d.getTime()) ? fallback : d;
+}
+
+/**
+ * Books: the index, each book, and EVERY chapter.
+ *
+ * The chapter URLs are the point. A fifteen-chapter book is fifteen pages of
+ * on-topic prose, and they are only discoverable from inside the book — listing
+ * just /books/{slug} would leave the pages that actually rank to be found by
+ * crawl depth alone.
+ *
+ * Deliberately absent: /books/{slug}/read, which is noindex (it duplicates
+ * every chapter, and indexing both would split the book against itself).
+ *
+ * Degrades to an empty list if the agent service is unavailable — the rest of
+ * the sitemap must still be valid.
+ */
+async function getBookEntries(now: Date): Promise<MetadataRoute.Sitemap> {
+  const books = await listBooks();
+  if (books.length === 0) return [];
+
+  const entries: MetadataRoute.Sitemap = [{
+    url: `${SITE_URL}/books`,
+    lastModified: now,
+    changeFrequency: "weekly",
+    priority: 0.9,
+  }];
+
+  for (const b of books) {
+    const modified = toDate(b.updatedAt ?? b.publishedAt ?? undefined, now);
+    entries.push({
+      url: `${SITE_URL}/books/${b.slug}`,
+      lastModified: modified,
+      changeFrequency: "monthly",
+      priority: 0.9,
+    });
+    const full = await getBook(b.slug);
+    for (const c of full?.toc || []) {
+      entries.push({
+        url: `${SITE_URL}/books/${b.slug}/${c.ordinal}`,
+        lastModified: modified,
+        changeFrequency: "monthly",
+        priority: 0.8,
+      });
+    }
+  }
+  return entries;
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -129,5 +176,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: i < 5 ? 0.85 : 0.7,
     }));
 
-  return [...staticEntries, ...blogIndex, ...archivePages, ...blogEntries];
+  const bookEntries = await getBookEntries(now);
+
+  return [...staticEntries, ...blogIndex, ...archivePages, ...blogEntries, ...bookEntries];
 }

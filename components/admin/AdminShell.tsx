@@ -10,6 +10,8 @@ import {
   IconSquareRoundedPlus,
   IconMail,
   IconSearch,
+  IconBook,
+  IconUsers,
   IconExternalLink,
   IconLogout,
   IconMenu2,
@@ -26,6 +28,9 @@ const NAV: {
   { href: "/admin/dashboard", label: "Dashboard", icon: IconLayoutDashboard },
   { href: "/admin/blog", label: "All Posts", icon: IconArticle, exact: true },
   { href: "/admin/blog/new", label: "New Post", icon: IconSquareRoundedPlus },
+  { href: "/admin/books", label: "Books", icon: IconBook, exact: true },
+  { href: "/admin/books/new", label: "New Book", icon: IconSquareRoundedPlus },
+  { href: "/admin/subscribers", label: "Subscribers", icon: IconUsers },
   { href: "/admin/contacts", label: "Contacts", icon: IconMail },
   { href: "/admin/seo", label: "SEO Settings", icon: IconSearch },
 ];
@@ -33,6 +38,9 @@ const NAV: {
 /** Label shown in the top bar for the route currently open. */
 function sectionLabel(pathname: string) {
   if (pathname.startsWith("/admin/blog/") && pathname.endsWith("/edit")) return "Edit Post";
+  // /admin/books/{id} is a detail screen, not "New Book" — the longest-prefix
+  // match below would otherwise land on whichever NAV entry shares the stem.
+  if (/^\/admin\/books\/\d+$/.test(pathname)) return "Book";
   const match = NAV.filter((n) => pathname === n.href || pathname.startsWith(n.href + "/"))
     .sort((a, b) => b.href.length - a.href.length)[0];
   return match?.label ?? "Admin";
