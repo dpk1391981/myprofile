@@ -52,8 +52,7 @@ export async function generateMetadata(
     book.description ||
     `A free ${book.pages}-page book on ${book.topic || book.title} for ${book.audience || "developers"}.`;
 
-  return {
-    ...pageMeta({
+  const base = pageMeta({
       title,
       description: description.slice(0, 300),
       path: `/books/${book.slug}`,
@@ -64,13 +63,28 @@ export async function generateMetadata(
         `free ${book.topic || book.title} book`,
         ...(book.outcomes || []).slice(0, 4),
       ].filter(Boolean),
-    }),
+  });
+
+  return {
+    ...base,
     openGraph: {
       type: "book",
       url: `${SITE_URL}/books/${book.slug}`,
       title,
       description: description.slice(0, 300),
-      ...(book.coverImage ? { images: [{ url: book.coverImage }] } : {}),
+      // Real cover art wins if set; otherwise the generated card, named
+      // explicitly. The file convention does NOT apply when a page defines its
+      // own openGraph — which pageMeta always does — so leaving this to
+      // convention silently shipped no image at all.
+      images: [{
+        url: book.coverImage || `${SITE_URL}/books/${book.slug}/opengraph-image`,
+        width: 1200, height: 630,
+        alt: `${book.title} — free ${book.pages}-page book`,
+      }],
+    },
+    twitter: {
+      ...(base.twitter ?? {}),
+      images: [book.coverImage || `${SITE_URL}/books/${book.slug}/opengraph-image`],
     },
   };
 }

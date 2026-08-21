@@ -18,7 +18,7 @@ import { SITE_URL } from "@/components/utils/site-data";
  */
 export const revalidate = 600;
 
-export const metadata: Metadata = pageMeta({
+const meta = pageMeta({
   title: "Free Books for Developers — Deepak Kumar",
   description:
     "Free, full-length technical books you can read online with no signup and no paywall. " +
@@ -31,6 +31,27 @@ export const metadata: Metadata = pageMeta({
     "developer ebooks free",
   ],
 });
+
+export const metadata: Metadata = {
+  ...meta,
+  openGraph: {
+    ...meta.openGraph,
+    // Point at the generated card EXPLICITLY.
+    //
+    // Next's file convention (./opengraph-image.tsx) only fills in when a page
+    // does not define openGraph itself. pageMeta always does — it spreads
+    // NEXT_SEO_DEFAULT.openGraph, which carries the site portrait — so the
+    // convention never applied here, and clearing `images` produced a page with
+    // no og:image at all rather than the generated one. Naming the URL is
+    // deterministic and does not depend on merge order.
+    images: [{
+      url: `${SITE_URL}/books/opengraph-image`,
+      width: 1200, height: 630,
+      alt: "Free technical books by Deepak Kumar",
+    }],
+  },
+  twitter: { ...meta.twitter, images: [`${SITE_URL}/books/opengraph-image`] },
+};
 
 export default async function BooksIndex() {
   const books = await listBooks();
