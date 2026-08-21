@@ -1774,3 +1774,302 @@ button.blog-share-btn { cursor: pointer; font: inherit; padding: 0; appearance: 
   border-radius: 2px; opacity: .9;
   pointer-events: none;   /* never sits between the reader and a control */
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BOOK READER — /books/{slug}/read
+   ═══════════════════════════════════════════════════════════════════════════
+   The whole-book view. Everything here is scoped under .bk-reader so none of it
+   can reach the chapter pages, which are ordinary web pages and should stay
+   that way.
+
+   THE CORE MOVE: the text sits on a PAGE, and the page sits on a surface. That
+   one relationship — a bounded sheet with an edge and a shadow, floating on a
+   tinted ground — is what makes a browser window read as a document rather than
+   as a website. Everything below is in service of it. */
+
+.bk-reader {
+  background: var(--surface);
+  min-height: 100vh;
+  padding: 0 0 80px;
+}
+/* The reader owns the full viewport, so the site's own page padding would
+   show as a stripe of the wrong colour above the sheet. */
+.bk-reader-bleed { margin-top: -1px; }
+
+.bk-page {
+  max-width: 46rem;
+  margin: 0 auto;
+  background: var(--paper);
+  /* Not a card: a sheet. A large soft shadow plus a hairline edge reads as
+     paper lifted off a surface, where a tight shadow reads as a UI panel. */
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--ink) 8%, transparent),
+              0 12px 40px color-mix(in srgb, var(--ink) 10%, transparent);
+  border: 1px solid var(--hair);
+  padding: 0 clamp(24px, 6vw, 72px) clamp(48px, 8vw, 88px);
+}
+@media (max-width: 720px) {
+  /* Below this the sheet metaphor costs more than it gives: a shadowed card
+     with margins on a 375px screen spends the measure the text needs on
+     decoration. The page goes full-bleed and keeps the paper — which is what
+     every dedicated e-reader does at this width, and for this reason. */
+  .bk-reader { background: var(--paper); padding-bottom: 56px; }
+  .bk-page { border: 0; box-shadow: none; padding-left: 20px; padding-right: 20px; }
+
+  /* Notched phones: the reader is edge-to-edge, so the safe area is the page's
+     problem now rather than the site chrome's. */
+  .bk-page {
+    padding-left: max(20px, env(safe-area-inset-left));
+    padding-right: max(20px, env(safe-area-inset-right));
+  }
+}
+
+/*
+  DARK MODE INVERTS THE SHEET.
+
+  In light, `--surface` is darker than `--paper`, so a paper-coloured page on a
+  surface-coloured ground reads as a sheet lifted off a desk. In dark those two
+  swap — `--surface` is the LIGHTER of the pair — and using them the same way
+  would put the page darker than its own background, which reads as a hole cut
+  in the screen rather than a page resting on it. Elevation goes up, not down,
+  so the roles trade places here.
+*/
+:root[data-ink="dark"] .bk-reader { background: #100f0f; }
+:root[data-ink="dark"] .bk-page {
+  background: var(--surface);
+  /* A shadow is nearly invisible against a dark ground; the lift has to come
+     from the edge instead. */
+  box-shadow: 0 0 0 1px color-mix(in srgb, #f1efee 5%, transparent),
+              0 18px 50px rgba(0, 0, 0, .55);
+  border-color: color-mix(in srgb, #f1efee 9%, transparent);
+}
+@media (max-width: 720px) {
+  /* Full-bleed: the page IS the background, so it takes the reading colour and
+     the separate ground disappears with it. */
+  :root[data-ink="dark"] .bk-reader { background: var(--surface); }
+  :root[data-ink="dark"] .bk-page { box-shadow: none; }
+}
+
+/* ---------- reader bar ---------- */
+.bk-readerbar {
+  position: sticky; top: 0; z-index: 40;
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  backdrop-filter: saturate(1.4) blur(8px);
+  border-bottom: 1px solid var(--hair);
+}
+.bk-readerbar-inner {
+  max-width: 46rem; margin: 0 auto;
+  display: flex; align-items: center; gap: 12px;
+  padding: 9px clamp(16px, 4vw, 24px);
+}
+.bk-readerbar-actions { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+.bk-readerbar-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 9px; border: 1px solid transparent; border-radius: 2px;
+  background: transparent; color: var(--quiet);
+  font: inherit; font-size: 12px; letter-spacing: .04em; cursor: pointer;
+  transition: background .18s ease, color .18s ease, border-color .18s ease;
+}
+.bk-readerbar-btn:hover { background: var(--surface); color: var(--ink); border-color: var(--hair); }
+@media (max-width: 560px) {
+  /* Icons only — the labels are the first thing to go when the running head
+     needs the room more than they do. */
+  .bk-readerbar-btn-label { display: none; }
+}
+
+/* The running head. Truncates rather than wraps: a two-line bar that changes
+   height as you scroll past a long chapter title is worse than an ellipsis. */
+.bk-runninghead {
+  margin: 0; min-width: 0; flex: 1;
+  display: flex; align-items: center; gap: 7px;
+  font-size: 12px; letter-spacing: .04em; color: var(--quiet);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.bk-runninghead-num { font-variant-numeric: tabular-nums; flex: none; }
+.bk-runninghead-sep { opacity: .5; flex: none; }
+.bk-runninghead-title { overflow: hidden; text-overflow: ellipsis; }
+
+.bk-readerbar-progress { height: 2px; background: var(--hair); }
+.bk-readerbar-progress span {
+  display: block; height: 100%; background: var(--spot);
+  transform-origin: 0 50%; transform: scaleX(0);
+}
+
+/* ---------- contents drawer ---------- */
+.bk-drawer-scrim {
+  position: fixed; inset: 0; z-index: 45;
+  background: color-mix(in srgb, var(--ink) 34%, transparent);
+  opacity: 0; pointer-events: none; transition: opacity .22s ease;
+}
+.bk-drawer-scrim.is-open { opacity: 1; pointer-events: auto; }
+
+.bk-drawer {
+  position: fixed; z-index: 46; top: 0; left: 0; bottom: 0;
+  width: min(360px, 86vw);
+  background: var(--paper); border-right: 1px solid var(--rule);
+  display: flex; flex-direction: column;
+  transform: translateX(-100%);
+  transition: transform .24s cubic-bezier(.4, 0, .2, 1);
+  overflow: hidden;
+}
+.bk-drawer.is-open { transform: translateX(0); }
+.bk-drawer:focus { outline: none; }
+.bk-drawer-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--hair);
+}
+.bk-drawer-list {
+  margin: 0; padding: 8px 0 24px; list-style: none;
+  overflow-y: auto; flex: 1;
+}
+.bk-drawer-link {
+  display: flex; gap: 12px; align-items: baseline;
+  padding: 10px 16px; text-decoration: none;
+  font-size: 14.5px; line-height: 1.45; color: var(--ink);
+  border-left: 2px solid transparent;
+}
+.bk-drawer-link:hover { background: var(--surface); text-decoration: none; }
+.bk-drawer-link.is-current {
+  border-left-color: var(--spot); color: var(--spot); font-weight: 600;
+  background: var(--spot-tint);
+}
+.bk-drawer-num {
+  flex: none; width: 1.6em;
+  font-size: 11px; letter-spacing: .1em; color: var(--quiet);
+  font-variant-numeric: tabular-nums;
+}
+.bk-drawer-link.is-current .bk-drawer-num { color: var(--spot); }
+.bk-drawer-foot { border-top: 1px solid var(--hair); padding: 12px 16px; }
+.bk-drawer-back {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 13px; color: var(--quiet); text-decoration: none;
+}
+.bk-drawer-back:hover { color: var(--spot); text-decoration: none; }
+@media (prefers-reduced-motion: reduce) {
+  .bk-drawer, .bk-drawer-scrim { transition: none; }
+}
+
+/* ---------- title page ----------
+   Given real height and a frame, because a book opens on a title page and a
+   heading three lines below a toolbar does not. */
+.bk-titlepage {
+  text-align: center;
+  padding: clamp(56px, 12vh, 120px) 0 clamp(48px, 9vh, 96px);
+  border-bottom: 1px solid var(--hair);
+}
+.bk-titlepage-mark { font-size: clamp(44px, 9vw, 64px); line-height: 1; }
+.bk-titlepage-rule {
+  width: 44px; height: 1px; background: var(--ink);
+  margin: 26px auto; opacity: .35;
+}
+.bk-titlepage-author {
+  font-size: 12px; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--quiet); margin: 0;
+}
+.bk-titlepage-facts {
+  margin: 10px 0 0; font-size: 12px; letter-spacing: .06em; color: var(--quiet);
+}
+
+/* ---------- chapter opener ----------
+   A rule, the number spaced out, then the title — the standard book chapter
+   opening, and the thing that most separates "chapters in one file" from a
+   page with several h2s on it. */
+.bk-chapter-open {
+  margin-top: clamp(56px, 10vh, 96px);
+  padding-top: clamp(28px, 5vh, 48px);
+  border-top: 1px solid var(--hair);
+  text-align: center;
+}
+.bk-chapter-open .bk-chapter-num {
+  font-size: 11px; letter-spacing: .28em; text-transform: uppercase;
+  color: var(--quiet); margin: 0 0 14px;
+}
+.bk-chapter-open-title {
+  font-family: var(--serif);
+  font-size: clamp(25px, 4.6vw, 33px);
+  line-height: 1.22; margin: 0; color: var(--ink);
+}
+
+/* The drop cap. Only on a chapter's first paragraph, and only where there is
+   room — at phone widths it swallows a third of the measure. */
+@media (min-width: 721px) {
+  .bk-chapter-body > p:first-of-type::first-letter {
+    float: left;
+    font-family: var(--serif);
+    font-size: 3.1em;
+    line-height: .84;
+    padding: .06em .09em 0 0;
+    color: var(--ink);
+  }
+}
+
+/* ---------- print ----------
+   The sheet is a screen affordance. On paper the paper IS the sheet, so every
+   trace of it has to go or the PDF carries a shadowed box on each page. */
+@media print {
+  .bk-reader { background: #fff; padding: 0; min-height: 0; }
+  .bk-page {
+    max-width: none; border: 0; box-shadow: none; padding: 0; background: #fff;
+  }
+  .bk-titlepage { border-bottom: 0; padding-top: 0; break-after: page; }
+  .bk-chapter-open { border-top: 0; }
+}
+
+/* ---------- the reader on a phone ----------
+   Most reading happens here, so "feels like a book" has to survive the small
+   screen — where it is carried by TYPESETTING rather than by the sheet, which
+   there is no room for. */
+@media (max-width: 720px) {
+  /*
+    Justified with hyphenation, which is what a printed book and every e-reader
+    do. The two go together and are close to worthless apart: justification
+    without hyphenation opens rivers of white space down a narrow measure,
+    which is the single most recognisable mark of amateur web typography. With
+    `hyphens: auto` the browser breaks words properly for the document's
+    language and the right edge closes cleanly.
+
+    Desktop keeps its ragged right on purpose: at a 46rem measure justification
+    buys almost nothing and costs the even word-spacing the serif was designed
+    for.
+  */
+  .bk-reader .bk-prose {
+    text-align: justify;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+  }
+  /* Never justify what is not running prose — a hyphenated heading or a
+     justified code line is a bug, not a style. */
+  .bk-reader .bk-prose h2,
+  .bk-reader .bk-prose h3,
+  .bk-reader .bk-prose h4,
+  .bk-reader .bk-prose pre,
+  .bk-reader .bk-prose code,
+  .bk-reader .bk-prose table { text-align: left; hyphens: none; -webkit-hyphens: none; }
+
+  /* A smaller drop cap rather than none. It was suppressed here because a 3.1em
+     letter eats a third of a phone measure — but the drop cap is most of what
+     signals "a chapter is starting", so it earns its place at a size that fits. */
+  .bk-reader .bk-chapter-body > p:first-of-type::first-letter {
+    float: left;
+    font-family: var(--serif);
+    font-size: 2.6em;
+    line-height: .86;
+    padding: .05em .08em 0 0;
+    color: var(--ink);
+  }
+
+  /* Touch targets. 6px of padding is a comfortable mouse target and a poor
+     thumb one; 44px is the floor every platform's guidance agrees on. */
+  .bk-readerbar-btn { min-height: 40px; padding: 8px 10px; }
+  .bk-readerbar-inner { padding-top: 6px; padding-bottom: 6px; }
+
+  /* The title page keeps real height — a book opens on one, and collapsing it
+     to a heading with a bit of margin is what makes a long scroll read as an
+     article instead. */
+  .bk-titlepage { padding-top: clamp(48px, 14vh, 96px); padding-bottom: clamp(40px, 8vh, 72px); }
+}
+
+/* Very narrow phones: the running head has to yield before the controls do —
+   the buttons are how you navigate, the head only tells you where you are. */
+@media (max-width: 380px) {
+  .bk-runninghead-title { display: none; }
+}

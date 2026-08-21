@@ -30,6 +30,15 @@ export default function SiteChrome({
     return <>{children}</>;
   }
 
+  // The whole-book reader is a reading surface, not a page of the site. A
+  // masthead above the title page and a sitemap footer under the last chapter
+  // are exactly what stop it reading as a book — and the site's <main> carries
+  // a measure the reader sets for itself. It provides its own way back in the
+  // reader bar, so nothing is stranded.
+  if (/^\/books\/[^/]+\/read\/?$/.test(pathname)) {
+    return <>{children}</>;
+  }
+
   return (
     <>
       <a href="#main" className="bs-skip">Skip to content</a>
