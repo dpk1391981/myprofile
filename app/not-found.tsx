@@ -26,13 +26,16 @@ import { listPosts } from "@/components/utils/portfolio-api";
  * Both fetches degrade to empty — a 404 whose own data source is down must
  * still render, or the error page becomes an error.
  *
- * NOINDEX. A 404 must never rank. Next already sends the 404 status; this makes
- * the intent explicit for crawlers that fetch the body anyway.
+ * NOINDEX is NOT set here on purpose. Next injects `<meta name="robots"
+ * content="noindex">` on not-found itself, and adding a second one produced two
+ * robots tags in the head. Google combines duplicates and takes the most
+ * restrictive, so it was harmless — but two contradictory-looking directives in
+ * one head is the kind of thing that gets "fixed" wrongly later. `follow` is the
+ * default when unspecified, so nothing is lost by leaving it to Next.
  */
 export const metadata: Metadata = {
   title: "Page not found — Deepak Kumar",
   description: "That page does not exist. Here is where everything else lives.",
-  robots: { index: false, follow: true },
 };
 
 // Rebuilt hourly. The lists change rarely and a 404 must be cheap to serve —
