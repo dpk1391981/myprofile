@@ -23,6 +23,7 @@ type BookRow = {
   pages: number;
   coverEmoji: string;
   errorText: string;
+  runStale: boolean;
   publishedAt: string | null;
   createdAt: string | null;
 };
@@ -63,7 +64,8 @@ export default function AdminBooksList() {
   // A run commits after every chapter, so polling shows real progress. Only
   // while something is actually moving, and only while the tab is visible — an
   // idle or backgrounded list must not sit there hitting the API forever.
-  const active = books.some((b) => b.status === "generating" || b.status === "outlining");
+  const active = books.some(
+    (b) => (b.status === "generating" || b.status === "outlining") && !b.runStale);
   usePolling(load, active, 8000);
 
   return (
@@ -119,8 +121,9 @@ export default function AdminBooksList() {
                             className="truncate font-semibold text-slate-900 hover:text-blue-700">
                         {b.title}
                       </Link>
-                      <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${s.cls}`}>
-                        {s.label}
+                      <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${
+                        b.runStale ? "bg-red-100 text-red-700" : s.cls}`}>
+                        {b.runStale ? "Run stopped" : s.label}
                       </span>
                     </div>
                     {b.subtitle && (
@@ -134,7 +137,7 @@ export default function AdminBooksList() {
                       {b.publishedAt && <span>Live {formatISTDate(b.publishedAt)}</span>}
                     </div>
 
-                    {b.status === "generating" && (
+                    {b.status === "generating" && !b.runStale && (
                       <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
                         <div className="h-full rounded-full bg-amber-500 transition-all"
                              style={{ width: `${pct}%` }} />

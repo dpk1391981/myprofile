@@ -124,6 +124,10 @@ export type AdminBook = Book & {
   targetWords: number;
   status: string;
   errorText: string;
+  /** status says "generating" but nothing has been written for a while — the
+   *  run did not survive a restart. The UI must offer resume, not a spinner. */
+  runStale: boolean;
+  staleAfterMinutes: number;
   outline: {
     ordinal: number;
     heading: string;

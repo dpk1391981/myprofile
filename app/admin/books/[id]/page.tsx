@@ -42,7 +42,8 @@ type Chapter = {
  *  this type is how fields silently render as undefined. */
 type Book = {
   id: number; slug: string; title: string; subtitle: string; status: string;
-  errorText: string; chapters: number; targetChapters: number; targetWords: number;
+  errorText: string; runStale: boolean; staleAfterMinutes: number;
+  chapters: number; targetChapters: number; targetWords: number;
   wordCount: number; pages: number; coverEmoji: string; publishedAt: string | null;
   outline: { ordinal: number; heading: string; summary: string; sections: string[];
              concepts: string[]; target_words: number }[];
@@ -88,7 +89,10 @@ export default function AdminBookDetail({ params }: { params: { id: string } }) 
   // agent commits after every chapter, so these numbers are the real state of
   // the book rather than a progress animation — and a chapter takes ~2 minutes,
   // so 8s is well inside the resolution anyone can perceive.
-  const running = book?.status === "generating" || book?.status === "outlining";
+  // A book stuck in "generating" after its run died is NOT running. Treating it
+  // as running is what left the page spinning forever and the button disabled.
+  const running =
+    (book?.status === "generating" || book?.status === "outlining") && !book?.runStale;
   usePolling(load, running, 8000);
 
   async function call(label: string, url: string, init?: RequestInit) {
@@ -256,19 +260,26 @@ export default function AdminBookDetail({ params }: { params: { id: string } }) 
           {hasOutline ? "Rebuild outline" : "1. Build outline"}
         </button>
 
-        <button onClick={generate} disabled={!!busy || !hasOutline || book.status === "generating"}
+        <button onClick={generate}
+                disabled={!!busy || !hasOutline || (book.status === "generating" && !book.runStale)}
                 className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60">
-          {busy === "generate" || book.status === "generating"
+          {busy === "generate" || running
             ? <IconLoader2 size={16} className="animate-spin" /> : <IconWand size={16} />}
-          {book.status === "generating" ? "Generating…" : "2. Generate book"}
+          {running ? "Generating…"
+            : book.runStale ? "Resume generation"
+            : "2. Generate book"}
         </button>
 
         <p className="text-xs text-slate-500">
           {!hasOutline
             ? "Build the outline first — it is cheap, and it is where a wrong brief gets caught."
-            : book.status === "generating"
+            : running
               ? "Running in the background. Safe to leave this page; progress is saved after every chapter."
-              : <>Resumes from the last finished chapter. Roughly <strong>${estCost.lo}–${estCost.hi}</strong> and <strong>{estCost.mins} min</strong> for a full run.</>}
+              : book.runStale
+                ? <>This run stopped without finishing — nothing has been written for over{" "}
+                   {book.staleAfterMinutes} minutes, which usually means the service restarted
+                   mid-run. Finished chapters are kept; resuming picks up from the last one.</>
+                : <>Resumes from the last finished chapter. Roughly <strong>${estCost.lo}–${estCost.hi}</strong> and <strong>{estCost.mins} min</strong> for a full run.</>}
         </p>
       </div>
 
