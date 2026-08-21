@@ -52,7 +52,7 @@ export default async function ConfirmPage(
             Start reading chapter 1
           </Link>
         </div>
-        <p className="mt-6 text-sm text-slate-500">
+        <p className="bs-small bs-quiet" style={{ marginTop: 26 }}>
           Bookmark the printable link — it is how you get back to your copy.
         </p>
       </Shell>
@@ -66,7 +66,7 @@ export default async function ConfirmPage(
             ? "This address opted out earlier. Sign up again and you will get a fresh link."
             : "The link may have been mistyped or already replaced by a newer one."}
         </p>
-        <Link href="/books" className="mt-6 inline-block underline">Back to the books</Link>
+        <Link href="/books" className="bs-link" style={{ marginTop: 26, display: "inline-block" }}>Back to the books</Link>
       </Shell>
     );
   }
@@ -74,9 +74,9 @@ export default async function ConfirmPage(
 
 function Shell({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <main className="mx-auto max-w-xl px-5 py-20">
-      <h1 className="text-3xl font-bold tracking-tight text-slate-900">{title}</h1>
-      <div className="mt-4 leading-relaxed text-slate-600">{children}</div>
+    <main className="bk-shell" style={{ paddingTop: 80, paddingBottom: 100 }}>
+      <h1 className="bk-chapter-title">{title}</h1>
+      <div className="bs-body-text bs-quiet" style={{ marginTop: 18 }}>{children}</div>
     </main>
   );
 }

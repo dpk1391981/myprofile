@@ -180,12 +180,12 @@ function Locked({ slug, reason }: { slug: string; reason: "no-token" | "unconfir
   }[reason];
 
   return (
-    <main className="mx-auto max-w-xl px-5 py-20">
-      <h1 className="text-3xl font-bold tracking-tight text-slate-900">Not unlocked yet</h1>
-      <p className="mt-4 leading-relaxed text-slate-600">{copy}</p>
-      <p className="mt-6 text-slate-600">
+    <main className="bk-shell" style={{ paddingTop: 80, paddingBottom: 100 }}>
+      <h1 className="bk-chapter-title">Not unlocked yet</h1>
+      <p className="bs-body-text bs-quiet" style={{ marginTop: 18 }}>{copy}</p>
+      <p className="bs-body-text" style={{ marginTop: 26 }}>
         The book is free to read either way —{" "}
-        <Link href={`/books/${slug}`} className="font-medium text-slate-900 underline">
+        <Link href={`/books/${slug}`} className="bs-link">
           every chapter is a public page
         </Link>
         .

@@ -7,6 +7,7 @@ import { SITE_URL } from "@/components/utils/site-data";
 import { chapterLd } from "@/components/books/book-seo";
 import { prepareChapter } from "@/components/books/chapter-html";
 import ReadingProgress from "@/components/books/ReadingProgress";
+import PriceTag from "@/components/books/PriceTag";
 
 /**
  * One chapter, one URL — the page that does the ranking.
@@ -172,6 +173,10 @@ export default async function ChapterPage(
         <p className="bs-eyebrow">Free book</p>
         <p className="bs-h4" style={{ margin: "8px 0 6px", fontSize: 19 }}>
           Want all {toc.length} chapters in one file?
+        </p>
+        <p style={{ margin: "0 0 10px" }}>
+          <PriceTag listPricePaise={book.listPricePaise} priceLabel={book.priceLabel}
+                    currency={book.currency} size="md" />
         </p>
         <p className="bs-small bs-quiet" style={{ margin: "0 0 16px" }}>
           {book.pages} pages, printable and yours to keep. One confirmed email, no payment.

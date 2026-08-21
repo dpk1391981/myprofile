@@ -19,7 +19,7 @@ export default function PrintButton() {
     <button
       type="button"
       onClick={() => window.print()}
-      className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-slate-800"
+      className="bs-btn bs-btn--solid bs-btn--sm"
     >
       <IconPrinter size={16} />
       Save as PDF

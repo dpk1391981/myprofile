@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { listBooks } from "@/components/utils/books-api";
 import { pageMeta, breadcrumbLd } from "@/components/utils/seo";
+import PriceTag from "@/components/books/PriceTag";
 import { SITE_URL } from "@/components/utils/site-data";
 
 /**
@@ -48,7 +49,7 @@ export default async function BooksIndex() {
   };
 
   return (
-    <main className="mx-auto max-w-3xl px-5 py-12 sm:py-16">
+    <main className="bk-shell" style={{ paddingTop: 44, paddingBottom: 80 }}>
       <script type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListLd) }} />
       <script type="application/ld+json"
@@ -60,8 +61,8 @@ export default async function BooksIndex() {
         }} />
 
       <header>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Books</h1>
-        <p className="mt-3 text-lg leading-relaxed text-slate-600">
+        <h1 className="bk-chapter-title">Books</h1>
+        <p className="bk-chapter-standfirst">
           Full-length technical books, free to read online. No paywall, no signup to read —
           every chapter is a public page. If you want a copy to keep, there is a printable
           version behind a single confirmed email.
@@ -69,31 +70,32 @@ export default async function BooksIndex() {
       </header>
 
       {books.length === 0 ? (
-        <p className="mt-12 rounded-xl border border-dashed border-slate-300 py-16 text-center text-slate-500">
+        <p className="bs-quiet" style={{ marginTop: 48, padding: "56px 20px", textAlign: "center", border: "1px dashed var(--rule)", borderRadius: 2 }}>
           The first book is being written. Check back shortly.
         </p>
       ) : (
-        <ul className="mt-12 space-y-6">
+        <ul style={{ listStyle: "none", margin: "44px 0 0", padding: 0 }}>
           {books.map((b) => (
             <li key={b.id}>
-              <article className="group rounded-2xl border border-slate-200 p-6 transition-colors hover:border-slate-400">
-                <div className="flex items-start gap-5">
-                  <span className="text-4xl" aria-hidden>{b.coverEmoji || "📘"}</span>
-                  <div className="min-w-0">
-                    <h2 className="text-xl font-semibold text-slate-900">
-                      <Link href={`/books/${b.slug}`} className="hover:underline">
+              <article className="bk-pager-link" style={{ padding: "24px 26px", marginBottom: 18 }}>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 20 }}>
+                  <span aria-hidden style={{ fontSize: 38, lineHeight: 1 }}>{b.coverEmoji || "📘"}</span>
+                  <div style={{ minWidth: 0 }}>
+                    <h2 style={{ margin: 0, fontFamily: "var(--serif)", fontSize: 23, fontWeight: 600, lineHeight: 1.25 }}>
+                      <Link href={`/books/${b.slug}`} className="bs-link-plain">
                         {b.title}
                       </Link>
                     </h2>
-                    {b.subtitle && <p className="mt-1 text-slate-600">{b.subtitle}</p>}
+                    {b.subtitle && <p className="bs-quiet" style={{ margin: "6px 0 0", fontFamily: "var(--serif)", fontSize: 17 }}>{b.subtitle}</p>}
                     {b.description && (
-                      <p className="mt-3 leading-relaxed text-slate-600">{b.description}</p>
+                      <p className="bs-body-text bs-quiet" style={{ marginTop: 14 }}>{b.description}</p>
                     )}
-                    <p className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-500">
+                    <p className="bs-small bs-quiet" style={{ display: "flex", flexWrap: "wrap", gap: "4px 18px", marginTop: 16 }}>
                       <span>{b.chapters} chapters</span>
                       <span>{b.pages} pages</span>
-                      {b.level && <span className="capitalize">{b.level}</span>}
-                      <span className="font-medium text-emerald-700">Free to read</span>
+                      {b.level && <span style={{ textTransform: "capitalize" }}>{b.level}</span>}
+                      <PriceTag listPricePaise={b.listPricePaise} priceLabel={b.priceLabel}
+                        currency={b.currency} size="sm" />
                     </p>
                   </div>
                 </div>

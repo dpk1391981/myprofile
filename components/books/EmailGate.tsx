@@ -92,15 +92,15 @@ export default function EmailGate({
   // Already confirmed on this device — offer the copy rather than the form.
   if (savedToken && state === "idle") {
     return (
-      <div className="rounded-2xl border border-slate-300 bg-white p-6">
-        <div className="flex items-center gap-2 text-slate-900">
+      <div style={{ padding: "26px 24px", border: "1px solid var(--rule)", borderRadius: 2 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <IconBookmark size={18} />
-          <h3 className="text-lg font-semibold">You already have this book</h3>
+          <h3 className="bs-h4" style={{ margin: 0, fontSize: 19 }}>You already have this book</h3>
         </div>
-        <p className="mt-1.5 text-sm text-slate-600">
+        <p className="bs-small bs-quiet" style={{ marginTop: 10 }}>
           Your email is confirmed, so the printable copy is ready whenever you want it.
         </p>
-        <div className="mt-4 flex flex-wrap gap-3">
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 18 }}>
           <Link href={`/books/${slug}/read?token=${encodeURIComponent(savedToken)}`}
                 className="bs-btn bs-btn--solid bs-btn--sm">
             Open the printable copy
@@ -116,11 +116,11 @@ export default function EmailGate({
 
   if (state === "sent") {
     return (
-      <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-6 text-center">
-        <IconMailCheck size={32} className="mx-auto text-emerald-600" />
-        <h3 className="mt-3 text-lg font-semibold text-emerald-900">Check your inbox</h3>
-        <p className="mt-1.5 text-sm text-emerald-800">{message}</p>
-        <p className="mt-3 text-xs text-emerald-700">
+      <div style={{ padding: "26px 24px", textAlign: "center", border: "1px solid var(--rule)", borderRadius: 2, background: "var(--surface)" }}>
+        <IconMailCheck size={30} style={{ margin: "0 auto", color: "var(--spot)" }} />
+        <h3 className="bs-h4" style={{ marginTop: 12, fontSize: 19 }}>Check your inbox</h3>
+        <p className="bs-small" style={{ marginTop: 8 }}>{message}</p>
+        <p className="bs-small bs-quiet" style={{ marginTop: 14, fontSize: 13 }}>
           Nothing arrives until you click that link. If it is not there in a few minutes,
           look in spam — and mark it "not spam" so the book itself lands properly.
         </p>
@@ -129,18 +129,18 @@ export default function EmailGate({
   }
 
   return (
-    <div className="rounded-2xl border border-slate-300 bg-white p-6 shadow-sm">
+    <div style={{ padding: "26px 24px", border: "1px solid var(--rule)", borderRadius: 2 }}>
       <div className="flex items-center gap-2 text-slate-900">
         <IconLock size={18} />
-        <h3 className="text-lg font-semibold">Read all {pages} pages, free</h3>
+        <h3 className="bs-h4" style={{ margin: 0, fontSize: 19 }}>Keep a copy of all {pages} pages</h3>
       </div>
-      <p className="mt-1.5 text-sm text-slate-600">
-        Confirm an email address and the whole book opens. One email with the link,
-        and occasional notes when there is a new one. No other mail, and one-click
-        unsubscribe in every message.
+      <p className="bs-small bs-quiet" style={{ marginTop: 10 }}>
+        The book is free to read above — this is for the printable single-file copy.
+        One email with the link, and occasional notes when there is a new book. No
+        other mail, and one-click unsubscribe in every message.
       </p>
 
-      <form onSubmit={submit} className="mt-4 space-y-3">
+      <form onSubmit={submit} style={{ marginTop: 18, display: "grid", gap: 12 }}>
         <div>
           <label htmlFor="gate-name" className="sr-only">Your name</label>
           <input
@@ -150,7 +150,7 @@ export default function EmailGate({
             onChange={(e) => setName(e.target.value)}
             placeholder="Your name (optional)"
             autoComplete="name"
-            className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm focus:border-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
+            style={{ width: "100%", padding: "12px 14px", fontSize: 15, border: "1px solid var(--rule)", borderRadius: 2, background: "var(--paper)", color: "var(--ink)", fontFamily: "inherit" }}
           />
         </div>
         <div>
@@ -163,12 +163,12 @@ export default function EmailGate({
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
             autoComplete="email"
-            className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm focus:border-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
+            style={{ width: "100%", padding: "12px 14px", fontSize: 15, border: "1px solid var(--rule)", borderRadius: 2, background: "var(--paper)", color: "var(--ink)", fontFamily: "inherit" }}
           />
         </div>
 
         {state === "error" && (
-          <p className="flex items-start gap-2 text-sm text-red-600">
+          <p className="bs-small" style={{ display: "flex", gap: 8, color: "var(--mag)" }}>
             <IconAlertTriangle size={16} className="mt-0.5 shrink-0" />
             {message}
           </p>
@@ -177,14 +177,14 @@ export default function EmailGate({
         <button
           type="submit"
           disabled={state === "sending"}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-slate-900 px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-slate-800 disabled:opacity-60"
+          className="bs-btn bs-btn--solid" style={{ width: "100%", justifyContent: "center" }}
         >
           {state === "sending" && <IconLoader2 size={16} className="animate-spin" />}
           {state === "sending" ? "Sending…" : `Send me ${bookTitle}`}
         </button>
       </form>
 
-      <p className="mt-3 text-center text-xs text-slate-500">
+      <p className="bs-small bs-quiet" style={{ marginTop: 14, textAlign: "center", fontSize: 13 }}>
         Double opt-in. Your address is never sold, shared, or used for anything else.
       </p>
     </div>

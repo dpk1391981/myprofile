@@ -44,6 +44,27 @@ export function bookLd(book: Book) {
     // The honest signal, and a competitive one: most results for "<topic> book"
     // are paid.
     isAccessibleForFree: true,
+    /*
+      An Offer at price 0.
+      Google shows a price on book results, and without this node the free book
+      renders next to paid competitors with a blank where their price is — which
+      reads as "unknown", not as "free". Stating 0 explicitly is what earns the
+      "Free" badge.
+
+      The struck-through list price is NOT modelled here. `price` means what the
+      buyer pays through this offer, and that is zero; putting 499 anywhere in
+      this node would be a false price claim to a search engine, which is a far
+      worse problem than a missing decoration. Verified against
+      scripts/schemaorg-vocab.json: Offer, price, priceCurrency, availability,
+      url are all in domain.
+    */
+    offers: {
+      "@type": "Offer",
+      price: 0,
+      priceCurrency: book.currency || "INR",
+      availability: "https://schema.org/InStock",
+      url,
+    },
     ...(book.outcomes?.length ? { teaches: book.outcomes } : {}),
     ...(book.level ? { educationalLevel: book.level } : {}),
     ...(book.audience

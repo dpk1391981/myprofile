@@ -5,6 +5,7 @@ import { getBook, listBooks } from "@/components/utils/books-api";
 import { pageMeta, breadcrumbLd, faqLd } from "@/components/utils/seo";
 import { SITE_URL } from "@/components/utils/site-data";
 import EmailGate from "@/components/books/EmailGate";
+import PriceTag from "@/components/books/PriceTag";
 import { bookLd, bookFaq } from "@/components/books/book-seo";
 
 /**
@@ -82,7 +83,7 @@ export default async function BookPage({ params }: { params: { slug: string } })
   const toc = book.toc || [];
 
   return (
-    <main className="mx-auto max-w-3xl px-5 py-12 sm:py-16">
+    <main className="bk-shell" style={{ paddingTop: 44, paddingBottom: 80 }}>
       {/* Structured data. Three separate blocks rather than one @graph so a
           single malformed node cannot cost the page all three. */}
       <script type="application/ld+json"
@@ -98,28 +99,34 @@ export default async function BookPage({ params }: { params: { slug: string } })
           ])),
         }} />
 
-      <nav aria-label="Breadcrumb" className="mb-8 text-sm text-slate-500">
-        <Link href="/" className="hover:text-slate-900">Home</Link>
-        <span className="mx-2">/</span>
-        <Link href="/books" className="hover:text-slate-900">Books</Link>
+      <nav aria-label="Breadcrumb" className="bs-small bs-quiet" style={{ marginBottom: 30 }}>
+        <Link href="/" className="bs-link-plain">Home</Link>
+        <span style={{ margin: "0 8px" }}>/</span>
+        <Link href="/books" className="bs-link-plain">Books</Link>
       </nav>
 
       {/* ── Header ──────────────────────────────────────────────────────── */}
       <header>
-        <div className="text-5xl">{book.coverEmoji || "📘"}</div>
-        <h1 className="mt-4 text-3xl font-bold leading-tight tracking-tight text-slate-900 sm:text-4xl">
+        <div style={{ fontSize: 52, lineHeight: 1 }}>{book.coverEmoji || "📘"}</div>
+        <h1 className="bk-chapter-title" style={{ marginTop: 20 }}>
           {book.title}
         </h1>
         {book.subtitle && (
-          <p className="mt-2 text-lg text-slate-600">{book.subtitle}</p>
+          <p className="bk-chapter-standfirst">{book.subtitle}</p>
         )}
 
-        <dl className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-500">
+        <dl className="bs-small bs-quiet" style={{ display: "flex", flexWrap: "wrap", gap: "6px 24px", marginTop: 22 }}>
           <div><dt className="sr-only">Length</dt><dd>{book.pages} pages</dd></div>
           <div><dt className="sr-only">Chapters</dt><dd>{book.chapters} chapters</dd></div>
           <div><dt className="sr-only">Words</dt><dd>{book.wordCount.toLocaleString()} words</dd></div>
           {book.level && <div><dt className="sr-only">Level</dt><dd className="capitalize">{book.level}</dd></div>}
-          <div><dt className="sr-only">Price</dt><dd className="font-medium text-emerald-700">Free to read</dd></div>
+          <div>
+            <dt className="sr-only">Price</dt>
+            <dd>
+              <PriceTag listPricePaise={book.listPricePaise} priceLabel={book.priceLabel}
+                        currency={book.currency} size="sm" />
+            </dd>
+          </div>
         </dl>
       </header>
 
@@ -129,22 +136,22 @@ export default async function BookPage({ params }: { params: { slug: string } })
           asks "what is the best book on X" — it has to make sense with no
           surrounding context, because that is how it will be quoted. */}
       {book.description && (
-        <section className="mt-8 border-l-2 border-slate-900 pl-5">
-          <p className="text-lg leading-relaxed text-slate-800">{book.description}</p>
+        <section style={{ marginTop: 34, paddingLeft: 20, borderLeft: "2px solid var(--spot)" }}>
+          <p className="bs-lede" style={{ margin: 0 }}>{book.description}</p>
         </section>
       )}
 
       {/* ── Outcomes — the highest-value extractable list ────────────────── */}
       {book.outcomes?.length > 0 && (
-        <section className="mt-10" aria-labelledby="outcomes">
-          <h2 id="outcomes" className="text-xl font-semibold text-slate-900">
+        <section style={{ marginTop: 44 }} aria-labelledby="outcomes">
+          <h2 id="outcomes" className="bs-h3" style={{ fontSize: 22 }}>
             What you will be able to do after reading it
           </h2>
-          <ul className="mt-4 space-y-2.5">
+          <ul style={{ listStyle: "none", margin: "16px 0 0", padding: 0 }}>
             {book.outcomes.map((o, i) => (
-              <li key={i} className="flex gap-3 text-slate-700">
-                <span aria-hidden className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-900" />
-                <span>{o}</span>
+              <li key={i} style={{ display: "flex", gap: 12, marginBottom: 10 }}>
+                <span aria-hidden style={{ marginTop: 9, width: 5, height: 5, flex: "0 0 5px", borderRadius: "50%", background: "var(--spot)" }} />
+                <span className="bs-body-text">{o}</span>
               </li>
             ))}
           </ul>
@@ -153,12 +160,12 @@ export default async function BookPage({ params }: { params: { slug: string } })
 
       {/* ── Who it is for ───────────────────────────────────────────────── */}
       {(book.audience || book.prerequisites) && (
-        <section className="mt-10" aria-labelledby="who">
-          <h2 id="who" className="text-xl font-semibold text-slate-900">Who this book is for</h2>
-          {book.audience && <p className="mt-3 text-slate-700">{book.audience}</p>}
+        <section style={{ marginTop: 44 }} aria-labelledby="who">
+          <h2 id="who" className="bs-h3" style={{ fontSize: 22 }}>Who this book is for</h2>
+          {book.audience && <p className="bs-body-text" style={{ marginTop: 14 }}>{book.audience}</p>}
           {book.prerequisites && (
-            <p className="mt-2 text-slate-600">
-              <strong className="font-medium text-slate-900">Assumed knowledge:</strong>{" "}
+            <p className="bs-body-text bs-quiet" style={{ marginTop: 10 }}>
+              <strong style={{ color: "var(--ink)", fontWeight: 600 }}>Assumed knowledge:</strong>{" "}
               {book.prerequisites}
             </p>
           )}
@@ -170,17 +177,30 @@ export default async function BookPage({ params }: { params: { slug: string } })
           public URL, so asking for an address before the first page would cost
           the ranking those pages exist to earn — and cost the reader a reason
           to trust the book. */}
-      <section className="mt-12" aria-labelledby="get">
-        <h2 id="get" className="text-xl font-semibold text-slate-900">
+      <section style={{ marginTop: 48 }} aria-labelledby="get">
+        <h2 id="get" className="bs-h3" style={{ fontSize: 22 }}>
           Read it now — free, no signup
         </h2>
-        <p className="mt-2 text-slate-600">
+        <p className="bs-body-text" style={{ marginTop: 12 }}>
           The whole book is on this site. Start at chapter one, or jump to whichever
           chapter you came for.
         </p>
+
+        {/* The anchor. Renders as a plain "Free" until a real list price is set
+            — see components/books/PriceTag.tsx. */}
+        <div style={{
+          marginTop: 22, padding: "18px 20px", borderRadius: 2,
+          background: "var(--spot-tint)", border: "1px solid var(--rule)",
+        }}>
+          <PriceTag listPricePaise={book.listPricePaise} priceLabel={book.priceLabel}
+                    currency={book.currency} size="lg" />
+          <p className="bs-small bs-quiet" style={{ margin: "8px 0 0" }}>
+            {book.pages} pages · {book.chapters} chapters · no paywall, no signup to read
+          </p>
+        </div>
         {toc.length > 0 && (
           <Link href={`/books/${book.slug}/${toc[0].ordinal}`}
-                className="mt-4 inline-flex items-center justify-center rounded-lg bg-slate-900 px-6 py-3.5 text-sm font-medium text-white transition-colors hover:bg-slate-800">
+                className="bs-btn bs-btn--solid" style={{ marginTop: 18 }}>
             Start reading: {toc[0].heading}
           </Link>
         )}
@@ -196,12 +216,12 @@ export default async function BookPage({ params }: { params: { slug: string } })
 
       {/* ── The sample ──────────────────────────────────────────────────── */}
       {(book.prefaceHtml || book.introHtml) && (
-        <section className="mt-14" aria-labelledby="sample">
-          <h2 id="sample" className="text-xl font-semibold text-slate-900">
+        <section style={{ marginTop: 56 }} aria-labelledby="sample">
+          <h2 id="sample" className="bs-h3" style={{ fontSize: 22 }}>
             Read the opening
           </h2>
           <div
-            className="prose prose-slate mt-4 max-w-none prose-headings:font-semibold prose-a:text-slate-900"
+            className="bk-prose" style={{ marginTop: 20 }}
             dangerouslySetInnerHTML={{ __html: (book.prefaceHtml || "") + (book.introHtml || "") }}
           />
         </section>
@@ -212,24 +232,23 @@ export default async function BookPage({ params }: { params: { slug: string } })
           on-topic prose that tells a crawler, and a reader, that the book
           actually covers what the title claims. */}
       {toc.length > 0 && (
-        <section className="mt-14" aria-labelledby="contents">
-          <h2 id="contents" className="text-xl font-semibold text-slate-900">
+        <section style={{ marginTop: 56 }} aria-labelledby="contents">
+          <h2 id="contents" className="bs-h3" style={{ fontSize: 22 }}>
             What is inside — all {toc.length} chapters
           </h2>
-          <ol className="mt-5 space-y-5">
+          <ol className="bk-toc" style={{ marginTop: 18 }}>
             {toc.map((c) => (
-              <li key={c.ordinal} className="flex gap-4">
-                <span className="w-6 shrink-0 pt-0.5 text-sm font-medium tabular-nums text-slate-400">
+              <li key={c.ordinal} className="bk-toc-item">
+                <Link href={`/books/${book.slug}/${c.ordinal}`} className="bk-toc-num bs-link-plain">
                   {c.ordinal}
-                </span>
-                <div className="min-w-0">
-                  <h3 className="font-medium">
-                    <Link href={`/books/${book.slug}/${c.ordinal}`}
-                          className="text-slate-900 hover:underline">
+                </Link>
+                <div style={{ minWidth: 0 }}>
+                  <h3 style={{ margin: 0, fontWeight: 400 }}>
+                    <Link href={`/books/${book.slug}/${c.ordinal}`} className="bk-toc-link">
                       {c.heading}
                     </Link>
                   </h3>
-                  {c.summary && <p className="mt-1 text-sm leading-relaxed text-slate-600">{c.summary}</p>}
+                  {c.summary && <p className="bk-toc-summary">{c.summary}</p>}
                 </div>
               </li>
             ))}
@@ -238,26 +257,26 @@ export default async function BookPage({ params }: { params: { slug: string } })
       )}
 
       {/* ── FAQ ─────────────────────────────────────────────────────────── */}
-      <section className="mt-14" aria-labelledby="faq">
-        <h2 id="faq" className="text-xl font-semibold text-slate-900">Questions</h2>
-        <dl className="mt-5 space-y-6">
+      <section style={{ marginTop: 56 }} aria-labelledby="faq">
+        <h2 id="faq" className="bs-h3" style={{ fontSize: 22 }}>Questions</h2>
+        <dl style={{ marginTop: 20 }}>
           {faq.map((f, i) => (
             <div key={i}>
-              <dt className="font-medium text-slate-900">{f.question}</dt>
-              <dd className="mt-1.5 leading-relaxed text-slate-600">{f.answer}</dd>
+              <dt className="bs-body-text" style={{ fontWeight: 600 }}>{f.question}</dt>
+              <dd className="bs-body-text bs-quiet" style={{ margin: "6px 0 22px" }}>{f.answer}</dd>
             </div>
           ))}
         </dl>
       </section>
 
-      <footer className="mt-14 border-t border-slate-200 pt-8">
-        <p className="text-sm text-slate-500">
+      <footer style={{ marginTop: 56, paddingTop: 26, borderTop: "1px solid var(--hair)" }}>
+        <p className="bs-small bs-quiet">
           Written by{" "}
-          <Link href="/about" className="font-medium text-slate-900 hover:underline">
+          <Link href="/about" className="bs-link">
             {book.authorName || "Deepak Kumar"}
           </Link>
           .{" "}
-          <Link href="/books" className="hover:underline">See the other books</Link>.
+          <Link href="/books" className="bs-link">See the other books</Link>.
         </p>
       </footer>
     </main>

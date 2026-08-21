@@ -64,6 +64,11 @@ export type Book = {
   wordCount: number;
   pages: number;
   access: string;
+  /** Struck-through anchor price in paise. 0 = show nothing. */
+  listPricePaise: number;
+  /** Where the list price applies, e.g. "on Amazon Kindle". */
+  priceLabel: string;
+  currency: string;
   authorName: string;
   seoTitle: string;
   seoDescription: string;

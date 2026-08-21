@@ -29,15 +29,15 @@ export default async function UnsubscribePage(
   }
 
   return (
-    <main className="mx-auto max-w-xl px-5 py-20">
-      <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+    <main className="bk-shell" style={{ paddingTop: 80, paddingBottom: 100 }}>
+      <h1 className="bk-chapter-title">
         {ok ? "Unsubscribed" : "We could not do that"}
       </h1>
-      <p className="mt-4 leading-relaxed text-slate-600">{message}</p>
+      <p className="bs-body-text bs-quiet" style={{ marginTop: 18 }}>{message}</p>
       {ok && (
-        <p className="mt-4 text-sm text-slate-500">
+        <p className="bs-small bs-quiet" style={{ marginTop: 18 }}>
           The books stay free to read either way —{" "}
-          <Link href="/books" className="underline">they are all still here</Link>.
+          <Link href="/books" className="bs-link">they are all still here</Link>.
         </p>
       )}
     </main>

@@ -36,6 +36,9 @@ export type BookBriefValues = {
   target_words: number;
   cover_emoji: string;
   access: string;
+  list_price_paise: number;
+  price_label: string;
+  currency: string;
   seo_title: string;
   seo_description: string;
   ai_disclosure: string;
@@ -60,6 +63,9 @@ export const EMPTY_BRIEF: BookBriefValues = {
   target_words: 35000,
   cover_emoji: "📘",
   access: "email",
+  list_price_paise: 0,
+  price_label: "",
+  currency: "INR",
   seo_title: "",
   seo_description: "",
   ai_disclosure: "ai-generated",
@@ -314,6 +320,51 @@ export default function BookForm({
                    onChange={(e) => set("cover_emoji", e.target.value)} />
           </Field>
         </div>
+
+        {/* ── Price anchoring ──────────────────────────────────────────
+            Entered in rupees, stored in paise. The hint is doing compliance
+            work, not decoration: a struck-through price the book was never
+            offered at is a misleading price representation under India's CCPA
+            dark-pattern guidelines and breaches Amazon's list-price policy. */}
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field
+            label="List price (₹)"
+            hint="Shown struck through beside “Free”. Leave 0 until the paid edition genuinely exists — an invented price is a misleading claim, and a checkable one converts better anyway."
+          >
+            <input
+              type="number" min={0} step={10} className={input}
+              value={v.list_price_paise ? v.list_price_paise / 100 : ""}
+              placeholder="0"
+              onChange={(e) =>
+                set("list_price_paise", Math.max(0, Math.round(Number(e.target.value) * 100) || 0))
+              }
+            />
+          </Field>
+          <Field label="Where that price applies" hint="Names the claim so a reader can check it. Blank shows the price with no context.">
+            <input className={input} value={v.price_label}
+                   onChange={(e) => set("price_label", e.target.value)}
+                   placeholder="on Amazon Kindle" />
+          </Field>
+        </div>
+
+        {v.list_price_paise > 0 && (
+          <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+            <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+              Readers will see
+            </p>
+            <p className="mt-1.5 text-slate-900">
+              <s className="text-slate-400">₹{(v.list_price_paise / 100).toLocaleString("en-IN")}</s>{" "}
+              <strong className="text-emerald-700">Free</strong>{" "}
+              {v.price_label && <span className="text-sm text-slate-500">{v.price_label}</span>}
+            </p>
+            {!v.price_label && (
+              <p className="mt-1.5 text-xs text-amber-700">
+                Add where the price applies. An unlabelled struck-through price reads as a
+                marketing trick and is harder to defend if anyone asks.
+              </p>
+            )}
+          </div>
+        )}
 
         <Field label="Access" hint="Email gate builds the list. That list is the actual asset — the book is what buys it.">
           <select className={input} value={v.access} onChange={(e) => set("access", e.target.value)}>

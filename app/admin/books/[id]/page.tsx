@@ -540,6 +540,9 @@ function toBriefValues(b: any): BookBriefValues {
     must_cover: b.mustCover ?? "", avoid: b.avoid ?? "", author_name: b.authorName ?? "",
     target_chapters: b.targetChapters || 12, target_words: b.targetWords || 35000,
     cover_emoji: b.coverEmoji ?? "", access: b.access || "email",
+    list_price_paise: b.listPricePaise ?? 0,
+    price_label: b.priceLabel ?? "",
+    currency: b.currency || "INR",
     seo_title: b.seoTitle ?? "", seo_description: b.seoDescription ?? "",
     ai_disclosure: b.aiDisclosure || "ai-generated",
   };
