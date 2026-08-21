@@ -653,3 +653,83 @@ export function TopicsFigure({
     </figure>
   );
 }
+
+/* ── /books — the shelf, in cross-section ─────────────────────────────────
+   The right-hand column of the books index. Same job as TopicsFigure: turn the
+   page's own data into the figure a newspaper would print there, rather than
+   leaving a third of the head as empty paper.
+
+   Each row is one book drawn to scale by page count — the reader learns which
+   book is the substantial one before reading a single blurb, and the total
+   underneath is the claim the whole page rests on ("N pages, free"). */
+export function ShelfFigure({
+  books,
+  totalPages,
+  totalWords,
+}: {
+  books: { title: string; pages: number; chapters: number }[];
+  totalPages: number;
+  totalWords: number;
+}) {
+  const rows = books.slice(0, 5);
+  const max = Math.max(1, ...rows.map((b) => b.pages));
+
+  return (
+    <figure className="bs-figure bs-headfig">
+      <div className="bs-headfig-box">
+        <p className="bs-eyebrow">On the shelf</p>
+
+        <ul style={{ listStyle: "none", margin: "16px 0 0", padding: 0, display: "grid", gap: 13 }}>
+          {rows.map((b) => (
+            <li key={b.title}>
+              <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12 }}>
+                <span style={{ fontSize: 15, fontWeight: 600, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {b.title}
+                </span>
+                <span className="bs-small bs-quiet" style={{ whiteSpace: "nowrap" }}>
+                  {b.pages} pp
+                </span>
+              </div>
+              {/* Drawn to scale against the longest book, on a track, so a
+                  shorter book still reads as a share of the shelf. */}
+              <div style={{ height: 6, background: "var(--hair)", marginTop: 7 }}>
+                <div style={{ height: "100%", width: `${Math.round((b.pages / max) * 100)}%`, background: "var(--spot)" }} />
+              </div>
+            </li>
+          ))}
+        </ul>
+
+        <div
+          style={{
+            display: "flex",
+            alignItems: "baseline",
+            justifyContent: "space-between",
+            gap: 16,
+            marginTop: 18,
+            paddingTop: 14,
+            borderTop: "1px solid var(--rule)",
+            fontSize: 11,
+            letterSpacing: ".12em",
+            textTransform: "uppercase",
+            color: "var(--quiet)",
+          }}
+        >
+          <span>
+            <strong style={{ color: "var(--ink)", fontSize: 15, letterSpacing: 0 }}>{totalPages}</strong> pages
+          </span>
+          <span>
+            <strong style={{ color: "var(--ink)", fontSize: 15, letterSpacing: 0 }}>
+              {Math.round(totalWords / 1000)}k
+            </strong>{" "}
+            words
+          </span>
+          <span style={{ color: "var(--spot)" }}>Free</span>
+        </div>
+      </div>
+      <figcaption className="bs-figcaption">
+        Every book drawn to scale by page count. All of it readable in the browser,
+        no signup.
+      </figcaption>
+    </figure>
+  );
+}

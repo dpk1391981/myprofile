@@ -115,3 +115,25 @@ export function gaShare(method: string, contentType: "article" | "book", itemId:
 export function gaOutbound(network: string, location: string, url: string): void {
   gaEvent("outbound_social", { network, link_location: location, link_url: url });
 }
+
+/**
+ * The book offer modal — shown, dismissed, submitted.
+ *
+ * One event name with an `action` parameter rather than three names: the three
+ * numbers are only ever read as a funnel (shown → submitted is the conversion
+ * rate, shown → dismissed is the annoyance rate), and three separate events
+ * cannot be put in one GA4 funnel report without a blended exploration.
+ *
+ * `trigger` is the part that pays for itself. It records WHAT opened the modal
+ * — scroll depth, dwell time, exit intent, the second attempt — so the timing
+ * can be tuned against real conversion instead of guessed at. Without it every
+ * open collapses into one row and the report cannot answer the only question
+ * worth asking: is the popup earning subscribers or costing readers?
+ */
+export function gaBookOffer(
+  action: "shown" | "dismissed" | "submitted",
+  slug: string,
+  trigger: string
+): void {
+  gaEvent("book_offer", { action, item_id: slug, trigger, content_type: "book" });
+}

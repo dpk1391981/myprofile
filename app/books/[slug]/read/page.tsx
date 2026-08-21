@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { repairEmphasis } from "@/components/books/chapter-html";
 import { downloadBook, type Book } from "@/components/utils/books-api";
 import ReaderChrome from "@/components/books/ReaderChrome";
 
@@ -112,7 +113,7 @@ export default async function ReadBookPage({
         {(book.prefaceHtml || book.introHtml) && (
           <section className="bk-chapter-break bk-prose" style={{ marginTop: 48 }}
                    dangerouslySetInnerHTML={{
-                     __html: (book.prefaceHtml || "") + (book.introHtml || ""),
+                     __html: repairEmphasis((book.prefaceHtml || "") + (book.introHtml || "")),
                    }} />
         )}
 
@@ -129,7 +130,7 @@ export default async function ReadBookPage({
               <h2 className="bk-chapter-open-title">{c.heading}</h2>
             </div>
             <div className="bk-prose bk-chapter-body" style={{ marginTop: 34 }}
-                 dangerouslySetInnerHTML={{ __html: c.html }} />
+                 dangerouslySetInnerHTML={{ __html: repairEmphasis(c.html) }} />
             <p className="no-print bs-small bs-quiet" style={{ marginTop: 26, textAlign: "center" }}>
               <Link href={`/books/${book.slug}/${c.ordinal}`} className="bs-link">
                 Open this chapter on its own page
@@ -141,13 +142,13 @@ export default async function ReadBookPage({
         {/* ── Back matter ───────────────────────────────────────────────── */}
         {book.conclusionHtml && (
           <section className="bk-chapter-break bk-prose" style={{ marginTop: 72 }}
-                   dangerouslySetInnerHTML={{ __html: book.conclusionHtml }} />
+                   dangerouslySetInnerHTML={{ __html: repairEmphasis(book.conclusionHtml) }} />
         )}
         {book.aboutAuthorHtml && (
           <section style={{ marginTop: 64 }}>
             <div className="bs-rail-thin" style={{ marginBottom: 24 }} />
             <p className="bs-eyebrow" style={{ marginBottom: 10 }}>About the author</p>
-            <div className="bk-prose" dangerouslySetInnerHTML={{ __html: book.aboutAuthorHtml }} />
+            <div className="bk-prose" dangerouslySetInnerHTML={{ __html: repairEmphasis(book.aboutAuthorHtml) }} />
           </section>
         )}
 

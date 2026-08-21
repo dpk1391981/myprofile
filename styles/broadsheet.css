@@ -2073,3 +2073,413 @@ button.blog-share-btn { cursor: pointer; font: inherit; padding: 0; appearance: 
 @media (max-width: 380px) {
   .bk-runninghead-title { display: none; }
 }
+
+/* ============================================================================
+   BOOKS INDEX — the shelf
+   ============================================================================
+   Scoped .bkx- (books index) so nothing here can reach the reading surface,
+   which is .bk-. The index is NOT a reading surface: it is a shop window and a
+   hub page, so it uses the full .bs-wrap shell and the broadsheet's own
+   furniture rather than the 38rem book measure. A listing set in a book column
+   is what made every card a narrow tower of text with half the page empty.
+   ========================================================================== */
+
+/* One book per row: cover left, everything else right. A grid of boxed cards
+   forces every blurb to the height of the longest one; a row lets each book be
+   exactly as long as it is, and keeps the titles on one scannable left edge. */
+.bkx-shelf { list-style: none; margin: 0; padding: 0; }
+.bkx-item + .bkx-item { border-top: 1px solid var(--hair); }
+.bkx-card {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 34px;
+  padding: 38px 0;
+  align-items: start;
+}
+
+/* The cover. Drawn, not photographed — same house rule as the head figures.
+   A 3:4 panel with a spine reads as a book at a glance, which one emoji on
+   open paper never did. */
+.bkx-cover {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 3 / 4;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-left: 5px solid var(--spot);
+  border-radius: 2px 3px 3px 2px;
+  overflow: hidden;
+  text-decoration: none;
+  transition: border-color .15s ease, transform .15s ease;
+}
+.bkx-cover:hover { border-color: var(--spot); transform: translateY(-2px); }
+/* The hinge line a bound book shows beside its spine. */
+.bkx-cover::before {
+  content: "";
+  position: absolute;
+  left: 7px; top: 0; bottom: 0;
+  width: 1px;
+  background: var(--hair);
+}
+.bkx-cover-emoji { font-size: 46px; line-height: 1; }
+.bkx-cover-tag {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: 6px 8px 7px 14px;
+  font-size: 9.5px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--quiet);
+  background: color-mix(in srgb, var(--paper) 72%, transparent);
+  border-top: 1px solid var(--hair);
+  text-align: center;
+}
+
+.bkx-title {
+  font-family: var(--serif);
+  font-size: clamp(1.3rem, 2.4vw, 1.75rem);
+  font-weight: 600;
+  line-height: 1.16;
+  letter-spacing: -.022em;
+  margin: 9px 0 0;
+  overflow-wrap: break-word;
+}
+.bkx-subtitle {
+  font-family: var(--serif);
+  font-size: 16.5px;
+  line-height: 1.45;
+  color: var(--quiet);
+  margin: 9px 0 0;
+}
+/*
+  The blurb is clamped to four lines. Unclamped, one 900-character description
+  pushed the next book below the fold and buried the shelf under a wall of
+  prose — the full text is on the book's own page, which is where it earns its
+  ranking. Clamping is display only: the whole string is still in the DOM for a
+  crawler to read.
+*/
+.bkx-desc {
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: var(--quiet);
+  margin: 13px 0 0;
+  max-width: 68ch;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* "What you'll learn" — three outcomes, the highest-value extractable lines
+   on the page for an answer engine and the fastest way for a reader to decide. */
+.bkx-outcomes { list-style: none; margin: 15px 0 0; padding: 0; display: grid; gap: 7px; }
+.bkx-outcome { display: flex; gap: 10px; font-size: 14.5px; line-height: 1.55; }
+.bkx-outcome::before {
+  content: "";
+  flex: 0 0 5px;
+  width: 5px; height: 5px;
+  margin-top: 8px;
+  border-radius: 50%;
+  background: var(--spot);
+}
+
+.bkx-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 18px;
+  margin: 17px 0 0;
+  font-size: 13px;
+  letter-spacing: .05em;
+  color: var(--quiet);
+}
+.bkx-meta strong { color: var(--ink); font-weight: 600; letter-spacing: 0; }
+
+.bkx-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 20px; }
+
+/* The chapter rail. These links are the point of the index: every one of them
+   is an indexable page of prose that is otherwise three clicks deep. */
+.bkx-chapters { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--hair); }
+.bkx-chapter-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 0; padding: 0; list-style: none; }
+.bkx-chapter {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+  max-width: 100%;
+  padding: 6px 11px;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: var(--ink);
+  text-decoration: none;
+}
+.bkx-chapter:hover { border-color: var(--spot); color: var(--spot); text-decoration: none; }
+.bkx-chapter-num { color: var(--quiet); font-variant-numeric: tabular-nums; font-size: 12px; }
+
+/* The comparison table. An answer engine quotes a table far more readily than
+   it quotes three paragraphs saying the same thing. */
+.bkx-table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 18px; }
+.bkx-table { width: 100%; border-collapse: collapse; font-size: 14.5px; min-width: 560px; }
+.bkx-table th, .bkx-table td { text-align: left; padding: 11px 16px 11px 0; border-bottom: 1px solid var(--hair); vertical-align: baseline; }
+.bkx-table thead th {
+  font-size: 11px;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--quiet);
+  font-weight: 400;
+  border-bottom: 1px solid var(--rule);
+  white-space: nowrap;
+}
+.bkx-table tbody th { font-weight: 600; font-family: var(--serif); font-size: 16px; }
+.bkx-table td { color: var(--quiet); white-space: nowrap; }
+
+/* FAQ — visible answers, not an accordion. Text hidden behind a click is text
+   an answer engine may never see, and this is the block written to be quoted. */
+.bkx-faq { margin: 0; }
+.bkx-faq-q { font-size: 17px; font-weight: 600; font-family: var(--serif); margin: 0; }
+.bkx-faq-a { font-size: 15.5px; line-height: 1.7; color: var(--quiet); margin: 7px 0 0; max-width: 74ch; }
+.bkx-faq-item + .bkx-faq-item { margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--hair); }
+
+@media (max-width: 700px) {
+  /* The cover shrinks to a fixed thumbnail and the text takes the rest — a
+     150px column beside a 40-character measure is two narrow columns, not a
+     layout. */
+  .bkx-card { grid-template-columns: 84px minmax(0, 1fr); gap: 18px; padding: 30px 0; }
+  .bkx-cover-emoji { font-size: 30px; }
+  .bkx-cover-tag { display: none; }
+  .bkx-desc { -webkit-line-clamp: 5; font-size: 15px; }
+  .bkx-chapter { font-size: 13px; padding: 5px 9px; }
+}
+
+/* ============================================================================
+   CHAPTER READING LAYOUT — the column and its rail
+   ============================================================================
+   The chapter page is a 38rem reading column, and that measure is correct: it
+   is what makes a long chapter readable. What was wrong was the page around it
+   — on a 1440px screen the column sat alone in the middle with ~450px of empty
+   paper on either side, so the page read as squeezed even though the text did
+   not.
+
+   The fix is not a wider measure. It is a rail in the space that was already
+   there: where you are in the book, where you are in the chapter, and the one
+   offer, all in view without scrolling. Below 1080px there is no spare space,
+   so the rail is removed and the column keeps the page to itself.
+   ========================================================================== */
+.bk-readgrid {
+  display: grid;
+  grid-template-columns: minmax(0, 38rem) minmax(232px, 288px);
+  justify-content: center;
+  align-items: start;
+  gap: 60px;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+/* The column keeps its own padding on a phone via .bk-shell; inside the grid
+   the grid supplies it, so the shell must not add a second gutter. */
+.bk-readgrid > .bk-readcol { min-width: 0; padding: 0; max-width: none; }
+
+.bk-rail {
+  position: sticky;
+  top: 84px;
+  /* Its own scroll, so a twenty-chapter book cannot push the rail past the
+     bottom of the window and strand the last entries. */
+  max-height: calc(100vh - 112px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-top: 2px solid var(--ink);
+  padding: 16px 4px 24px 0;
+  font-size: 14px;
+}
+.bk-rail::-webkit-scrollbar { width: 6px; }
+.bk-rail::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 3px; }
+
+.bk-rail-book { display: flex; align-items: flex-start; gap: 11px; }
+.bk-rail-emoji {
+  flex: 0 0 auto;
+  font-size: 20px;
+  line-height: 1;
+  padding: 7px 8px;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--spot);
+  border-radius: 2px;
+}
+.bk-rail-title {
+  font-family: var(--serif);
+  font-size: 15.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 0;
+}
+.bk-rail-sub { font-size: 12px; color: var(--quiet); margin: 4px 0 0; }
+
+.bk-rail-group { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--hair); }
+.bk-rail-list { list-style: none; margin: 9px 0 0; padding: 0; }
+.bk-rail-list li { margin: 0; }
+.bk-rail-link {
+  display: block;
+  padding: 5px 0 5px 12px;
+  border-left: 2px solid transparent;
+  color: var(--quiet);
+  font-size: 13.5px;
+  line-height: 1.45;
+  text-decoration: none;
+}
+.bk-rail-link:hover { color: var(--spot); border-left-color: var(--rule); text-decoration: none; }
+.bk-rail-link--sub { padding-left: 24px; font-size: 13px; }
+.bk-rail-link--current { color: var(--ink); font-weight: 600; border-left-color: var(--spot); }
+.bk-rail-num { color: var(--quiet); font-variant-numeric: tabular-nums; margin-right: 7px; font-size: 12px; }
+
+.bk-rail-cta {
+  margin-top: 22px;
+  padding: 15px 16px;
+  background: var(--spot-tint);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+}
+.bk-rail-cta p { margin: 0; }
+
+/* Below the rail's breakpoint the column is the page again, and the in-flow
+   contents box takes back the job the rail was doing. */
+@media (max-width: 1080px) {
+  .bk-readgrid { grid-template-columns: minmax(0, 1fr); max-width: 38rem; gap: 0; }
+  .bk-rail { display: none; }
+}
+@media (min-width: 1081px) {
+  /* Two copies of the same list, one of them always in view, is furniture.
+     The rail wins on desktop; the in-flow box wins everywhere else. */
+  .bk-inline-toc { display: none; }
+}
+@media (max-width: 640px) {
+  .bk-readgrid { padding: 0 20px; }
+}
+@media print {
+  .bk-readgrid { display: block; max-width: none; padding: 0; }
+  .bk-rail { display: none; }
+}
+
+/* ============================================================================
+   BOOK OFFER MODAL
+   ============================================================================
+   Paper on a dimmed page, not a card floating in space — same tokens, same
+   serif, same spot rule at the top edge as the rest of the site's furniture.
+   On a phone it lands as a bottom sheet, because a centred dialog on a 640px
+   viewport puts the primary button under the thumb's blind spot.
+   ========================================================================== */
+.bkm-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  /* A plain rgba scrim, not a token mix. The dim behind a dialog is not part
+     of the palette — it has to be the same on both grounds, and it must not
+     depend on color-mix support, which is the one property in this stylesheet
+     whose absence would leave the page UNDIMMED rather than slightly off. */
+  background: rgba(12, 11, 10, .62);
+  animation: bkm-fade .16s ease-out;
+}
+.bkm-panel {
+  position: relative;
+  width: min(560px, 100%);
+  max-height: min(88vh, 780px);
+  overflow-y: auto;
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  border-top: 4px solid var(--spot);
+  border-radius: 3px;
+  padding: 30px 32px 26px;
+  box-shadow: 0 26px 70px rgba(0, 0, 0, .32);
+  animation: bkm-rise .2s ease-out;
+}
+.bkm-panel:focus { outline: none; }
+
+.bkm-close {
+  position: absolute;
+  top: 12px; right: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px; height: 34px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--quiet);
+  cursor: pointer;
+}
+.bkm-close:hover { color: var(--ink); border-color: var(--rule); }
+
+.bkm-title {
+  font-family: var(--serif);
+  font-size: clamp(22px, 4.4vw, 28px);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -.022em;
+  margin: 10px 0 0;
+}
+.bkm-sub { font-size: 15.5px; line-height: 1.6; color: var(--quiet); margin: 11px 0 0; }
+
+.bkm-list { list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 9px; }
+.bkm-list li { display: flex; gap: 10px; font-size: 14.5px; line-height: 1.5; }
+.bkm-list svg { color: var(--spot); flex: 0 0 auto; margin-top: 3px; }
+
+.bkm-form { display: grid; gap: 11px; margin-top: 20px; }
+.bkm-input {
+  width: 100%;
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+}
+.bkm-input:focus { outline: 2px solid var(--spot); outline-offset: 1px; border-color: var(--spot); }
+
+.bkm-fine { font-size: 12.5px; line-height: 1.55; color: var(--quiet); margin: 12px 0 0; }
+.bkm-decline {
+  display: block;
+  width: 100%;
+  margin-top: 14px;
+  padding: 6px;
+  background: none;
+  border: 0;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--quiet);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.bkm-decline:hover { color: var(--ink); }
+
+@keyframes bkm-fade { from { opacity: 0 } to { opacity: 1 } }
+@keyframes bkm-rise { from { opacity: 0; transform: translateY(14px) } to { opacity: 1; transform: none } }
+
+@media (max-width: 560px) {
+  /* Bottom sheet: it arrives from the edge the thumb is already at, and the
+     submit button sits inside reach rather than halfway up the screen. */
+  .bkm-backdrop { align-items: flex-end; padding: 0; }
+  .bkm-panel {
+    width: 100%;
+    max-height: 92vh;
+    border-radius: 4px 4px 0 0;
+    padding: 26px 22px 24px;
+    animation: bkm-sheet .22s ease-out;
+  }
+  .bkm-title { font-size: 22px; }
+}
+@keyframes bkm-sheet { from { transform: translateY(100%) } to { transform: none } }
+
+/* Motion is decoration here; the dialog must still appear instantly for anyone
+   who has asked the system for less of it. */
+@media (prefers-reduced-motion: reduce) {
+  .bkm-backdrop, .bkm-panel { animation: none; }
+}

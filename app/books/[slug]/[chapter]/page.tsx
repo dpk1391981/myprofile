@@ -9,6 +9,7 @@ import { prepareChapter } from "@/components/books/chapter-html";
 import ReadingProgress from "@/components/books/ReadingProgress";
 import ChapterTracker from "@/components/books/ChapterTracker";
 import PriceTag from "@/components/books/PriceTag";
+import BookOfferModal, { BookOfferButton } from "@/components/books/BookOfferModal";
 
 /**
  * One chapter, one URL — the page that does the ranking.
@@ -90,9 +91,19 @@ export default async function ChapterPage(
   // Heading ids + the visible ¶ affordance, so every section inside a chapter
   // is directly linkable and the contents rail below has somewhere to point.
   const { html, headings } = prepareChapter(chapter.html);
+  const sections = headings.filter((h) => h.level === 2);
 
   return (
-    <main className="bk-shell" style={{ paddingTop: 44, paddingBottom: 80 }}>
+    /*
+      The column and its rail. The reading measure is unchanged — 38rem is what
+      makes a 4,000-word chapter readable — but the page around it no longer
+      leaves ~450px of empty paper on either side of it on a desktop: the rail
+      puts the book's contents, the chapter's own sections and the one offer in
+      that space. Below 1080px the rail is removed and the column has the page
+      to itself, exactly as before. See .bk-readgrid in broadsheet.css.
+    */
+    <div className="bk-readgrid" style={{ paddingTop: 44, paddingBottom: 80 }}>
+      <main className="bk-shell bk-readcol">
       <ReadingProgress />
       <ChapterTracker
         slug={book.slug}
@@ -139,7 +150,7 @@ export default async function ChapterPage(
           Only when there is enough structure for it to help. A rail listing two
           headings is furniture, not navigation. */}
       {headings.length >= 3 && (
-        <nav aria-label="In this chapter"
+        <nav aria-label="In this chapter" className="bk-inline-toc"
              style={{ marginBottom: 40, padding: "18px 20px", background: "var(--surface)", borderRadius: 2 }}>
           <p className="bs-eyebrow" style={{ marginBottom: 10 }}>In this chapter</p>
           <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
@@ -217,6 +228,85 @@ export default async function ChapterPage(
           ))}
         </ol>
       </section>
-    </main>
+      </main>
+
+      {/* ── The rail ─────────────────────────────────────────────────────
+          Desktop only, and everything in it is already on the page below —
+          it is a second, always-visible route to the same links rather than
+          content that exists nowhere else, so nothing is lost when it is not
+          drawn. */}
+      <aside className="bk-rail" aria-label={`${book.title} — contents`}>
+        <div className="bk-rail-book">
+          <span className="bk-rail-emoji" aria-hidden="true">{book.coverEmoji || "📘"}</span>
+          <div style={{ minWidth: 0 }}>
+            <p className="bk-rail-title">
+              <Link href={`/books/${book.slug}`} className="bs-link-plain">{book.title}</Link>
+            </p>
+            <p className="bk-rail-sub">
+              Chapter {chapter.ordinal} of {toc.length} · {book.pages} pages · free
+            </p>
+          </div>
+        </div>
+
+        {/* Top-level sections only. A chapter like this one has ~28 headings
+            once the h3s are counted, and a rail that long buries the chapter
+            list and the offer under a scroll of its own. The full outline,
+            sub-headings included, is still in the in-flow box for the widths
+            where that box is the one being shown. */}
+        {sections.length >= 2 && (
+          <nav className="bk-rail-group" aria-label="Sections in this chapter">
+            <p className="bs-eyebrow">In this chapter</p>
+            <ul className="bk-rail-list">
+              {sections.map((h) => (
+                <li key={h.id}>
+                  <a href={`#${h.id}`} className="bk-rail-link">{h.text}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
+
+        <nav className="bk-rail-group" aria-label="All chapters">
+          <p className="bs-eyebrow">All {toc.length} chapters</p>
+          <ul className="bk-rail-list">
+            {toc.map((c) => (
+              <li key={c.ordinal}>
+                <Link
+                  href={`/books/${book.slug}/${c.ordinal}`}
+                  aria-current={c.ordinal === chapter.ordinal ? "page" : undefined}
+                  className={`bk-rail-link${c.ordinal === chapter.ordinal ? " bk-rail-link--current" : ""}`}
+                >
+                  <span className="bk-rail-num">{String(c.ordinal).padStart(2, "0")}</span>
+                  {c.heading}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        {/* The offer, always in view but never in the way — the same dialog the
+            modal opens, asked for rather than sprung. */}
+        <div className="bk-rail-cta">
+          <p className="bs-eyebrow">Printable copy</p>
+          <p className="bs-small" style={{ margin: "7px 0 0", lineHeight: 1.5 }}>
+            Keep all {book.pages} pages as one file. Free — one confirmed email.
+          </p>
+          <div style={{ marginTop: 12 }}>
+            <BookOfferButton>Get the copy</BookOfferButton>
+          </div>
+        </div>
+      </aside>
+
+      {/* The offer dialog itself. Never on arrival — it waits for the reader to
+          scroll, dwell or leave, which keeps it clear of Google's intrusive-
+          interstitial rule on the pages that do the site's ranking. See the
+          component for the full timing argument. */}
+      <BookOfferModal
+        slug={book.slug}
+        bookTitle={book.title}
+        pages={book.pages}
+        chapters={toc.length || book.chapters}
+      />
+    </div>
   );
 }

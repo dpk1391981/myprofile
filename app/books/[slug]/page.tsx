@@ -5,12 +5,14 @@ import { getBook, listBooks } from "@/components/utils/books-api";
 import { pageMeta, breadcrumbLd, faqLd } from "@/components/utils/seo";
 import { SITE_URL } from "@/components/utils/site-data";
 import EmailGate from "@/components/books/EmailGate";
+import BookOfferModal from "@/components/books/BookOfferModal";
 import PriceTag from "@/components/books/PriceTag";
 import ShareRow from "@/components/shared/ShareRow";
 import ViewTracker from "@/components/shared/ViewTracker";
 import ViewCountText from "@/components/shared/ViewCountText";
 import { belowFloorClass } from "@/components/utils/engagement-config";
 import { bookLd, bookFaq } from "@/components/books/book-seo";
+import { repairEmphasis } from "@/components/books/chapter-html";
 
 /**
  * The book landing page — the one that has to rank.
@@ -275,7 +277,9 @@ export default async function BookPage({ params }: { params: { slug: string } })
           </h2>
           <div
             className="bk-prose" style={{ marginTop: 20 }}
-            dangerouslySetInnerHTML={{ __html: (book.prefaceHtml || "") + (book.introHtml || "") }}
+            dangerouslySetInnerHTML={{
+              __html: repairEmphasis((book.prefaceHtml || "") + (book.introHtml || "")),
+            }}
           />
         </section>
       )}
@@ -321,6 +325,19 @@ export default async function BookPage({ params }: { params: { slug: string } })
           ))}
         </dl>
       </section>
+
+      {/* The printable-copy offer, on a delay.
+          The page already carries the same ask twice — the "Read it now" block
+          and the EmailGate below it — but both are things the reader has to go
+          looking for. This one comes to them, after they have scrolled or
+          dwelled, and never before. Someone who has already confirmed an
+          address never sees it; see the component for the timing rules. */}
+      <BookOfferModal
+        slug={book.slug}
+        bookTitle={book.title}
+        pages={book.pages}
+        chapters={toc.length || book.chapters}
+      />
 
       <footer style={{ marginTop: 56, paddingTop: 26, borderTop: "1px solid var(--hair)" }}>
         <p className="bs-small bs-quiet">
