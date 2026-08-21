@@ -13,9 +13,8 @@
  * displaying — see components/books/ChapterTracker.
  */
 
-import { IconEye } from "@tabler/icons-react";
 import { useEngagement, type ContentType } from "@/components/utils/useEngagement";
-import { MIN_PUBLIC_VIEWS } from "@/components/utils/engagement-config";
+import ViewCountText from "@/components/shared/ViewCountText";
 
 type Props = {
   contentType: ContentType;
@@ -27,7 +26,8 @@ type Props = {
   dimensions?: Record<string, string | number>;
   /** Extra beacon body fields. */
   extra?: Record<string, unknown>;
-  minViews?: number;
+  /** "views" on articles, "readers" on books — a book is not a web page. */
+  label?: string;
   /** Emit a leading "·" so the counter drops into an existing meta line. */
   withSeparator?: boolean;
   className?: string;
@@ -35,7 +35,7 @@ type Props = {
 
 export default function ViewCounter({
   contentType, itemId, endpoint, initialViews = 0,
-  dimensions, extra, minViews = MIN_PUBLIC_VIEWS,
+  dimensions, extra, label,
   withSeparator = false, className = "",
 }: Props) {
   const { views } = useEngagement({
@@ -48,20 +48,15 @@ export default function ViewCounter({
     initialViews,
   });
 
-  if (views < minViews) return null;
-
-  const formatted = views.toLocaleString("en-IN");
-
+  // Always rendered — ViewCountText applies the floor as a CSS class rather
+  // than by returning null, so `?view_show=true` can reveal a sub-floor count
+  // without this component (or the page around it) re-rendering.
   return (
-    <>
-      {withSeparator && <span className="sep" aria-hidden="true">·</span>}
-      <span
-        className={`blog-viewcount ${className}`.trim()}
-        title={`${formatted} unique readers`}
-      >
-        <IconEye size={14} aria-hidden="true" />
-        {formatted} views
-      </span>
-    </>
+    <ViewCountText
+      views={views}
+      label={label}
+      withSeparator={withSeparator}
+      className={className}
+    />
   );
 }

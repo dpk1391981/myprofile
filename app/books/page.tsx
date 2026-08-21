@@ -4,7 +4,7 @@ import { listBooks } from "@/components/utils/books-api";
 import { pageMeta, breadcrumbLd } from "@/components/utils/seo";
 import PriceTag from "@/components/books/PriceTag";
 import { SITE_URL } from "@/components/utils/site-data";
-import { MIN_PUBLIC_VIEWS } from "@/components/utils/engagement-config";
+import ViewCountText from "@/components/shared/ViewCountText";
 
 /**
  * The books index.
@@ -117,9 +117,7 @@ export default async function BooksIndex() {
                       <span>{b.pages} pages</span>
                       {b.level && <span style={{ textTransform: "capitalize" }}>{b.level}</span>}
                       {/* Same floor the book page and the blog use. */}
-                      {(b.views ?? 0) >= MIN_PUBLIC_VIEWS && (
-                        <span>{(b.views ?? 0).toLocaleString("en-IN")} readers</span>
-                      )}
+                      <ViewCountText views={b.views ?? 0} label="readers" withIcon={false} />
                       <PriceTag listPricePaise={b.listPricePaise} priceLabel={b.priceLabel}
                         currency={b.currency} size="sm" />
                     </p>

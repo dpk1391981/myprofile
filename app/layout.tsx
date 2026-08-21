@@ -6,6 +6,7 @@ import { Footer, Nav } from "@/components";
 import SiteChrome from "@/components/SiteChrome";
 import { Analytics } from "@vercel/analytics/react";
 import GoogleAnalytics from "@/components/Analytics";
+import ViewPreviewFlag from "@/components/shared/ViewPreviewFlag";
 import Script from "next/script";
 import { NEXT_SEO_DEFAULT, STRUCT_DATA } from "@/app/seo_config";
 import ThemeScript from "@/components/bs/ThemeScript";
@@ -84,6 +85,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
         </SiteChrome>
         <Analytics />
+        {/* Reads ?view_show=true and stamps the root element, revealing view
+            counts that sit below the public floor. Ships no markup; see
+            components/utils/engagement-config.ts for why this is a CSS gate
+            rather than a server-side check. */}
+        <ViewPreviewFlag />
         {/* GA4, public routes only — the admin panel is the site owner's own
             sessions, not traffic. See components/Analytics.tsx. */}
         <GoogleAnalytics />

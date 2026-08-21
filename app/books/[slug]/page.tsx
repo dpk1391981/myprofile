@@ -8,7 +8,8 @@ import EmailGate from "@/components/books/EmailGate";
 import PriceTag from "@/components/books/PriceTag";
 import ShareRow from "@/components/shared/ShareRow";
 import ViewTracker from "@/components/shared/ViewTracker";
-import { MIN_PUBLIC_VIEWS } from "@/components/utils/engagement-config";
+import ViewCountText from "@/components/shared/ViewCountText";
+import { belowFloorClass } from "@/components/utils/engagement-config";
 import { bookLd, bookFaq } from "@/components/books/book-seo";
 
 /**
@@ -144,16 +145,17 @@ export default async function BookPage({ params }: { params: { slug: string } })
                         currency={book.currency} size="sm" />
             </dd>
           </div>
-          {/* Shown only past the floor — see MIN_PUBLIC_VIEWS. The <div> is
-              conditional rather than the contents, because an empty flex item
-              in this row still collects the 24px gap either side of it.
-              Measurement is unconditional and lives in ViewTracker below. */}
-          {(book.views ?? 0) >= MIN_PUBLIC_VIEWS && (
-            <div>
-              <dt className="sr-only">Readers</dt>
-              <dd>{(book.views ?? 0).toLocaleString("en-IN")} readers</dd>
-            </div>
-          )}
+          {/* The hiding class goes on the flex ITEM, not on the count inside
+              it: an empty item still collects the 24px gap either side, so the
+              row would keep a hole where the count is not shown. `noHide` stops
+              ViewCountText adding a second, redundant one. Measurement is
+              unconditional and lives in ViewTracker below. */}
+          <div className={belowFloorClass(book.views ?? 0)}>
+            <dt className="sr-only">Readers</dt>
+            <dd>
+              <ViewCountText views={book.views ?? 0} label="readers" withIcon={false} noHide />
+            </dd>
+          </div>
         </dl>
 
         <ViewTracker

@@ -11,7 +11,7 @@ import Link from "next/link";
 import { BLOG_POSTS, PERSONAL_INFO } from "@/components/utils/portfolio-data";
 import { IconArrowRight, IconRss } from "@tabler/icons-react";
 import { listAllPosts, getSeoConfig } from "@/components/utils/portfolio-api";
-import { MIN_PUBLIC_VIEWS } from "@/components/utils/engagement-config";
+import ViewCountText from "@/components/shared/ViewCountText";
 import AdSlot from "@/components/blog/AdSlot";
 import { TopicsFigure } from "@/components/bs/HeadFigure";
 import { POSTS_PER_PAGE, pageCount, indexPath } from "@/components/utils/blog-pagination";
@@ -518,8 +518,8 @@ export default async function BlogIndexView(
               <p className="bs-eyebrow bs-mt-3">
                 <time dateTime={lead.publishedAt || lead.date}>
                   {formatDateTime(lead.publishedAt || lead.date)}
-                </time> · {lead.readTime}
-                {lead.views >= MIN_PUBLIC_VIEWS && ` · ${lead.views.toLocaleString("en-IN")} views`}
+                </time> · {lead.readTime}{" "}
+                <ViewCountText views={lead.views} withSeparator withIcon={false} />
               </p>
             </div>
             <div>
@@ -584,12 +584,10 @@ export default async function BlogIndexView(
                     )}
                     <span>{post.readTime}</span>
                     {post.category ? <span>{post.category}</span> : null}
-                    {/* Same floor as the article page — see MIN_PUBLIC_VIEWS.
-                        A post that advertises its count in the list and hides
-                        it on its own page reads as a bug. */}
-                    {post.views >= MIN_PUBLIC_VIEWS && (
-                      <span>{post.views.toLocaleString("en-IN")} views</span>
-                    )}
+                    {/* Same floor as the article page — a post that advertises
+                        its count in the list and hides it on its own page reads
+                        as a bug. ViewCountText owns that rule. */}
+                    <ViewCountText views={post.views} withIcon={false} />
                   </div>
                 </article>
               </div>

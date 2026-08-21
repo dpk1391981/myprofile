@@ -1743,3 +1743,21 @@ button.blog-share-btn { cursor: pointer; font: inherit; padding: 0; appearance: 
    evenly rather than huddling at the left edge. */
 .blog-share-row--sidebar { margin-top: 12px; gap: 8px; }
 .blog-share-row--sidebar .blog-share-btn { flex: 1; width: auto; height: 36px; }
+
+/* ---------- sub-floor view counts ----------
+   Counts below MIN_PUBLIC_VIEWS are rendered but hidden, so ?view_show=true can
+   reveal them by stamping the root element — no re-render, and the article and
+   book pages keep their static/ISR rendering. See engagement-config.ts.
+
+   `display: none` rather than visibility/opacity: these sit inside flex meta
+   rows, and anything that leaves the box in flow also leaves its gap behind. */
+.vc-sub { display: none; }
+[data-view-preview="1"] .vc-sub { display: inline-flex; }
+
+/* The preview needs to read as a preview. Without this it is impossible to tell
+   a real 1,200 from a below-floor 4 that only you can see. */
+[data-view-preview="1"] .blog-viewcount {
+  outline: 1px dashed var(--spot);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
