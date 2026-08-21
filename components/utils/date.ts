@@ -66,3 +66,72 @@ export function careerYears(): string {
   const decimal = parseFloat(totalExperianceYears());
   return `${Math.floor(decimal) || 9}+`;
 }
+
+/* ── Publication dates ───────────────────────────────────────────────────────
+ *
+ * The blog publishes on IST and every date it shows is meant as an IST date.
+ * Two things get that wrong on their own:
+ *
+ *   1. A bare "2026-08-21" is parsed by `new Date()` as UTC midnight, so a
+ *      reader west of UTC sees the day before. A US visitor read every post as
+ *      a day older than it is.
+ *   2. A timestamp with no offset — "2026-08-21T11:04:00", which is the shape
+ *      the agent API used to return — is parsed as the *viewer's* local time,
+ *      so the same row rendered differently depending on who was looking.
+ *
+ * istStamp() forces both shapes onto +05:30; the formatters then render in
+ * Asia/Kolkata so the output is the same everywhere. The API now sends the
+ * offset itself (api/portfolio_routes.py `_iso`), and an input that already
+ * carries one is passed through untouched — this stays for the static
+ * fallback posts, which are bare dates, and so a future API regression
+ * degrades to "still correct" rather than "silently 5h30m off".
+ */
+const IST_OFFSET = "+05:30";
+
+export function istStamp(value: string): string {
+  if (!value) return "";
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return `${value}T00:00:00${IST_OFFSET}`;
+
+  // Microseconds are valid but noisy, and no consumer reads past seconds.
+  const trimmed = value.replace(/\.\d+/, "");
+  return /(Z|[+-]\d{2}:?\d{2})$/.test(trimmed) ? trimmed : `${trimmed}${IST_OFFSET}`;
+}
+
+/** "2026-08-21T11:04:00+05:30" → "Aug 21, 2026", always as the IST day. */
+export function formatISTDate(value: string): string {
+  const d = new Date(istStamp(value));
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("en-US", {
+    month: "short", day: "numeric", year: "numeric", timeZone: "Asia/Kolkata",
+  });
+}
+
+/** "2026-08-21T11:04:00+05:30" → "11:04 am IST". */
+export function formatISTTime(value: string): string {
+  const d = new Date(istStamp(value));
+  if (Number.isNaN(d.getTime())) return "";
+  return `${d.toLocaleTimeString("en-IN", {
+    hour: "2-digit", minute: "2-digit", timeZone: "Asia/Kolkata",
+  })} IST`;
+}
+
+/**
+ * "2026-08-21T11:04:00+05:30" → "Aug 21, 2026 · 11:04 am IST".
+ *
+ * Falls back to the date alone when the value carries no time of day. That
+ * case is real and must not be papered over: the `date` column is a bare DATE
+ * and the hand-written fallback posts in portfolio-data have never had a
+ * timestamp, so formatting them as a datetime would invent a publication
+ * minute — and "12:00 am IST" on every older essay reads as a real claim.
+ * Pass `publishedAt` when you want the time; it is the only field that has one.
+ */
+export function formatISTDateTime(value: string): string {
+  const date = formatISTDate(value);
+  if (!date || !hasTimeOfDay(value)) return date;
+  return `${date} · ${formatISTTime(value)}`;
+}
+
+/** Whether a value is a full timestamp rather than a bare "2026-08-21". */
+export function hasTimeOfDay(value: string): boolean {
+  return Boolean(value) && /\d{2}:\d{2}/.test(value);
+}

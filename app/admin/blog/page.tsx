@@ -12,6 +12,7 @@ import {
   IconInbox,
 } from "@tabler/icons-react";
 import PageHeader from "@/components/admin/PageHeader";
+import { istStamp, formatISTDate, formatISTTime } from "@/components/utils/date";
 
 interface Blog {
   id: string;
@@ -42,14 +43,19 @@ type LiveState = "live" | "scheduled" | "draft";
 function liveState(b: Blog): LiveState {
   if (b.status !== "published") return "draft";
   if (!b.publishedAt) return "scheduled";
-  return new Date(b.publishedAt).getTime() <= Date.now() ? "live" : "scheduled";
+  // istStamp() before comparing: `publishedAt` is an IST instant, and parsing
+  // it without its offset compared the release time against the wrong clock —
+  // a post scheduled minutes out read as "live" hours early.
+  return new Date(istStamp(b.publishedAt)).getTime() <= Date.now() ? "live" : "scheduled";
 }
 
 function goLiveLabel(iso?: string | null) {
   if (!iso) return "waiting for a release time";
-  const at = new Date(iso);
+  const at = new Date(istStamp(iso));
   const mins = Math.max(1, Math.round((at.getTime() - Date.now()) / 60000));
-  return `goes live in ~${mins} min (${at.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })})`;
+  // Spelled out as IST rather than left to the browser's zone: this is the
+  // clock the generator schedules on, so it is the clock to publish against.
+  return `goes live in ~${mins} min (${formatISTTime(iso)})`;
 }
 
 export default function AdminBlogList() {
@@ -255,7 +261,7 @@ export default function AdminBlogList() {
                       </span>
                     </td>
                     <td className="hidden px-4 py-3.5 text-xs text-slate-500 lg:table-cell">
-                      {blog.date || new Date(blog.createdAt).toLocaleDateString()}
+                      {formatISTDate(blog.date || blog.createdAt)}
                     </td>
                     <td className="px-4 py-3.5">
                       <StatusButton blog={blog} />
@@ -310,7 +316,7 @@ export default function AdminBlogList() {
                         <span className="rounded bg-slate-100 px-1.5 py-0.5 font-medium text-slate-600">
                           {blog.category}
                         </span>
-                        <span>{blog.date || new Date(blog.createdAt).toLocaleDateString()}</span>
+                        <span>{formatISTDate(blog.date || blog.createdAt)}</span>
                         {blog.featured && (
                           <span className="inline-flex items-center gap-0.5 text-amber-500">
                             <IconStarFilled size={11} /> Featured

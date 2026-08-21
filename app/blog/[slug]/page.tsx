@@ -10,6 +10,7 @@ import { getPost as apiGetPost, getSeoConfig } from "@/components/utils/portfoli
 import AdSlot from "@/components/blog/AdSlot";
 import ReadingProgress from "@/components/blog/ReadingProgress";
 import { withHeadingAnchors, countWords, type Heading } from "@/components/utils/article-html";
+import { istStamp, formatISTDate, formatISTDateTime } from "@/components/utils/date";
 
 /**
  * RENDERING STRATEGY. This was `force-dynamic`, which re-fetched the agent
@@ -79,6 +80,9 @@ async function getPost(slug: string) {
       title:          p.title,
       description:    p.description,
       date:           (p.date || p.publishedAt || "").slice(0, 10),
+      // The bare day above drives sorting and the JSON-LD; this is the field
+      // that knows the time of day. Empty for the hand-written fallback posts.
+      publishedAt:    p.publishedAt || "",
       updatedAt:      p.updatedAt || p.publishedAt || p.date || "",
       readTime:       p.readTime,
       tags:           p.tags ?? [],
@@ -105,7 +109,7 @@ async function getPost(slug: string) {
   }
   const sp = getBlogPost(slug);
   if (!sp) return null;
-  return { ...sp, _fromDb: false, category: "", updatedAt: sp.date,
+  return { ...sp, _fromDb: false, category: "", publishedAt: "", updatedAt: sp.date,
     seoTitle: "", seoDescription: "", focusKeyword: "",
     seoKeywords: [] as string[], ogImage: "", canonicalUrl: "", robots: "index, follow", noIndex: false,
     sourceUrl: "", sourceTitle: "", schemaJsonLd: null,
@@ -178,11 +182,15 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       title:         post.seoTitle || post.title,
       description,
       type:          "article",
-      publishedTime: isoStamp(post.date),
+      // `publishedAt` before `date`: the byline now renders the time of day, and
+      // Google's guidance is that the visible date and the machine-readable one
+      // agree. `date` is a bare day, so using it here would publish a midnight
+      // that contradicts the "11:04 am IST" a reader can see.
+      publishedTime: isoStamp(post.publishedAt || post.date),
       // og:article:modified_time is an ISO 8601 *timestamp*. The static
       // fallback posts carry a bare "YYYY-MM-DD", which several validators
       // reject outright and Google reads inconsistently.
-      modifiedTime:  isoStamp(post.updatedAt || post.date),
+      modifiedTime:  isoStamp(post.updatedAt || post.publishedAt || post.date),
       authors:       [PERSONAL_INFO.fullName],
       tags:          [...post.tags, ...(post.seoKeywords || [])],
       url:           canonical,
@@ -248,9 +256,19 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
     wordCount >= MID_AD_MIN_WORDS ? splitAtSectionBoundary(bodyHtml) : [bodyHtml, ""];
   const hasMidAd = Boolean(contentSecond);
 
-  const publishedLabel = formatDate(post.date);
-  const updatedLabel   = post.updatedAt ? formatDate(post.updatedAt.slice(0, 10)) : "";
-  const wasUpdated     = Boolean(updatedLabel) && updatedLabel !== publishedLabel;
+  // `publishedAt` when the post has one, so the byline carries the time of day;
+  // `date` alone for the hand-written fallback posts, which never had one.
+  const publishedAt    = post.publishedAt || post.date;
+  const publishedLabel = formatISTDateTime(publishedAt);
+  const updatedLabel   = post.updatedAt ? formatISTDateTime(post.updatedAt) : "";
+
+  // Only claim an update when the article was genuinely touched AFTER it went
+  // live. Comparing the two labels is not enough now that they carry minutes:
+  // a generated post is INSERTed (which sets updated_at) 4-25 minutes before
+  // its scheduled published_at, so every fresh article would otherwise announce
+  // an "update" timestamped before its own publication. The old code was
+  // accidentally safe here only because it compared dates truncated to the day.
+  const wasUpdated = Boolean(updatedLabel) && minutesBetween(publishedAt, post.updatedAt) >= 1;
 
   // ── Structured data ───────────────────────────────────────────────
   // TechArticle + BreadcrumbList as before, plus two additions:
@@ -276,8 +294,8 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         name:         post.seoTitle || post.title,
         description:  post.seoDescription || post.description,
         url:          postUrl,
-        datePublished: isoStamp(post.date),
-        dateModified:  isoStamp(post.updatedAt || post.date),
+        datePublished: isoStamp(publishedAt),
+        dateModified:  isoStamp(post.updatedAt || publishedAt),
         // One Person, referenced by a stable @id, so this article's author
         // resolves to the same entity the site-wide Person schema in
         // app/seo_config.ts already describes rather than looking like a
@@ -419,7 +437,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                 {post.category && <span className="blog-category">{post.category}</span>}
                 {post.category && <span className="blog-kicker-sep" aria-hidden="true">/</span>}
                 <span className="bs-eyebrow">
-                  <time dateTime={post.date}>{publishedLabel}</time>
+                  <time dateTime={isoStamp(publishedAt)}>{publishedLabel}</time>
                 </span>
               </div>
 
@@ -462,7 +480,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                       {wasUpdated && (
                         <>
                           <span className="sep" aria-hidden="true">·</span>
-                          <span>Updated <time dateTime={post.updatedAt}>{updatedLabel}</time></span>
+                          <span>Updated <time dateTime={isoStamp(post.updatedAt)}>{updatedLabel}</time></span>
                         </>
                       )}
                     </p>
@@ -786,35 +804,37 @@ function TocList({ headings }: { headings: Heading[] }) {
 }
 
 /**
- * A date-or-timestamp string as a full, offset-qualified ISO 8601 timestamp.
+ * A date-or-timestamp string as a full, offset-qualified ISO 8601 timestamp,
+ * for `datePublished`, `dateModified` and the OpenGraph article tags.
  *
- * Three shapes arrive here and all three end up in `datePublished`,
- * `dateModified` and the OpenGraph article tags:
+ * Three shapes arrive here:
  *
  *   "2026-03-01"                  the static fallback posts — a bare date
- *   "2026-08-18T18:30:33.240095"  MySQL via the agent service — no offset
- *   "2026-08-18T18:30:33+05:30"   already complete
+ *   "2026-08-18T18:30:33+05:30"   MySQL via the agent service
+ *   "2026-08-18T18:30:33.240095"  the same, before the API sent its offset
  *
- * The first two are ambiguous to a consumer: a timestamp with no offset is
- * read as UTC by some validators and as local time by others, which is how a
- * post published this evening ends up dated tomorrow. Everything is normalised
- * to IST, the timezone the site actually publishes in.
+ * The last one is the reason this exists. A timestamp with no offset is read
+ * as UTC by some validators and as local time by others, which is how a post
+ * published this evening ends up dated tomorrow. The API now qualifies its own
+ * timestamps (api/portfolio_routes.py `_iso`), so in practice only the bare
+ * fallback dates still need normalising — but an unqualified value must never
+ * reach a consumer, so the rule stays enforced here too.
+ *
+ * The rule itself lives in components/utils/date.ts, so these structured-data
+ * stamps and the human-readable dates on the index cannot drift apart the way
+ * two private copies of it would.
  */
-const IST = "+05:30";
+const isoStamp = istStamp;
 
-function isoStamp(value: string): string {
-  if (!value) return "";
-  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return `${value}T00:00:00${IST}`;
-
-  // Microseconds are valid but noisy, and no consumer reads past seconds.
-  const trimmed = value.replace(/\.\d+/, "");
-  const hasOffset = /(Z|[+-]\d{2}:?\d{2})$/.test(trimmed);
-  return hasOffset ? trimmed : `${trimmed}${IST}`;
+// Same IST day for every reader — see components/utils/date.ts.
+function formatDate(dateStr: string): string {
+  return formatISTDate(dateStr);
 }
 
-function formatDate(dateStr: string): string {
-  if (!dateStr) return "";
-  const d = new Date(dateStr);
-  if (Number.isNaN(d.getTime())) return "";
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+/** Whole minutes from `from` to `to`; 0 when either side is unusable. */
+function minutesBetween(from: string, to: string): number {
+  const a = new Date(isoStamp(from)).getTime();
+  const b = new Date(isoStamp(to)).getTime();
+  if (Number.isNaN(a) || Number.isNaN(b)) return 0;
+  return Math.floor((b - a) / 60000);
 }

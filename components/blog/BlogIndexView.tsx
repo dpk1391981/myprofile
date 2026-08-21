@@ -14,6 +14,7 @@ import { listAllPosts, getSeoConfig } from "@/components/utils/portfolio-api";
 import AdSlot from "@/components/blog/AdSlot";
 import { TopicsFigure } from "@/components/bs/HeadFigure";
 import { POSTS_PER_PAGE, pageCount, indexPath } from "@/components/utils/blog-pagination";
+import { istStamp, formatISTDate, formatISTDateTime } from "@/components/utils/date";
 
 const SLOT_TOP    = process.env.NEXT_PUBLIC_ADSENSE_SLOT_BLOG_TOP    ?? "0000000000";
 const SLOT_INFEED = process.env.NEXT_PUBLIC_ADSENSE_SLOT_BLOG_INFEED ?? "1111111111";
@@ -24,6 +25,13 @@ export type IndexPost = {
   title: string;
   description: string;
   date: string;
+  /** The full release instant, "2026-08-21T11:04:00+05:30".
+   *
+   *  Separate from `date` on purpose. `date` stays a bare YYYY-MM-DD because
+   *  sorting, the `dateTime` attribute and the JSON-LD all want a plain day;
+   *  this is the only field that knows the time, and it is empty for the
+   *  hand-written fallback posts, which never had one. */
+  publishedAt: string;
   readTime: string;
   tags: string[];
   coverEmoji: string;
@@ -50,6 +58,7 @@ async function getDbPosts(): Promise<IndexPost[]> {
     title:       p.title,
     description: p.description,
     date:        (p.date || p.publishedAt || "").slice(0, 10),
+    publishedAt: p.publishedAt || "",
     readTime:    p.readTime,
     tags:        p.tags ?? [],
     coverEmoji:  p.coverEmoji,
@@ -64,7 +73,10 @@ async function getAllPosts(): Promise<IndexPost[]> {
   const dbPosts = await getDbPosts();
   const staticPosts: IndexPost[] = BLOG_POSTS.filter(
     (sp) => !dbPosts.some((dp) => dp.slug === sp.slug)
-  ).map((p) => ({ ...p, category: "", noIndex: false }));
+    // No `publishedAt`: these were hand-written and only ever carried a day.
+    // formatISTDateTime() falls back to the date alone rather than inventing a
+    // midnight for them.
+  ).map((p) => ({ ...p, category: "", noIndex: false, publishedAt: "" }));
 
   return [...dbPosts, ...staticPosts].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
@@ -339,14 +351,17 @@ export default async function BlogIndexView(
         inLanguage: "en-IN",
         author,
         publisher: author,
-        ...(latestDate ? { dateModified: latestDate } : {}),
+        // istStamp() so the emitted value carries +05:30. A bare "2026-08-21"
+        // is read as UTC midnight by consumers, which is a different day for
+        // anyone west of us and disagrees with the byline rendered below it.
+        ...(latestDate ? { dateModified: istStamp(allPosts[0]?.publishedAt || latestDate) } : {}),
         ...(page > 1 ? { isPartOf: { "@type": "Blog", "@id": `${SITE_URL}/blog` } } : {}),
         blogPost: listedHere.slice(0, 10).map((p) => ({
           "@type": "BlogPosting",
           headline: p.title,
           description: p.description,
           url: `${SITE_URL}/blog/${p.slug}`,
-          datePublished: p.date,
+          datePublished: istStamp(p.publishedAt || p.date),
           keywords: p.tags.join(", "),
           author: { "@type": "Person", name: PERSONAL_INFO.fullName },
         })),
@@ -494,7 +509,9 @@ export default async function BlogIndexView(
                 <Link href={`/blog/${lead.slug}`} className="bs-link-plain">{lead.title}</Link>
               </h2>
               <p className="bs-eyebrow bs-mt-3">
-                <time dateTime={lead.date}>{formatDate(lead.date)}</time> · {lead.readTime}
+                <time dateTime={lead.publishedAt || lead.date}>
+                  {formatDateTime(lead.publishedAt || lead.date)}
+                </time> · {lead.readTime}
               </p>
             </div>
             <div>
@@ -546,7 +563,9 @@ export default async function BlogIndexView(
                     </div>
                   </div>
                   <div className="blog-row-meta">
-                    <time dateTime={post.date}>{formatDate(post.date)}</time>
+                    <time dateTime={post.publishedAt || post.date}>
+                      {formatDateTime(post.publishedAt || post.date)}
+                    </time>
                     <br />
                     {post.readTime}
                     {post.category ? <><br />{post.category}</> : null}
@@ -625,9 +644,14 @@ export default async function BlogIndexView(
   );
 }
 
+// Every byline date on this page is the IST publication day — see
+// components/utils/date.ts for why rendering it in the reader's own zone put
+// half the world a day behind.
 function formatDate(dateStr: string): string {
-  if (!dateStr) return "";
-  const d = new Date(dateStr);
-  if (Number.isNaN(d.getTime())) return "";
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  return formatISTDate(dateStr);
+}
+
+// Date plus time-of-day when the post has one; date alone when it does not.
+function formatDateTime(value: string): string {
+  return formatISTDateTime(value);
 }
