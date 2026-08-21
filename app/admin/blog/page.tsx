@@ -26,6 +26,10 @@ interface Blog {
   tags: string[];
   readTime: string;
   createdAt: string;
+  /** Unique visitors, and of those the ones who crossed the read thresholds
+   *  (30s active + 60% scroll). See api/portfolio_routes.record_view. */
+  views?: number;
+  reads?: number;
   /** Release instant. A value in the future means the post is written and
    *  marked published but the public API still answers 404 for it. */
   publishedAt?: string | null;
@@ -231,6 +235,7 @@ export default function AdminBlogList() {
                   <th className="px-4 py-3 font-semibold">Category</th>
                   <th className="hidden px-4 py-3 font-semibold lg:table-cell">Date</th>
                   <th className="px-4 py-3 font-semibold">Status</th>
+                  <th className="hidden px-4 py-3 font-semibold lg:table-cell">Engagement</th>
                   <th className="px-5 py-3 text-right font-semibold">Actions</th>
                 </tr>
               </thead>
@@ -269,6 +274,9 @@ export default function AdminBlogList() {
                         <p className="mt-1 text-[11px] text-sky-600">{goLiveLabel(blog.publishedAt)}</p>
                       )}
                     </td>
+                    <td className="hidden px-4 py-3.5 lg:table-cell">
+                      <Engagement views={blog.views} reads={blog.reads} />
+                    </td>
                     <td className="px-5 py-3.5">
                       <div className="flex items-center justify-end gap-1">
                         <a
@@ -302,7 +310,7 @@ export default function AdminBlogList() {
               </tbody>
             </table>
 
-            {/* Mobile cards — a five-column table is unusable under 768px */}
+            {/* Mobile cards — a six-column table is unusable under 768px */}
             <ul className="divide-y divide-slate-100 md:hidden">
               {filtered.map((blog) => (
                 <li key={blog.id} className="p-4">
@@ -317,6 +325,12 @@ export default function AdminBlogList() {
                           {blog.category}
                         </span>
                         <span>{formatISTDate(blog.date || blog.createdAt)}</span>
+                        {!!blog.views && (
+                          <span className="tabular-nums">
+                            {blog.views.toLocaleString("en-IN")} views ·{" "}
+                            {Math.round(((blog.reads || 0) / blog.views) * 100)}% read
+                          </span>
+                        )}
                         {blog.featured && (
                           <span className="inline-flex items-center gap-0.5 text-amber-500">
                             <IconStarFilled size={11} /> Featured
@@ -361,6 +375,40 @@ export default function AdminBlogList() {
           </>
         )}
       </div>
+    </div>
+  );
+}
+
+/**
+ * Views, reads, and the ratio between them.
+ *
+ * The ratio is the number worth looking at. A post with 4,000 views and a 9%
+ * read rate has a headline that works and a body that does not, and that is a
+ * completely different problem from a post with 200 views and a 70% read rate —
+ * which is a good article nobody has found yet. Two raw counts side by side
+ * make that comparison possible at a glance; either one alone hides it.
+ */
+function Engagement({ views = 0, reads = 0 }: { views?: number; reads?: number }) {
+  if (!views) {
+    return <span className="text-xs text-slate-300">—</span>;
+  }
+  const rate = Math.round((reads / views) * 100);
+  // Colour only once the sample is big enough to mean anything. Painting a post
+  // red off three visitors would be reading noise as signal.
+  const tone =
+    views < 25 ? "text-slate-400"
+      : rate >= 50 ? "text-emerald-600"
+      : rate >= 25 ? "text-amber-600"
+      : "text-rose-500";
+
+  return (
+    <div className="text-xs leading-tight">
+      <p className="font-medium tabular-nums text-slate-700">
+        {views.toLocaleString("en-IN")} views
+      </p>
+      <p className={`mt-0.5 tabular-nums ${tone}`}>
+        {reads.toLocaleString("en-IN")} reads · {rate}%
+      </p>
     </div>
   );
 }

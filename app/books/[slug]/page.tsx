@@ -6,6 +6,7 @@ import { pageMeta, breadcrumbLd, faqLd } from "@/components/utils/seo";
 import { SITE_URL } from "@/components/utils/site-data";
 import EmailGate from "@/components/books/EmailGate";
 import PriceTag from "@/components/books/PriceTag";
+import ShareRow from "@/components/shared/ShareRow";
 import { bookLd, bookFaq } from "@/components/books/book-seo";
 
 /**
@@ -142,6 +143,19 @@ export default async function BookPage({ params }: { params: { slug: string } })
             </dd>
           </div>
         </dl>
+
+        {/* Share. Placed in the header rather than at the foot of the page:
+            a reader who recognises the book from its title and blurb is most
+            likely to pass it on right there, and burying the control below
+            twelve chapters of copy is what makes share rows go unused. */}
+        <ShareRow
+          url={`${SITE_URL}/books/${book.slug}`}
+          title={book.title}
+          label="Share"
+          contentType="book"
+          itemId={book.slug}
+          className="bk-share-row"
+        />
       </header>
 
       {/* ── The answer block ─────────────────────────────────────────────

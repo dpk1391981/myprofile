@@ -4,12 +4,14 @@ import { notFound } from "next/navigation";
 import { BLOG_POSTS, getBlogPost, PERSONAL_INFO } from "@/components/utils/portfolio-data";
 import {
   IconArrowLeft, IconArrowRight, IconArrowNarrowRight, IconChevronDown,
-  IconBrandTwitter, IconBrandLinkedin, IconBrandWhatsapp, IconBrandGithub,
+  IconBrandGithub, IconBrandLinkedin, IconBrandX,
 } from "@tabler/icons-react";
 import { getPost as apiGetPost, getSeoConfig } from "@/components/utils/portfolio-api";
 import AdSlot from "@/components/blog/AdSlot";
 import BookPromo from "@/components/books/BookPromo";
 import ReadingProgress from "@/components/blog/ReadingProgress";
+import ShareRow from "@/components/shared/ShareRow";
+import ViewCounter from "@/components/blog/ViewCounter";
 import { withHeadingAnchors, countWords, type Heading } from "@/components/utils/article-html";
 import {
   istStamp, formatISTDate, formatISTDateTime, formatISTTime, hasTimeOfDay,
@@ -91,6 +93,10 @@ async function getPost(slug: string) {
       tags:           p.tags ?? [],
       coverEmoji:     p.coverEmoji,
       featured:       p.featured,
+      // Unique readers, as counted by components/blog/ViewCounter. Server-rendered
+      // so the byline has its final width before the beacon answers; the client
+      // replaces it with the live number a moment later.
+      views:          p.views ?? 0,
       content:        p.content || "",
       category:       p.category || "",
       // SEO fields
@@ -112,7 +118,7 @@ async function getPost(slug: string) {
   }
   const sp = getBlogPost(slug);
   if (!sp) return null;
-  return { ...sp, _fromDb: false, category: "", publishedAt: "", updatedAt: sp.date,
+  return { ...sp, _fromDb: false, category: "", publishedAt: "", updatedAt: sp.date, views: 0,
     seoTitle: "", seoDescription: "", focusKeyword: "",
     seoKeywords: [] as string[], ogImage: "", canonicalUrl: "", robots: "index, follow", noIndex: false,
     sourceUrl: "", sourceTitle: "", schemaJsonLd: null,
@@ -376,12 +382,6 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
     ],
   };
 
-  const shareLinks = [
-    { href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(postUrl)}`, label: "Share on X", Icon: IconBrandTwitter },
-    { href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(postUrl)}`, label: "Share on LinkedIn", Icon: IconBrandLinkedin },
-    { href: `https://wa.me/?text=${encodeURIComponent(post.title + " " + postUrl)}`, label: "Share on WhatsApp", Icon: IconBrandWhatsapp },
-  ];
-
   const readNext = related.slice(0, 2);
 
   return (
@@ -480,6 +480,8 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                       <span>{PERSONAL_INFO.title}, {PERSONAL_INFO.currentWork.company}</span>
                       <span className="sep" aria-hidden="true">·</span>
                       <span>{post.readTime}</span>
+                      <ViewCounter slug={post.slug} initialViews={post.views}
+                                   category={post.category} wordCount={wordCount} />
                       {wasUpdated && (
                         <>
                           <span className="sep" aria-hidden="true">·</span>
@@ -489,14 +491,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                     </p>
                   </div>
                 </div>
-                <div className="blog-share-row" aria-label="Share this article">
-                  {shareLinks.map(({ href, label, Icon }) => (
-                    <a key={label} href={href} target="_blank" rel="noopener noreferrer"
-                      className="blog-share-btn" aria-label={label} title={label}>
-                      <Icon size={16} />
-                    </a>
-                  ))}
-                </div>
+                <ShareRow url={postUrl} title={post.title} itemId={post.slug} />
               </div>
 
               {/*
@@ -690,7 +685,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                     <IconBrandGithub size={15} /> GitHub
                   </a>
                   <a href={PERSONAL_INFO.social.twitter} target="_blank" rel="noopener noreferrer me" className="blog-author-link">
-                    <IconBrandTwitter size={15} /> {PERSONAL_INFO.social.twitterHandle}
+                    <IconBrandX size={15} /> {PERSONAL_INFO.social.twitterHandle}
                   </a>
                   <Link href="/joinme" className="blog-author-cta">
                     Work with me <IconArrowNarrowRight size={16} />
@@ -755,14 +750,12 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
               {/* Share */}
               <div>
                 <p className="blog-sidebar-heading">Share this article</p>
-                <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
-                  {shareLinks.map(({ href, label, Icon }) => (
-                    <a key={label} href={href} target="_blank" rel="noopener noreferrer"
-                      className="blog-share-btn blog-share-btn--wide" aria-label={label} title={label}>
-                      <Icon size={16} />
-                    </a>
-                  ))}
-                </div>
+                <ShareRow
+                  url={postUrl}
+                  title={post.title}
+                  itemId={post.slug}
+                  className="blog-share-row--sidebar"
+                />
               </div>
 
               {/* Books — an editorial link from the part of the site that has

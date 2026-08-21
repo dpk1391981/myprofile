@@ -42,6 +42,10 @@ export type PortfolioPost = {
   wordCount: number;
   featured: boolean;
   status: string;
+  /** Unique visitors, and of those the ones who actually read it. Present on
+   *  listings as well as the single post — see _shape_post upstream. */
+  views?: number;
+  reads?: number;
   date: string | null;
   publishedAt: string | null;
   sourceUrl: string;
@@ -74,6 +78,10 @@ type FetchOpts = {
    *  the contact route carries the per-field messages the sender needs to see;
    *  throwing on it turns "your message is too short" into "server error". */
   jsonStatuses?: number[];
+  /** Extra request headers. Used by the view beacon to pass the reader's own IP
+   *  and user agent through, since the upstream would otherwise fingerprint
+   *  Vercel's egress node and count every reader as the same person. */
+  headers?: Record<string, string>;
 };
 
 async function apiFetchRaw<T>(
@@ -87,6 +95,7 @@ async function apiFetchRaw<T>(
     revalidate = 300,
     timeoutMs = READ_TIMEOUT_MS,
     jsonStatuses = [],
+    headers: extraHeaders,
   } = opts;
 
   const controller = new AbortController();
@@ -95,6 +104,7 @@ async function apiFetchRaw<T>(
   const headers: Record<string, string> = { Accept: "application/json" };
   if (body !== undefined) headers["Content-Type"] = "application/json";
   if (auth && INTERNAL_KEY) headers["X-Internal-Key"] = INTERNAL_KEY;
+  if (extraHeaders) Object.assign(headers, extraHeaders);
 
   try {
     const res = await fetch(`${API_BASE}${path}`, {
@@ -234,6 +244,46 @@ export type SeoConfig = {
 
 /** Page-level SEO overrides. `null` means "not configured" — the caller falls
  *  back to its own defaults, which is the normal case for most pages. */
+/**
+ * Record one article view or read.
+ *
+ * Degrades silently. This is a counter, not content: if the agent service is
+ * unreachable the reader must still get their article, and a failed beacon is
+ * not worth a single line of red in their console.
+ */
+export async function recordBlogView(
+  slug: string,
+  payload: { event: "view" | "read"; dwellSeconds?: number; scrollPct?: number; referrer?: string },
+  visitor: { ip: string; ua: string }
+): Promise<{ ok: boolean; counted: boolean; views: number; reads: number } | null> {
+  try {
+    return await apiFetch(`/portfolio/blogs/${encodeURIComponent(slug)}/view`, {
+      method: "POST",
+      body: payload,
+      // The key is what makes the upstream trust the forwarded visitor headers.
+      auth: true,
+      headers: { "X-Visitor-Ip": visitor.ip, "X-Visitor-Ua": visitor.ua },
+      timeoutMs: 4000,
+    });
+  } catch {
+    return null;
+  }
+}
+
+/** Current counters for one post, with no side effect. */
+export async function getBlogStats(
+  slug: string
+): Promise<{ views: number; reads: number } | null> {
+  try {
+    return await apiFetch(`/portfolio/blogs/${encodeURIComponent(slug)}/stats`, {
+      revalidate: 60,
+      timeoutMs: 4000,
+    });
+  } catch {
+    return null;
+  }
+}
+
 export async function getSeoConfig(key: string): Promise<SeoConfig | null> {
   try {
     const data = await apiFetch<{ config: SeoConfig | null }>(
