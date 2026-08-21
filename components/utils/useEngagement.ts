@@ -30,28 +30,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { gaEvent } from "@/components/utils/gtag";
-
-/** Delay before the view beacon. Long enough to exclude a bounce. */
-const VIEW_DELAY_MS = 5000;
-
-/**
- * Read thresholds. These are the canonical values for the whole site and MUST
- * match VIEW_READ_MIN_* in the agent service's api/portfolio_routes.py and
- * api/book_routes.py — the server re-checks them, because a client-decided
- * metric is a client-editable one.
- */
-export const READ_MIN_SECONDS = 30;
-export const READ_MIN_SCROLL = 60;
-
-/**
- * Scroll milestones reported to GA4.
- *
- * GA4's enhanced measurement fires `scroll` exactly once, at 90%, which
- * identifies the readers who finished and says nothing about everyone else.
- * Quarters turn "most people leave" into "most people leave in the second
- * section", which is the version you can act on.
- */
-const PROGRESS_MILESTONES = [25, 50, 75, 100] as const;
+import {
+  PROGRESS_MILESTONES, READ_MIN_SCROLL, READ_MIN_SECONDS, VIEW_DELAY_MS,
+} from "@/components/utils/engagement-config";
 
 export type ContentType = "article" | "book" | "chapter";
 

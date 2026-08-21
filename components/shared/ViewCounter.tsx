@@ -15,16 +15,7 @@
 
 import { IconEye } from "@tabler/icons-react";
 import { useEngagement, type ContentType } from "@/components/utils/useEngagement";
-
-/**
- * Below this, no number is shown at all.
- *
- * "3 views" on a day-old post is worse than silence: it is the one piece of
- * social proof on the page and it is arguing against the thing it sits on.
- * Every platform that shows counts hides them until they help. Tracking still
- * runs — this gates the DISPLAY only.
- */
-const DEFAULT_MIN_PUBLIC_VIEWS = 50;
+import { MIN_PUBLIC_VIEWS } from "@/components/utils/engagement-config";
 
 type Props = {
   contentType: ContentType;
@@ -44,7 +35,7 @@ type Props = {
 
 export default function ViewCounter({
   contentType, itemId, endpoint, initialViews = 0,
-  dimensions, extra, minViews = DEFAULT_MIN_PUBLIC_VIEWS,
+  dimensions, extra, minViews = MIN_PUBLIC_VIEWS,
   withSeparator = false, className = "",
 }: Props) {
   const { views } = useEngagement({

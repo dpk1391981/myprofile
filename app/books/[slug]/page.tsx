@@ -7,7 +7,8 @@ import { SITE_URL } from "@/components/utils/site-data";
 import EmailGate from "@/components/books/EmailGate";
 import PriceTag from "@/components/books/PriceTag";
 import ShareRow from "@/components/shared/ShareRow";
-import ViewCounter from "@/components/shared/ViewCounter";
+import ViewTracker from "@/components/shared/ViewTracker";
+import { MIN_PUBLIC_VIEWS } from "@/components/utils/engagement-config";
 import { bookLd, bookFaq } from "@/components/books/book-seo";
 
 /**
@@ -143,26 +144,28 @@ export default async function BookPage({ params }: { params: { slug: string } })
                         currency={book.currency} size="sm" />
             </dd>
           </div>
-          {/* Renders nothing until the count is worth showing — see ViewCounter.
-              It tracks either way, so the number is accumulating before it
-              first appears rather than starting from zero on the day it does. */}
-          <div>
-            <dt className="sr-only">Readers</dt>
-            <dd>
-              <ViewCounter
-                contentType="book"
-                itemId={book.slug}
-                endpoint={`/api/books/${book.slug}/view`}
-                initialViews={book.views ?? 0}
-                dimensions={{
-                  book_title: book.title,
-                  level: book.level || "(none)",
-                  word_count: book.wordCount || 0,
-                }}
-              />
-            </dd>
-          </div>
+          {/* Shown only past the floor — see MIN_PUBLIC_VIEWS. The <div> is
+              conditional rather than the contents, because an empty flex item
+              in this row still collects the 24px gap either side of it.
+              Measurement is unconditional and lives in ViewTracker below. */}
+          {(book.views ?? 0) >= MIN_PUBLIC_VIEWS && (
+            <div>
+              <dt className="sr-only">Readers</dt>
+              <dd>{(book.views ?? 0).toLocaleString("en-IN")} readers</dd>
+            </div>
+          )}
         </dl>
+
+        <ViewTracker
+          contentType="book"
+          itemId={book.slug}
+          endpoint={`/api/books/${book.slug}/view`}
+          dimensions={{
+            book_title: book.title,
+            level: book.level || "(none)",
+            word_count: book.wordCount || 0,
+          }}
+        />
 
         {/* Share. Placed in the header rather than at the foot of the page:
             a reader who recognises the book from its title and blurb is most

@@ -11,6 +11,7 @@ import Link from "next/link";
 import { BLOG_POSTS, PERSONAL_INFO } from "@/components/utils/portfolio-data";
 import { IconArrowRight, IconRss } from "@tabler/icons-react";
 import { listAllPosts, getSeoConfig } from "@/components/utils/portfolio-api";
+import { MIN_PUBLIC_VIEWS } from "@/components/utils/engagement-config";
 import AdSlot from "@/components/blog/AdSlot";
 import { TopicsFigure } from "@/components/bs/HeadFigure";
 import { POSTS_PER_PAGE, pageCount, indexPath } from "@/components/utils/blog-pagination";
@@ -41,6 +42,9 @@ export type IndexPost = {
   category: string;
   /** True when the post's own page will answer `noindex`. */
   noIndex: boolean;
+  /** Unique readers. Display only here — the index does not track anything;
+   *  the count is written by the article page's own beacon. */
+  views: number;
 };
 
 // ── Fetch page-level SEO config ───────────────────────────────────────────
@@ -67,6 +71,7 @@ async function getDbPosts(): Promise<IndexPost[]> {
     featured:    p.featured,
     category:    p.category || "",
     noIndex:     Boolean(p.noIndex) || Boolean(p.robots?.includes("noindex")),
+    views:       p.views ?? 0,
   }));
 }
 
@@ -78,7 +83,7 @@ async function getAllPosts(): Promise<IndexPost[]> {
     // No `publishedAt`: these were hand-written and only ever carried a day.
     // formatISTDateTime() falls back to the date alone rather than inventing a
     // midnight for them.
-  ).map((p) => ({ ...p, category: "", noIndex: false, publishedAt: "" }));
+  ).map((p) => ({ ...p, category: "", noIndex: false, publishedAt: "", views: 0 }));
 
   return [...dbPosts, ...staticPosts].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
@@ -514,6 +519,7 @@ export default async function BlogIndexView(
                 <time dateTime={lead.publishedAt || lead.date}>
                   {formatDateTime(lead.publishedAt || lead.date)}
                 </time> · {lead.readTime}
+                {lead.views >= MIN_PUBLIC_VIEWS && ` · ${lead.views.toLocaleString("en-IN")} views`}
               </p>
             </div>
             <div>
@@ -578,6 +584,12 @@ export default async function BlogIndexView(
                     )}
                     <span>{post.readTime}</span>
                     {post.category ? <span>{post.category}</span> : null}
+                    {/* Same floor as the article page — see MIN_PUBLIC_VIEWS.
+                        A post that advertises its count in the list and hides
+                        it on its own page reads as a bug. */}
+                    {post.views >= MIN_PUBLIC_VIEWS && (
+                      <span>{post.views.toLocaleString("en-IN")} views</span>
+                    )}
                   </div>
                 </article>
               </div>
