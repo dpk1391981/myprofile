@@ -2298,18 +2298,49 @@ button.blog-share-btn { cursor: pointer; font: inherit; padding: 0; appearance: 
   position: sticky;
   top: 84px;
   /* Its own scroll, so a twenty-chapter book cannot push the rail past the
-     bottom of the window and strand the last entries. */
-  max-height: calc(100vh - 112px);
+     bottom of the window and strand the last entries. dvh, not vh: on a phone
+     browser vh is the height WITHOUT the collapsing address bar, which makes
+     the rail taller than the space it actually has. */
+  max-height: calc(100dvh - 112px);
   overflow-y: auto;
   overscroll-behavior: contain;
-  border-top: 2px solid var(--ink);
-  padding: 16px 4px 24px 0;
+  padding: 0 0 24px;
   font-size: 14px;
-}
-.bk-rail::-webkit-scrollbar { width: 6px; }
-.bk-rail::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 3px; }
+  /*
+    THE SCROLLBAR IS FURNITURE, NOT CONTENT — the same rule the article rail
+    follows (see .blog-article-sidebar-inner). A permanent grey track down the
+    right edge reads as a second page scrollbar and is the first thing the eye
+    lands on; it stays invisible and fades in as a hairline only while the
+    pointer is over the rail.
 
-.bk-rail-book { display: flex; align-items: flex-start; gap: 11px; }
+    The negative margin puts that bar in the 60px grid gutter, so the rail's
+    text keeps its full width and one straight right edge instead of being
+    inset by the scrollbar.
+  */
+  margin-right: -14px;
+  padding-right: 14px;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color .18s ease;
+}
+.bk-rail:hover { scrollbar-color: var(--hair) transparent; }
+.bk-rail::-webkit-scrollbar { width: 5px; }
+.bk-rail::-webkit-scrollbar-track { background: transparent; }
+.bk-rail::-webkit-scrollbar-thumb {
+  background: transparent; border-radius: 3px; transition: background .18s ease;
+}
+.bk-rail:hover::-webkit-scrollbar-thumb { background: var(--hair); }
+.bk-rail::-webkit-scrollbar-thumb:hover { background: var(--quiet); }
+
+/* The rule at the top of the rail lives on the first CHILD, not on the rail
+   itself. The rail's box is 14px wider than its content (the scrollbar gutter
+   trick above), so a border drawn there would overhang the column by 14px and
+   sit off the grid the rest of the page is set to. */
+.bk-rail-book {
+  display: flex; align-items: flex-start; gap: 11px;
+  border-top: 2px solid var(--ink);
+  padding-top: 16px;
+}
 .bk-rail-emoji {
   flex: 0 0 auto;
   font-size: 20px;
