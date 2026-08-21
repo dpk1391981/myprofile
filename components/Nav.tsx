@@ -1,4 +1,6 @@
 "use client";
+
+import SocialIconLink from "@/components/shared/SocialIconLink";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -136,33 +138,27 @@ const Nav = () => {
           <div className="bs-drawer-social">
             <p className="bs-eyebrow">Elsewhere</p>
             <div className="bs-socials">
-              <a
+              <SocialIconLink
                 href={PERSONAL_INFO.social.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="GitHub"
+                network="GitHub" location="nav_drawer"
                 onClick={() => setOpen(false)}
               >
                 <IconBrandGithub size={22} />
-              </a>
-              <a
+              </SocialIconLink>
+              <SocialIconLink
                 href={PERSONAL_INFO.social.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn"
+                network="LinkedIn" location="nav_drawer"
                 onClick={() => setOpen(false)}
               >
                 <IconBrandLinkedin size={22} />
-              </a>
-              <a
+              </SocialIconLink>
+              <SocialIconLink
                 href={PERSONAL_INFO.social.twitter}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="X (Twitter)"
+                network="X" location="nav_drawer" label="X (Twitter) profile"
                 onClick={() => setOpen(false)}
               >
                 <IconBrandX size={22} />
-              </a>
+              </SocialIconLink>
             </div>
           </div>
 

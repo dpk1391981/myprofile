@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SocialIconLink from "@/components/shared/SocialIconLink";
 import { IconBrandGithub, IconBrandLinkedin, IconBrandX } from "@tabler/icons-react";
 import { FOOTER_NAV } from "./utils/site-data";
 import { PERSONAL_INFO } from "./utils/portfolio-data";
@@ -19,15 +20,15 @@ const Footer = () => {
             Available for senior roles and contract work, on-site in Delhi NCR or fully remote.
           </p>
           <div className="bs-socials bs-mt-3">
-            <a href={PERSONAL_INFO.social.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+            <SocialIconLink href={PERSONAL_INFO.social.github} network="GitHub" location="footer">
               <IconBrandGithub size={21} />
-            </a>
-            <a href={PERSONAL_INFO.social.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+            </SocialIconLink>
+            <SocialIconLink href={PERSONAL_INFO.social.linkedin} network="LinkedIn" location="footer">
               <IconBrandLinkedin size={21} />
-            </a>
-            <a href={PERSONAL_INFO.social.twitter} target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+            </SocialIconLink>
+            <SocialIconLink href={PERSONAL_INFO.social.twitter} network="X" location="footer" label="X (Twitter) profile">
               <IconBrandX size={21} />
-            </a>
+            </SocialIconLink>
           </div>
         </div>
 

@@ -13,7 +13,11 @@
  * add a metric, it adds a second, slightly-disagreeing copy of one. Everything
  * below is something enhanced measurement genuinely does not know:
  *
- *   share          — a recommended GA4 event, not an automatic one.
+ *   share          — a recommended GA4 event, not an automatic one. The URL
+ *                    it shares is UTM-tagged too, so the RETURN visit is
+ *                    attributed as well as the outgoing click.
+ *   outbound_social— clicks on the profile icons. Not tagged with UTM,
+ *                    because those links point away from this site; see utm.ts.
  *   read_progress  — enhanced measurement fires scroll ONCE, at 90%, which
  *                    tells you who finished and nothing about where everyone
  *                    else stopped. Quarter milestones show the drop-off.
@@ -89,4 +93,25 @@ export function gaEvent(name: string, params: Record<string, Primitive | undefin
  */
 export function gaShare(method: string, contentType: "article" | "book", itemId: string): void {
   gaEvent("share", { method, content_type: contentType, item_id: itemId });
+}
+
+/**
+ * A click on a link that leaves the site.
+ *
+ * GA4's enhanced measurement already collects `click` for outbound links, so
+ * this is deliberately NOT named `click` — a second event under that name would
+ * double-count every outbound click on the site.
+ *
+ * It exists because UTM parameters cannot do this job. Tagging a link to
+ * linkedin.com sends the parameters to LinkedIn's analytics, never to ours; the
+ * only way to know a footer icon was clicked is to record it here, before the
+ * reader leaves. See components/utils/utm.ts for the full argument.
+ *
+ * `location` is where on the site the link was (footer, nav, hero, author_bio)
+ * — without it every profile click on every page collapses into one row and the
+ * report cannot answer which placement actually earns clicks, which is the only
+ * reason to measure them at all.
+ */
+export function gaOutbound(network: string, location: string, url: string): void {
+  gaEvent("outbound_social", { network, link_location: location, link_url: url });
 }

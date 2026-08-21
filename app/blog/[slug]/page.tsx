@@ -11,6 +11,7 @@ import AdSlot from "@/components/blog/AdSlot";
 import BookPromo from "@/components/books/BookPromo";
 import ReadingProgress from "@/components/blog/ReadingProgress";
 import ShareRow from "@/components/shared/ShareRow";
+import SocialIconLink from "@/components/shared/SocialIconLink";
 import ViewCounter from "@/components/shared/ViewCounter";
 import { withHeadingAnchors, countWords, type Heading } from "@/components/utils/article-html";
 import {
@@ -684,15 +685,18 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                   <Link href="/about" className="blog-author-link">
                     About <IconArrowNarrowRight size={15} />
                   </Link>
-                  <a href={PERSONAL_INFO.social.linkedin} target="_blank" rel="noopener noreferrer me" className="blog-author-link">
+                  <SocialIconLink href={PERSONAL_INFO.social.linkedin} network="LinkedIn"
+                    location="author_bio" className="blog-author-link" label="LinkedIn profile">
                     <IconBrandLinkedin size={15} /> LinkedIn
-                  </a>
-                  <a href={PERSONAL_INFO.social.github} target="_blank" rel="noopener noreferrer me" className="blog-author-link">
+                  </SocialIconLink>
+                  <SocialIconLink href={PERSONAL_INFO.social.github} network="GitHub"
+                    location="author_bio" className="blog-author-link" label="GitHub profile">
                     <IconBrandGithub size={15} /> GitHub
-                  </a>
-                  <a href={PERSONAL_INFO.social.twitter} target="_blank" rel="noopener noreferrer me" className="blog-author-link">
+                  </SocialIconLink>
+                  <SocialIconLink href={PERSONAL_INFO.social.twitter} network="X"
+                    location="author_bio" className="blog-author-link" label="X (Twitter) profile">
                     <IconBrandX size={15} /> {PERSONAL_INFO.social.twitterHandle}
-                  </a>
+                  </SocialIconLink>
                   <Link href="/joinme" className="blog-author-cta">
                     Work with me <IconArrowNarrowRight size={16} />
                   </Link>

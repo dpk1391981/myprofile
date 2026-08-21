@@ -1,4 +1,5 @@
 import Image from "next/image";
+import SocialIconLink from "@/components/shared/SocialIconLink";
 import Link from "next/link";
 import {
   IconDownload,
@@ -24,15 +25,15 @@ export default function Hero() {
         {/* Social also appears under the portrait further down this column;
             repeated here so the profiles are reachable before any scroll. */}
         <span className="bs-socials bs-dateline-social">
-          <a href={PERSONAL_INFO.social.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+          <SocialIconLink href={PERSONAL_INFO.social.github} network="GitHub" location="hero_dateline">
             <IconBrandGithub size={16} />
-          </a>
-          <a href={PERSONAL_INFO.social.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+          </SocialIconLink>
+          <SocialIconLink href={PERSONAL_INFO.social.linkedin} network="LinkedIn" location="hero_dateline">
             <IconBrandLinkedin size={16} />
-          </a>
-          <a href={PERSONAL_INFO.social.twitter} target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+          </SocialIconLink>
+          <SocialIconLink href={PERSONAL_INFO.social.twitter} network="X" location="hero_dateline" label="X (Twitter) profile">
             <IconBrandX size={16} />
-          </a>
+          </SocialIconLink>
         </span>
       </div>
       <div className="bs-rail-thin" />
@@ -125,15 +126,15 @@ export default function Hero() {
           </div>
 
           <div className="bs-socials bs-mt-4">
-            <a href={PERSONAL_INFO.social.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+            <SocialIconLink href={PERSONAL_INFO.social.github} network="GitHub" location="hero_portrait">
               <IconBrandGithub size={22} />
-            </a>
-            <a href={PERSONAL_INFO.social.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+            </SocialIconLink>
+            <SocialIconLink href={PERSONAL_INFO.social.linkedin} network="LinkedIn" location="hero_portrait">
               <IconBrandLinkedin size={22} />
-            </a>
-            <a href={PERSONAL_INFO.social.twitter} target="_blank" rel="noopener noreferrer" aria-label="X">
+            </SocialIconLink>
+            <SocialIconLink href={PERSONAL_INFO.social.twitter} network="X" location="hero_portrait" label="X (Twitter) profile">
               <IconBrandX size={22} />
-            </a>
+            </SocialIconLink>
           </div>
         </div>
       </div>

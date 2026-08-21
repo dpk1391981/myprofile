@@ -1738,6 +1738,10 @@ button.blog-share-btn { cursor: pointer; font: inherit; padding: 0; appearance: 
   font-variant-numeric: tabular-nums;
 }
 .blog-viewcount svg { opacity: .75; }
+/* 5px inner gap + 4px = the 9px the parent row puts between its own children,
+   so the leading separator sits on the same rhythm as every other one in the
+   line instead of hugging the count. */
+.blog-viewcount .sep { margin-right: 4px; opacity: .5; }
 
 /* Sidebar variant: the rail is narrow, so the five controls stretch to fill it
    evenly rather than huddling at the left edge. */
@@ -1754,10 +1758,19 @@ button.blog-share-btn { cursor: pointer; font: inherit; padding: 0; appearance: 
 .vc-sub { display: none; }
 [data-view-preview="1"] .vc-sub { display: inline-flex; }
 
-/* The preview needs to read as a preview. Without this it is impossible to tell
-   a real 1,200 from a below-floor 4 that only you can see. */
-[data-view-preview="1"] .blog-viewcount {
-  outline: 1px dashed var(--spot);
-  outline-offset: 2px;
-  border-radius: 2px;
+/* A preview still has to be unmistakable — otherwise a below-floor 4 that only
+   you can see is indistinguishable from a real 1,200. But marking the COUNT
+   itself (an outline, a tint) defeats the entire purpose: the reason to preview
+   is to judge how the finished thing looks, and a decorated count is not the
+   finished thing. So the count renders pixel-identical to production and the
+   mode is announced away from it, in the corner. */
+[data-view-preview="1"] body::after {
+  content: "view-count preview";
+  position: fixed; z-index: 90;
+  left: 12px; bottom: 12px;
+  padding: 5px 10px;
+  font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--paper); background: var(--spot);
+  border-radius: 2px; opacity: .9;
+  pointer-events: none;   /* never sits between the reader and a control */
 }
