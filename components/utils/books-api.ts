@@ -99,6 +99,15 @@ export type BookChapter = {
     scores?: Record<string, number>;
     fixes?: string[];
     suspect_claims?: string[];
+    /** Deterministic concrete-detail profile — see _specificity in book_author.py.
+     *  Kept beside the LLM's opinion because it is the half that cannot be
+     *  argued with: it counts real numbers, named APIs, conditions, failure
+     *  modes and stated judgements per 1000 words. */
+    specificity?: {
+      score: number; words: number; numbers: number; identifiers: number;
+      contingency: number; failure: number; judgement: number;
+    };
+    sections?: { heading: string; words: number; specificity: number; repetition: number }[];
   };
   revised: boolean;
   status: string;

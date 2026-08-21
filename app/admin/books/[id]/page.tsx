@@ -26,7 +26,12 @@ type Chapter = {
   ordinal: number; heading: string; summary: string; bodyHtml: string;
   concepts: string[]; wordCount: number; codeBlocks: number; codeVerified: boolean;
   codeErrors: string[]; editorScore: number;
-  editorNotes: { fixes?: string[]; suspect_claims?: string[]; scores?: Record<string, number> };
+  editorNotes: {
+    fixes?: string[]; suspect_claims?: string[]; scores?: Record<string, number>;
+    specificity?: { score: number; numbers: number; identifiers: number;
+                    contingency: number; failure: number; judgement: number };
+    sections?: { heading: string; words: number; specificity: number; repetition: number }[];
+  };
   revised: boolean; status: string; attempts: number; errorText: string;
 };
 
@@ -393,6 +398,14 @@ function ChapterCard({
                 editor {c.editorScore}/25
               </span>
             )}
+            {typeof c.editorNotes?.specificity?.score === "number" && (
+              <span className={`rounded px-1.5 py-0.5 font-medium ${
+                c.editorNotes.specificity.score >= 3 ? "bg-emerald-50 text-emerald-700"
+                : c.editorNotes.specificity.score >= 2.2 ? "bg-amber-50 text-amber-700"
+                : "bg-red-50 text-red-700"}`}>
+                specifics {c.editorNotes.specificity.score}/5
+              </span>
+            )}
             {c.codeBlocks > 0 && (
               <span className={`inline-flex items-center gap-1 ${
                 c.codeErrors.length ? "text-red-600" : c.codeVerified ? "text-emerald-600" : "text-slate-500"}`}>
@@ -414,6 +427,46 @@ function ChapterCard({
 
       {open && (
         <div className="border-t border-slate-100 p-4">
+          {c.editorNotes?.specificity && (
+            <div className="mb-4 rounded-lg bg-slate-50 p-3">
+              <p className="text-sm font-medium text-slate-700">
+                Concrete detail — {c.editorNotes.specificity.score}/5
+              </p>
+              <p className="mt-1 text-xs text-slate-500">
+                Counted per 1,000 words. This is the deterministic half of the grade: a
+                chapter can read well and still score low, which is exactly the failure
+                worth catching.
+              </p>
+              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-600">
+                <span>{c.editorNotes.specificity.numbers} numbers</span>
+                <span>{c.editorNotes.specificity.identifiers} named APIs</span>
+                <span>{c.editorNotes.specificity.contingency} conditions</span>
+                <span>{c.editorNotes.specificity.failure} failure mentions</span>
+                <span>{c.editorNotes.specificity.judgement} stated opinions</span>
+              </div>
+              {!!c.editorNotes.sections?.length && (
+                <table className="mt-3 w-full text-xs">
+                  <thead className="text-left text-slate-400">
+                    <tr><th className="font-normal">Section</th>
+                        <th className="font-normal">Words</th>
+                        <th className="font-normal">Specifics</th>
+                        <th className="font-normal">Repeat</th></tr>
+                  </thead>
+                  <tbody>
+                    {c.editorNotes.sections.map((sec, i) => (
+                      <tr key={i} className="border-t border-slate-200">
+                        <td className="py-1 pr-2 text-slate-600">{sec.heading}</td>
+                        <td className="py-1 pr-2 tabular-nums">{sec.words}</td>
+                        <td className="py-1 pr-2 tabular-nums">{sec.specificity}</td>
+                        <td className="py-1 tabular-nums">{Math.round(sec.repetition * 100)}%</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          )}
+
           {(c.editorNotes?.fixes?.length || c.editorNotes?.suspect_claims?.length) && (
             <div className="mb-4 space-y-3 rounded-lg bg-slate-50 p-3 text-sm">
               {!!c.editorNotes.suspect_claims?.length && (
