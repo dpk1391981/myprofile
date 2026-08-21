@@ -61,6 +61,13 @@ export type Book = {
   coverEmoji: string;
   coverImage: string;
   chapters: number;
+  /** Unique visitors to the landing page, and of those the ones who read it.
+   *  `chapterViews` is unique chapter opens across the whole book — kept apart
+   *  because a busy landing page with empty chapters is a marketing success
+   *  and a writing failure, and one blended number hides that. */
+  views?: number;
+  reads?: number;
+  chapterViews?: number;
   wordCount: number;
   pages: number;
   access: string;

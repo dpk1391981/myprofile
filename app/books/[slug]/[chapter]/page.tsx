@@ -7,6 +7,7 @@ import { SITE_URL } from "@/components/utils/site-data";
 import { chapterLd } from "@/components/books/book-seo";
 import { prepareChapter } from "@/components/books/chapter-html";
 import ReadingProgress from "@/components/books/ReadingProgress";
+import ChapterTracker from "@/components/books/ChapterTracker";
 import PriceTag from "@/components/books/PriceTag";
 
 /**
@@ -93,6 +94,12 @@ export default async function ChapterPage(
   return (
     <main className="bk-shell" style={{ paddingTop: 44, paddingBottom: 80 }}>
       <ReadingProgress />
+      <ChapterTracker
+        slug={book.slug}
+        ordinal={chapter.ordinal}
+        bookTitle={book.title}
+        words={chapter.wordCount}
+      />
 
       <script type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(chapterLd(book, chapter)) }} />

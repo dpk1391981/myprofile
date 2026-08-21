@@ -7,6 +7,7 @@ import { SITE_URL } from "@/components/utils/site-data";
 import EmailGate from "@/components/books/EmailGate";
 import PriceTag from "@/components/books/PriceTag";
 import ShareRow from "@/components/shared/ShareRow";
+import ViewCounter from "@/components/shared/ViewCounter";
 import { bookLd, bookFaq } from "@/components/books/book-seo";
 
 /**
@@ -140,6 +141,25 @@ export default async function BookPage({ params }: { params: { slug: string } })
             <dd>
               <PriceTag listPricePaise={book.listPricePaise} priceLabel={book.priceLabel}
                         currency={book.currency} size="sm" />
+            </dd>
+          </div>
+          {/* Renders nothing until the count is worth showing — see ViewCounter.
+              It tracks either way, so the number is accumulating before it
+              first appears rather than starting from zero on the day it does. */}
+          <div>
+            <dt className="sr-only">Readers</dt>
+            <dd>
+              <ViewCounter
+                contentType="book"
+                itemId={book.slug}
+                endpoint={`/api/books/${book.slug}/view`}
+                initialViews={book.views ?? 0}
+                dimensions={{
+                  book_title: book.title,
+                  level: book.level || "(none)",
+                  word_count: book.wordCount || 0,
+                }}
+              />
             </dd>
           </div>
         </dl>

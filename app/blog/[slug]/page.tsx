@@ -11,7 +11,7 @@ import AdSlot from "@/components/blog/AdSlot";
 import BookPromo from "@/components/books/BookPromo";
 import ReadingProgress from "@/components/blog/ReadingProgress";
 import ShareRow from "@/components/shared/ShareRow";
-import ViewCounter from "@/components/blog/ViewCounter";
+import ViewCounter from "@/components/shared/ViewCounter";
 import { withHeadingAnchors, countWords, type Heading } from "@/components/utils/article-html";
 import {
   istStamp, formatISTDate, formatISTDateTime, formatISTTime, hasTimeOfDay,
@@ -480,8 +480,14 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                       <span>{PERSONAL_INFO.title}, {PERSONAL_INFO.currentWork.company}</span>
                       <span className="sep" aria-hidden="true">·</span>
                       <span>{post.readTime}</span>
-                      <ViewCounter slug={post.slug} initialViews={post.views}
-                                   category={post.category} wordCount={wordCount} />
+                      <ViewCounter
+                        contentType="article"
+                        itemId={post.slug}
+                        endpoint={`/api/blog/${post.slug}/view`}
+                        initialViews={post.views}
+                        dimensions={{ category: post.category || "(none)", word_count: wordCount }}
+                        withSeparator
+                      />
                       {wasUpdated && (
                         <>
                           <span className="sep" aria-hidden="true">·</span>
