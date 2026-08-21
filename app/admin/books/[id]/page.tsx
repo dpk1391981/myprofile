@@ -623,9 +623,13 @@ function estimateCost(targetWords: number, chapters: number) {
   const outTokens = targetWords * 1.35;             // words -> tokens, incl. markup
   const inPerSection = 1500;                        // brief + continuity digest
 
-  // Prose: every section once, plus an expansion pass over roughly a fifth.
-  const proseOut = outTokens * 1.2;
-  const proseIn = sections * inPerSection * 1.2;
+  // Prose: every section once, plus a rewrite for the ~45% that trip a gate
+  // (length, specificity floor, repetition ceiling, banned phrases) on the
+  // first attempt. That rewrite rate is the price of the quality bar and it is
+  // most of the difference between this estimate and a naive one.
+  const REWRITE_RATE = 0.45;
+  const proseOut = outTokens * (1 + REWRITE_RATE);
+  const proseIn = sections * inPerSection * (1 + REWRITE_RATE);
   const prose = proseIn * 2.5e-6 + proseOut * 10e-6;
 
   // Critic reads each finished chapter back on the mini model.
@@ -636,8 +640,8 @@ function estimateCost(targetWords: number, chapters: number) {
 
   const total = prose + critic + matter;
 
-  // ~20s per section call, ~8s per critique, plus the configured pauses.
-  const seconds = sections * 21 + chapters * 9 + 40;
+  // ~21s per prose call including the pause, ~9s per chapter critique.
+  const seconds = sections * (1 + REWRITE_RATE) * 21 + chapters * 9 + 40;
 
   return {
     lo: total.toFixed(2),
