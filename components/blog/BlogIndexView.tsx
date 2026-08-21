@@ -14,7 +14,9 @@ import { listAllPosts, getSeoConfig } from "@/components/utils/portfolio-api";
 import AdSlot from "@/components/blog/AdSlot";
 import { TopicsFigure } from "@/components/bs/HeadFigure";
 import { POSTS_PER_PAGE, pageCount, indexPath } from "@/components/utils/blog-pagination";
-import { istStamp, formatISTDate, formatISTDateTime } from "@/components/utils/date";
+import {
+  istStamp, formatISTDate, formatISTDateTime, formatISTTime, hasTimeOfDay,
+} from "@/components/utils/date";
 
 const SLOT_TOP    = process.env.NEXT_PUBLIC_ADSENSE_SLOT_BLOG_TOP    ?? "0000000000";
 const SLOT_INFEED = process.env.NEXT_PUBLIC_ADSENSE_SLOT_BLOG_INFEED ?? "1111111111";
@@ -562,13 +564,20 @@ export default async function BlogIndexView(
                       ))}
                     </div>
                   </div>
+                  {/* Each fact is its own element rather than <br />-joined
+                      text, so the rail can stack in its 132px desktop column
+                      and reflow to one wrapping line on mobile. Date and time
+                      are separate items for the same reason: at this width they
+                      do not fit on one line together. */}
                   <div className="blog-row-meta">
                     <time dateTime={post.publishedAt || post.date}>
-                      {formatDateTime(post.publishedAt || post.date)}
+                      {formatDate(post.publishedAt || post.date)}
                     </time>
-                    <br />
-                    {post.readTime}
-                    {post.category ? <><br />{post.category}</> : null}
+                    {hasTimeOfDay(post.publishedAt) && (
+                      <span>{formatTime(post.publishedAt)}</span>
+                    )}
+                    <span>{post.readTime}</span>
+                    {post.category ? <span>{post.category}</span> : null}
                   </div>
                 </article>
               </div>
@@ -652,6 +661,12 @@ function formatDate(dateStr: string): string {
 }
 
 // Date plus time-of-day when the post has one; date alone when it does not.
+// Used for the lead byline, which has a full-width line to sit on. The row
+// rail splits the two instead — see .blog-row-meta.
 function formatDateTime(value: string): string {
   return formatISTDateTime(value);
+}
+
+function formatTime(value: string): string {
+  return formatISTTime(value);
 }

@@ -10,7 +10,9 @@ import { getPost as apiGetPost, getSeoConfig } from "@/components/utils/portfoli
 import AdSlot from "@/components/blog/AdSlot";
 import ReadingProgress from "@/components/blog/ReadingProgress";
 import { withHeadingAnchors, countWords, type Heading } from "@/components/utils/article-html";
-import { istStamp, formatISTDate, formatISTDateTime } from "@/components/utils/date";
+import {
+  istStamp, formatISTDate, formatISTDateTime, formatISTTime, hasTimeOfDay,
+} from "@/components/utils/date";
 
 /**
  * RENDERING STRATEGY. This was `force-dynamic`, which re-fetched the agent
@@ -518,7 +520,17 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                 </div>
                 <div className="blog-fact">
                   <dt className="blog-fact-label">Published</dt>
-                  <dd className="blog-fact-value">{publishedLabel}</dd>
+                  {/* Date and time on separate lines rather than the "·"-joined
+                      label used in the kicker: this cell is a quarter of the
+                      strip on desktop and half of it on mobile, too narrow to
+                      hold both, and the separator was ending up stranded at the
+                      end of the first line. */}
+                  <dd className="blog-fact-value">
+                    {formatDate(publishedAt)}
+                    {hasTimeOfDay(publishedAt) && (
+                      <><br />{formatISTTime(publishedAt)}</>
+                    )}
+                  </dd>
                 </div>
               </dl>
             </header>

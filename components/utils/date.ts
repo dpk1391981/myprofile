@@ -106,13 +106,24 @@ export function formatISTDate(value: string): string {
   });
 }
 
-/** "2026-08-21T11:04:00+05:30" → "11:04 am IST". */
+/**
+ * "2026-08-21T11:04:00+05:30" → "11:04 am IST", as one unbreakable run.
+ *
+ * The spaces are non-breaking on purpose. This renders inside a 132px metadata
+ * rail on the blog index, and an ordinary space let the line wrap mid-value —
+ * "10:19" on one row and "PM IST" orphaned on the next, which reads as two
+ * separate facts. Binding it here rather than with `white-space: nowrap` means
+ * the value stays intact wherever it is dropped, including in text extracted
+ * from the page, and still wraps as a unit when the container is genuinely too
+ * narrow.
+ */
 export function formatISTTime(value: string): string {
   const d = new Date(istStamp(value));
   if (Number.isNaN(d.getTime())) return "";
-  return `${d.toLocaleTimeString("en-IN", {
+  const time = d.toLocaleTimeString("en-IN", {
     hour: "2-digit", minute: "2-digit", timeZone: "Asia/Kolkata",
-  })} IST`;
+  });
+  return `${time} IST`.replace(/\s+/g, "\u00A0");
 }
 
 /**

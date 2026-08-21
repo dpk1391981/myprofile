@@ -1238,10 +1238,24 @@ a.blog-tag:hover { border-color: var(--spot); color: var(--spot); text-decoratio
 }
 .blog-row-title { font-size: 19px; line-height: 1.32; letter-spacing: -.014em; margin: 0; }
 .blog-row-desc { font-size: 15px; line-height: 1.6; color: var(--quiet); margin: 8px 0 0; max-width: 62ch; }
+/* The metadata rail: date, time, reading time, category.
+ *
+ * A flex column rather than <br />-joined text, because the same four facts
+ * need two different shapes. On desktop this is a 132px column beside the
+ * headline — too narrow for "Aug 20, 2026 · 10:19 pm IST" on one line, so the
+ * facts stack. On mobile the row collapses to a single column and the rail
+ * becomes a full-width line under the description, where stacking four short
+ * facts would waste four lines; there it reflows inline with separators.
+ *
+ * `nowrap` per item is what stops a value breaking in half across lines. The
+ * time string binds its own spaces too (see formatISTTime) so it survives being
+ * dropped anywhere else. */
 .blog-row-meta {
   font-size: 11px; letter-spacing: .09em; text-transform: uppercase;
   color: var(--quiet); text-align: right; padding-top: 6px; line-height: 1.9;
+  display: flex; flex-direction: column; align-items: flex-end;
 }
+.blog-row-meta > * { white-space: nowrap; }
 
 /* legacy card used by any remaining listing */
 .blog-card {
@@ -1295,7 +1309,16 @@ a.blog-tag:hover { border-color: var(--spot); color: var(--spot); text-decoratio
   .blog-pager-link--next { text-align: left; }
   .blog-row { grid-template-columns: minmax(0, 1fr); gap: 8px; }
   .blog-row-index { display: none; }
-  .blog-row-meta { text-align: left; padding-top: 2px; line-height: 1.6; }
+  /* Inline and wrapping, separated by space rather than by "·". A middot
+     between items looks right until the line wraps and one is left stranded at
+     the start of the next line, reading as a bullet. Gap has no such failure
+     mode, and at this size the uppercase tracking already separates the
+     values. */
+  .blog-row-meta {
+    text-align: left; padding-top: 2px; line-height: 1.7;
+    flex-direction: row; flex-wrap: wrap; align-items: baseline;
+    column-gap: 14px; row-gap: 0;
+  }
 }
 
 /* ---------- products ---------- */
