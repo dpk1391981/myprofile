@@ -28,16 +28,25 @@ export default async function Image({ params }: { params: { slug: string } }) {
   const title = book?.title ?? "Book";
   const subtitle = book?.subtitle ?? "";
   const audience = book?.audience ?? "";
-  const emoji = book?.coverEmoji || "📘";
 
+  /*
+    Price WITHOUT Intl currency formatting.
+
+    Intl produces "₹450", and the rupee sign (U+20B9) is not in any font Satori
+    can reach here, so it rendered as a tofu box — "□450 Free", which reads as a
+    broken image rather than a discount. A share card is the one surface where a
+    rendering fault travels furthest, so this spells the currency in ASCII
+    instead. The page itself keeps the proper symbol: browsers have the glyph.
+
+    Embedding a font with ₹ would also work, but it means fetching or bundling a
+    file on every card render for one character.
+  */
   const listPrice = book?.listPricePaise ?? 0;
+  const CURRENCY_PREFIX: Record<string, string> = { INR: "Rs ", USD: "$", EUR: "EUR ", GBP: "GBP " };
+  const cur = (book?.currency || "INR").toUpperCase();
   const priceText =
     listPrice > 0
-      ? new Intl.NumberFormat("en-IN", {
-          style: "currency",
-          currency: book?.currency || "INR",
-          maximumFractionDigits: 0,
-        }).format(listPrice / 100)
+      ? `${CURRENCY_PREFIX[cur] ?? cur + " "}${Math.round(listPrice / 100).toLocaleString("en-IN")}`
       : "";
 
   // Long titles have to shrink or they overflow the card.
@@ -64,7 +73,7 @@ export default async function Image({ params }: { params: { slug: string } }) {
             style={{
               display: "flex",
               alignItems: "center",
-              gap: 14,
+              justifyContent: "space-between",
               paddingTop: 18,
               fontSize: 21,
               letterSpacing: "0.14em",
@@ -72,8 +81,10 @@ export default async function Image({ params }: { params: { slug: string } }) {
               color: "#0088b0",
             }}
           >
-            <span>{emoji}</span>
+            {/* No emoji: Satori has no colour-emoji font here, so the book
+                glyph rendered as a plain blue square. */}
             <span>Deepak Kumar</span>
+            <span style={{ color: "#201e1d", opacity: 0.45 }}>Free book</span>
           </div>
         </div>
 
