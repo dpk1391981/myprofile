@@ -17,12 +17,22 @@ import { requireAdmin } from "@/lib/require-admin";
 import { adminListPosts, adminCreatePost } from "@/components/utils/portfolio-api";
 import { revalidateBlog } from "@/lib/revalidate-blog";
 
-export async function GET() {
+export async function GET(req: Request) {
   const authError = requireAdmin();
   if (authError) return authError;
 
+  const url = new URL(req.url);
+  // Clamped here as well as upstream: this route is reachable with any query
+  // string an authenticated caller cares to type, and `limit=100000` would
+  // undo the point of paginating at all.
+  const limit = Math.min(Math.max(Number(url.searchParams.get("limit")) || 10, 1), 100);
+  const offset = Math.max(Number(url.searchParams.get("offset")) || 0, 0);
+  const statusParam = url.searchParams.get("status") || "";
+  const status = statusParam === "published" || statusParam === "draft" ? statusParam : undefined;
+  const q = (url.searchParams.get("q") || "").trim().slice(0, 120) || undefined;
+
   try {
-    const { posts, total } = await adminListPosts();
+    const { posts, total } = await adminListPosts({ limit, offset, status, q });
     // `blogs` keeps the key the existing admin UI already reads.
     return NextResponse.json({ blogs: posts, total });
   } catch (err: any) {

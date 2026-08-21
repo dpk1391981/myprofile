@@ -382,11 +382,24 @@ export async function submitContact(payload: {
 
 // ── Admin (all require INTERNAL_KEY) ─────────────────────────────────────────
 
-export async function adminListPosts(): Promise<{
+export async function adminListPosts(params: {
+  limit?: number;
+  offset?: number;
+  /** "published" | "draft". Omitted means every status. */
+  status?: string;
+  /** Substring match on title, category and slug. */
+  q?: string;
+} = {}): Promise<{
   posts: PortfolioPost[];
+  /** Size of the FILTERED set, which is what the page counter is built from. */
   total: number;
 }> {
-  return apiFetch("/portfolio/blogs-admin?limit=300", { auth: true, revalidate: false });
+  const qs = new URLSearchParams();
+  qs.set("limit", String(params.limit ?? 300));
+  if (params.offset) qs.set("offset", String(params.offset));
+  if (params.status) qs.set("status", params.status);
+  if (params.q) qs.set("q", params.q);
+  return apiFetch(`/portfolio/blogs-admin?${qs}`, { auth: true, revalidate: false });
 }
 
 export async function adminCreatePost(

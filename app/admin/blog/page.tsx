@@ -62,24 +62,56 @@ function goLiveLabel(iso?: string | null) {
   return `goes live in ~${mins} min (${formatISTTime(iso)})`;
 }
 
+/** Rows per page. Matches the `limit` the API route defaults to. */
+const PER_PAGE = 10;
+
 export default function AdminBlogList() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "published" | "draft">("all");
   const [search, setSearch] = useState("");
+  /** `search` drives the input; this drives the query, one debounce behind. */
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [deleting, setDeleting] = useState<string | null>(null);
   const [toggling, setToggling] = useState<string | null>(null);
 
+  // Typing "javascript" should be one request, not ten. 300ms is below the
+  // point a keystroke feels laggy and above a normal inter-key interval.
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(search.trim()), 300);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  // Any change to what is being asked for resets to the first page. Without
+  // this, filtering while on page 5 of an unfiltered list asks for page 5 of a
+  // two-page result and renders an empty table that looks like a failure.
+  useEffect(() => {
+    setPage(1);
+  }, [filter, debouncedSearch]);
+
   useEffect(() => {
     loadBlogs();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, filter, debouncedSearch]);
+
+  const pageCount = Math.max(1, Math.ceil(total / PER_PAGE));
 
   async function loadBlogs() {
     setLoading(true);
     try {
-      const res = await fetch("/api/admin/blogs");
+      const qs = new URLSearchParams({
+        limit: String(PER_PAGE),
+        offset: String((page - 1) * PER_PAGE),
+      });
+      if (filter !== "all") qs.set("status", filter);
+      if (debouncedSearch) qs.set("q", debouncedSearch);
+
+      const res = await fetch(`/api/admin/blogs?${qs}`);
       const data = await res.json();
       setBlogs(data.blogs || []);
+      setTotal(data.total ?? 0);
     } finally {
       setLoading(false);
     }
@@ -118,18 +150,20 @@ export default function AdminBlogList() {
     if (!confirm("Delete this post permanently?")) return;
     setDeleting(id);
     await fetch(`/api/admin/blogs/${id}`, { method: "DELETE" });
-    setBlogs((prev) => prev.filter((b) => b.id !== id));
     setDeleting(null);
+
+    // Refetch rather than splice the row out locally: with server-side paging,
+    // removing one row leaves a nine-row page and silently hides whatever got
+    // pulled up from the next one. Stepping back a page when the last row on
+    // it was the one deleted keeps the view from landing on an empty page.
+    if (blogs.length === 1 && page > 1) setPage((p) => p - 1);
+    else loadBlogs();
   }
 
-  const filtered = blogs.filter((b) => {
-    const matchStatus = filter === "all" || b.status === filter;
-    const matchSearch =
-      !search ||
-      b.title.toLowerCase().includes(search.toLowerCase()) ||
-      b.category.toLowerCase().includes(search.toLowerCase());
-    return matchStatus && matchSearch;
-  });
+  // Filtering and searching happen in SQL — see list_blogs_admin upstream. A
+  // second pass here would re-filter one page of an already-filtered result and
+  // could only ever remove rows the server meant to show.
+  const filtered = blogs;
 
   const PILL: Record<LiveState, string> = {
     live: "bg-emerald-50 text-emerald-700 hover:bg-emerald-100",
@@ -161,7 +195,15 @@ export default function AdminBlogList() {
     <div className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
       <PageHeader
         title="All Posts"
-        description={loading ? "Loading…" : `${blogs.length} total ${blogs.length === 1 ? "post" : "posts"}`}
+        // `total`, not `blogs.length` — the latter is one page's worth, and
+        // reporting "10 total posts" on an archive of 200 would be a lie the
+        // pager immediately contradicts. Says "matching" while a filter is on,
+        // because the number is then a subset and not the archive size.
+        description={
+          loading && blogs.length === 0
+            ? "Loading…"
+            : `${total} ${filter !== "all" || debouncedSearch ? "matching " : "total "}${total === 1 ? "post" : "posts"}`
+        }
         actions={
           <Link
             href="/admin/blog/new"
@@ -182,7 +224,7 @@ export default function AdminBlogList() {
           />
           <input
             type="search"
-            placeholder="Search by title or category…"
+            placeholder="Search by title, category or slug…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
@@ -205,9 +247,9 @@ export default function AdminBlogList() {
 
       {/* List */}
       <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-        {loading ? (
+        {loading && blogs.length === 0 ? (
           <div className="divide-y divide-slate-100">
-            {[...Array(5)].map((_, i) => (
+            {[...Array(PER_PAGE)].map((_, i) => (
               <div key={i} className="h-[72px] animate-pulse bg-slate-50" />
             ))}
           </div>
@@ -216,7 +258,7 @@ export default function AdminBlogList() {
             <IconInbox size={40} stroke={1.4} className="mx-auto mb-3 text-slate-300" />
             <p className="font-medium text-slate-700">No posts found</p>
             <p className="mt-1 text-sm text-slate-500">
-              {search || filter !== "all" ? "Try a different search or filter." : "Create your first post."}
+              {debouncedSearch || filter !== "all" ? "Try a different search or filter." : "Create your first post."}
             </p>
             <Link
               href="/admin/blog/new"
@@ -226,7 +268,7 @@ export default function AdminBlogList() {
             </Link>
           </div>
         ) : (
-          <>
+          <div className={loading ? "pointer-events-none opacity-50 transition-opacity" : "transition-opacity"}>
             {/* Desktop table */}
             <table className="hidden w-full text-sm md:table">
               <thead className="border-b border-slate-200 bg-slate-50">
@@ -372,10 +414,99 @@ export default function AdminBlogList() {
                 </li>
               ))}
             </ul>
-          </>
+
+            <Pager
+              page={page}
+              pageCount={pageCount}
+              total={total}
+              perPage={PER_PAGE}
+              shown={blogs.length}
+              onChange={setPage}
+            />
+          </div>
         )}
       </div>
     </div>
+  );
+}
+
+/**
+ * Page controls for the admin list.
+ *
+ * Shows the range rather than only the page number — "11–20 of 47" answers
+ * "how much is there and where am I" in one line, which a bare "Page 2 of 5"
+ * does not. Hidden entirely at one page: a pager under a five-row table is
+ * furniture.
+ */
+function Pager({
+  page, pageCount, total, perPage, shown, onChange,
+}: {
+  page: number; pageCount: number; total: number;
+  perPage: number; shown: number; onChange: (p: number) => void;
+}) {
+  if (pageCount <= 1) return null;
+
+  const first = (page - 1) * perPage + 1;
+  const last = first + shown - 1;
+
+  // A window around the current page. Every page number is unusable past a
+  // couple of dozen pages, and the ends matter more than the middle — so first
+  // and last are always reachable, with an ellipsis standing in for the gap.
+  const window = new Set<number>([1, pageCount, page, page - 1, page + 1]);
+  const pages = Array.from(window)
+    .filter((p) => p >= 1 && p <= pageCount)
+    .sort((a, b) => a - b);
+
+  const btn =
+    "min-w-[34px] rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40";
+
+  return (
+    <nav
+      aria-label="Pagination"
+      className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 px-5 py-3"
+    >
+      <p className="text-xs text-slate-500 tabular-nums">
+        {first}–{last} of {total}
+      </p>
+
+      <div className="flex items-center gap-1">
+        <button
+          onClick={() => onChange(page - 1)}
+          disabled={page <= 1}
+          className={`${btn} border-slate-200 text-slate-600 hover:bg-slate-50`}
+        >
+          Prev
+        </button>
+
+        {pages.map((p, i) => (
+          <span key={p} className="flex items-center gap-1">
+            {/* A gap in the sequence means pages were skipped. */}
+            {i > 0 && p - pages[i - 1] > 1 && (
+              <span className="px-1 text-xs text-slate-400" aria-hidden="true">…</span>
+            )}
+            <button
+              onClick={() => onChange(p)}
+              aria-current={p === page ? "page" : undefined}
+              className={`${btn} ${
+                p === page
+                  ? "border-blue-600 bg-blue-600 text-white"
+                  : "border-slate-200 text-slate-600 hover:bg-slate-50"
+              }`}
+            >
+              {p}
+            </button>
+          </span>
+        ))}
+
+        <button
+          onClick={() => onChange(page + 1)}
+          disabled={page >= pageCount}
+          className={`${btn} border-slate-200 text-slate-600 hover:bg-slate-50`}
+        >
+          Next
+        </button>
+      </div>
+    </nav>
   );
 }
 
