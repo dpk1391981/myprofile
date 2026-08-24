@@ -150,6 +150,10 @@ export async function listPosts(params: {
   category?: string;
   featured?: boolean;
   tag?: string;
+  /** Cache lifetime for this listing, in seconds. Callers that render inside a
+   *  long-lived page (the home page's featured strip) pass a larger value so a
+   *  300s listing does not drag the whole route down to a 300s revalidate. */
+  revalidate?: number | false;
 } = {}): Promise<{ posts: PortfolioPost[]; total: number }> {
   const qs = new URLSearchParams();
   if (params.limit !== undefined) qs.set("limit", String(params.limit));
@@ -160,7 +164,8 @@ export async function listPosts(params: {
 
   try {
     return await apiFetch<{ posts: PortfolioPost[]; total: number }>(
-      `/portfolio/blogs${qs.toString() ? `?${qs}` : ""}`
+      `/portfolio/blogs${qs.toString() ? `?${qs}` : ""}`,
+      params.revalidate !== undefined ? { revalidate: params.revalidate } : {}
     );
   } catch (err) {
     console.error("[portfolio-api] listPosts failed:", (err as Error).message);
