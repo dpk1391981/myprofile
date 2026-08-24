@@ -465,7 +465,17 @@ export default async function BlogIndexView(
                 All<span className="blog-topic-count">{allPosts.length}</span>
               </Link>
               {topics.map(([t, count]) => (
+                /*
+                  `nofollow` because these views already answer `noindex` (see
+                  `indexable` above). Without it a crawler keeps re-fetching all
+                  twelve to re-confirm a verdict that cannot change, and every
+                  post they list is reachable from /blog and the archive pages
+                  anyway — the rail is a reader convenience, not a discovery
+                  path. Kept as real hrefs so the filter stays linkable and
+                  shareable.
+                */
                 <Link key={t} href={`/blog?topic=${encodeURIComponent(t)}`}
+                  rel="nofollow"
                   className="blog-topic"
                   data-active={t.toLowerCase() === activeTopic.toLowerCase()}>
                   {t}<span className="blog-topic-count">{count}</span>

@@ -409,7 +409,7 @@ const personSchema = {
     "@type": "CommunicateAction",
     target: {
       "@type": "EntryPoint",
-      urlTemplate: `${SITE_URL}/joinme`,
+      urlTemplate: `${SITE_URL}/contact`,
       inLanguage: "en",
       actionPlatform: [
         "http://schema.org/DesktopWebPlatform",

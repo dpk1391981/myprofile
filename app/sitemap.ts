@@ -13,27 +13,37 @@ const SITE_URL = (process.env.NEXT_PUBLIC_WEB_SITE || "https://officialdeepak.in
  */
 export const revalidate = 3600;
 
-// Static routes with crawl priorities tuned for a portfolio.
-const STATIC_ROUTES: { path: string; priority: number; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"] }[] = [
-  { path: "",            priority: 1.0,  changeFrequency: "weekly" },
-  { path: "/about",      priority: 0.9,  changeFrequency: "monthly" },
-  { path: "/experience", priority: 0.9,  changeFrequency: "monthly" },
-  { path: "/projects",   priority: 0.95, changeFrequency: "monthly" },
-  { path: "/skills",     priority: 0.8,  changeFrequency: "monthly" },
-  { path: "/education",  priority: 0.7,  changeFrequency: "monthly" },
-  { path: "/reviews",    priority: 0.6,  changeFrequency: "monthly" },
-  { path: "/contact",    priority: 0.9,  changeFrequency: "monthly" },
-  // The hire page. It is listed in llms.txt and linked from every article's
-  // author box and CTA, but was missing here — a page that is internally
-  // linked everywhere and absent from the sitemap reads to a crawler as an
-  // oversight rather than as an intent signal.
-  { path: "/joinme",     priority: 0.85, changeFrequency: "monthly" },
+/*
+  Static routes with crawl priorities tuned for a portfolio.
+
+  `lastModified` is a HAND-MAINTAINED date, not `new Date()`. This file
+  regenerates hourly (see `revalidate`), so stamping the current time told a
+  crawler that all eighteen static pages changed every hour. They did not.
+  Google verifies a handful of those claims, concludes this site's lastmod
+  means nothing, and then ignores it on the pages where it IS true — which is
+  precisely the signal the blog entries below depend on.
+
+  Bump the date when the page's CONTENT changes. A restyle or a refactor is
+  not a content change. Leaving a date stale is cheap; inflating it is not.
+  Seeded from each route's last content commit.
+*/
+const STATIC_ROUTES: { path: string; priority: number; lastModified: string; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"] }[] = [
+  { path: "",            priority: 1.0,  lastModified: "2026-08-24", changeFrequency: "weekly" },
+  { path: "/about",      priority: 0.9,  lastModified: "2026-08-20", changeFrequency: "monthly" },
+  { path: "/experience", priority: 0.9,  lastModified: "2026-08-20", changeFrequency: "monthly" },
+  { path: "/projects",   priority: 0.95, lastModified: "2026-08-20", changeFrequency: "monthly" },
+  { path: "/skills",     priority: 0.8,  lastModified: "2026-08-20", changeFrequency: "monthly" },
+  { path: "/education",  priority: 0.7,  lastModified: "2026-08-20", changeFrequency: "monthly" },
+  { path: "/reviews",    priority: 0.6,  lastModified: "2026-08-20", changeFrequency: "monthly" },
+  // The hire page. Every article's author box and CTA points here, and it is
+  // the destination /joinme now redirects to.
+  { path: "/contact",    priority: 0.9,  lastModified: "2026-08-20", changeFrequency: "monthly" },
   // Keyword landing pages — the phrases this site targets in search.
-  { path: "/react-developer-in-india",      priority: 0.95, changeFrequency: "weekly" },
-  { path: "/software-developer-in-india",   priority: 0.95, changeFrequency: "weekly" },
-  { path: "/javascript-developer-in-india", priority: 0.95, changeFrequency: "weekly" },
-  { path: "/full-stack-developer-in-india", priority: 0.95, changeFrequency: "weekly" },
-  { path: "/ai-engineer-in-india",          priority: 0.95, changeFrequency: "weekly" },
+  { path: "/react-developer-in-india",      priority: 0.95, lastModified: "2026-08-19", changeFrequency: "weekly" },
+  { path: "/software-developer-in-india",   priority: 0.95, lastModified: "2026-08-19", changeFrequency: "weekly" },
+  { path: "/javascript-developer-in-india", priority: 0.95, lastModified: "2026-08-19", changeFrequency: "weekly" },
+  { path: "/full-stack-developer-in-india", priority: 0.95, lastModified: "2026-08-19", changeFrequency: "weekly" },
+  { path: "/ai-engineer-in-india",          priority: 0.95, lastModified: "2026-08-19", changeFrequency: "weekly" },
 ];
 // Deliberately absent: /success (noindex — a form receipt), /moved (a redirect
 // notice), /admin (disallowed in robots.ts), /blog?topic=… (noindex, follow —
@@ -73,15 +83,21 @@ async function getBookEntries(now: Date): Promise<MetadataRoute.Sitemap> {
   const books = await listBooks();
   if (books.length === 0) return [];
 
-  const entries: MetadataRoute.Sitemap = [{
+  // Index entry first so it leads the block, but its date is filled in below
+  // from the newest book — same rule as /blog: a listing page's lastmod is
+  // the freshest thing it lists, never the time the file happened to build.
+  const index: MetadataRoute.Sitemap[number] = {
     url: `${SITE_URL}/books`,
     lastModified: now,
     changeFrequency: "weekly",
     priority: 0.9,
-  }];
+  };
+  const entries: MetadataRoute.Sitemap = [index];
+  let newestBook: Date | null = null;
 
   for (const b of books) {
     const modified = toDate(b.updatedAt ?? b.publishedAt ?? undefined, now);
+    if (!newestBook || modified > newestBook) newestBook = modified;
     entries.push({
       url: `${SITE_URL}/books/${b.slug}`,
       lastModified: modified,
@@ -98,6 +114,8 @@ async function getBookEntries(now: Date): Promise<MetadataRoute.Sitemap> {
       });
     }
   }
+
+  if (newestBook) index.lastModified = newestBook;
   return entries;
 }
 
@@ -130,7 +148,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const staticEntries: MetadataRoute.Sitemap = STATIC_ROUTES.map((r) => ({
     url: `${SITE_URL}${r.path}`,
-    lastModified: now,
+    // `toDate` guards a typo'd literal from poisoning the file; a bad date
+    // falls back to `now`, which is the old behaviour for that one entry
+    // rather than a build failure.
+    lastModified: toDate(r.lastModified, now),
     changeFrequency: r.changeFrequency,
     priority: r.priority,
   }));

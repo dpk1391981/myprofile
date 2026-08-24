@@ -66,6 +66,21 @@ const nextConfig = {
       // post rather than a 404.
       { source: "/:path*", has: BLOG_HOST,
         destination: "https://officialdeepak.in/blog/:path*", permanent: true },
+
+      /*
+        The hire form moved to /contact.
+
+        This lives here rather than as a `permanentRedirect()` in
+        app/joinme/page.tsx because that route prerenders: the redirect gets
+        baked into a static error shell that answers 200, which is strictly
+        worse than the 307 it replaced. An edge redirect answers a real 308
+        without rendering React at all.
+
+        `missing: BLOG_HOST` keeps it to one hop — on the blog host the rules
+        above have already claimed /joinme and send it to the apex, where this
+        rule then finishes the job.
+      */
+      { source: "/joinme", missing: BLOG_HOST, destination: "/contact", permanent: true },
     ];
   },
   async headers() {

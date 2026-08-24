@@ -175,7 +175,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   /*
     `noindex, follow`, not `noindex, nofollow`. Keeping a page out of the index
     is a statement about that page; it is not a reason to stop crawlers reading
-    its links to /blog, /joinme and the related articles. `nofollow` here threw
+    its links to /blog, /contact and the related articles. `nofollow` here threw
     away the internal linking of every suppressed post.
   */
   const robots      = post.noIndex ? "noindex, follow" : (post.robots || "index, follow");
@@ -697,7 +697,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                     location="author_bio" className="blog-author-link" label="X (Twitter) profile">
                     <IconBrandX size={15} /> {PERSONAL_INFO.social.twitterHandle}
                   </SocialIconLink>
-                  <Link href="/joinme" className="blog-author-cta">
+                  <Link href="/contact" className="blog-author-cta">
                     Work with me <IconArrowNarrowRight size={16} />
                   </Link>
                 </div>
@@ -780,7 +780,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                 <p className="blog-cta-body">
                   Available for senior full-stack and AI/ML roles, freelance and remote.
                 </p>
-                <Link href="/joinme" className="blog-cta-link">
+                <Link href="/contact" className="blog-cta-link">
                   Start a conversation <IconArrowRight size={14} />
                 </Link>
               </div>

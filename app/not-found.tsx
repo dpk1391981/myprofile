@@ -152,7 +152,7 @@ export default async function NotFound() {
             { href: "/books", label: "Free books" },
             { href: "/blog", label: "Engineering blog" },
             { href: "/reviews", label: "Recommendations" },
-            { href: "/joinme", label: "Hire me" },
+            { href: "/contact", label: "Hire me" },
           ].map((l) => (
             <Link key={l.href} href={l.href} className="bs-link-plain" style={{ fontSize: 15.5 }}>
               {l.label}
