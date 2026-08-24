@@ -8,6 +8,7 @@ import Recommendations from "@/components/sections/Recommendations";
 import Credentials from "@/components/sections/Credentials";
 import Faq from "@/components/sections/Faq";
 import HireCta from "@/components/sections/HireCta";
+import TechBlogs from "@/components/sections/TechBlogs";
 import { FAQS } from "@/components/utils/portfolio-data";
 import { SITE_URL } from "@/components/utils/site-data";
 import { HOME_FAQ_STRUCT_DATA, NEXT_SEO_DEFAULT } from "./seo_config";
@@ -35,6 +36,7 @@ export default function Home() {
           down and collapsed by default. */}
       <Career />
       <SelectedWork limit={5} showMore />
+      <TechBlogs />
       <Products />
       <Capabilities />
       <Recommendations />
