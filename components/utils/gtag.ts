@@ -137,3 +137,20 @@ export function gaBookOffer(
 ): void {
   gaEvent("book_offer", { action, item_id: slug, trigger, content_type: "book" });
 }
+
+/**
+ * A WhatsApp CTA click.
+ *
+ * Not folded into gaOutbound: `outbound_social` answers "which profile icon
+ * earns clicks", and mixing a lead intent into that row makes both numbers
+ * useless — the social report would inherit a spike that isn't social traffic,
+ * and the lead number would be buried under footer icon clicks.
+ *
+ * `page_path` is recorded explicitly rather than left to GA4's automatic
+ * page_location, because the whole point of the per-page prefill is to find out
+ * WHICH page produces conversations worth having. Without it the floating CTA
+ * is one undifferentiated count and there is nothing to tune.
+ */
+export function gaWhatsApp(location: string, pagePath: string): void {
+  gaEvent("whatsapp_click", { link_location: location, page_path: pagePath });
+}

@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import WhatsAppCta from "@/components/shared/WhatsAppCta";
 
 /**
  * Decides whether a page gets the public site chrome.
@@ -45,6 +46,11 @@ export default function SiteChrome({
       {nav}
       <main id="main">{children}</main>
       {footer}
+      {/* Public pages only, which is the whole reason it is mounted here and
+          not in the root layout: both early returns above — the admin panel and
+          the whole-book reader — drop it for free. The remaining exclusions
+          (blog, books) are the CTA's own, in components/utils/whatsapp.ts. */}
+      <WhatsAppCta />
     </>
   );
 }

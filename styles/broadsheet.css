@@ -2526,3 +2526,231 @@ button.blog-share-btn { cursor: pointer; font: inherit; padding: 0; appearance: 
 @media (prefers-reduced-motion: reduce) {
   .bkm-backdrop, .bkm-panel { animation: none; }
 }
+/* ============================================================================
+   FLOATING WHATSAPP CTA
+   ============================================================================
+   Bottom-right on every public page except the reading surfaces (blog, books)
+   and the admin panel — see components/utils/whatsapp.ts for that decision.
+
+   THE ONE RULE THIS FOLLOWS: the brand mark is untouched, the furniture around
+   it is ours. WhatsApp green only ever appears inside the 36px disc, at the
+   colour people recognise. The pill it sits in is paper, hairline rule and
+   Source Serif — the same three ingredients as every other control on the site.
+   Tint the whole pill green and it stops being part of the page.
+
+   ── WHERE THE PROMINENCE COMES FROM ─────────────────────────────────────────
+   All of it is STATIC. An earlier pass gave this an idle float and a travelling
+   sheen, and both were wrong in the same way: a control that moves while nobody
+   is touching it reads as an advertisement, and next to a page of body text the
+   float is simply a button that will not sit still. Continuous motion is also
+   self-defeating as emphasis — a thing that is always moving has no way left to
+   say "now", which is the one thing the nudge below needs to say.
+
+   So the disc is LIT as a physical object instead, which is prominence that
+   costs one paint and never nags. Four cues do it, none of them animated:
+
+     1. a radial gradient with its light source at the upper left, so the
+        surface curves away from a fixed light instead of being evenly filled;
+     2. an inset rim highlight along the top edge — the bright line where a
+        convex surface catches that light;
+     3. an inset shade along the bottom — the terminator, which is what tells
+        the eye the object is round rather than a lit flat disc;
+     4. a GREEN-TINTED cast shadow underneath. This is the one people leave out
+        and it is the one that does the work: a grey shadow under a green object
+        reads as a sticker on glass, while a shadow carrying the object's own
+        colour reads as light bouncing off a thing that is really there.
+
+   The only movement left is a response to something the visitor did: the
+   entrance, the hover lift, the press, and the once-per-session nudge.
+
+   Z-INDEX 65 IS DELIBERATE. It sits UNDER the nav drawer's scrim (70), so
+   opening the menu dims this along with everything else instead of leaving one
+   bright green button floating above a dimmed page. It also sits under the book
+   offer modal (200), which it can never co-occur with anyway.
+
+   TRANSFORM IS SPLIT TWO WAYS ON PURPOSE. The entrance and the hover lift both
+   want to move this element, and a single `transform` lets only the last one
+   win. So each takes a channel it owns outright: `translate` for the entrance,
+   `scale` for hover and press. They compose instead of overwriting, which is
+   the entire reason the individual transform properties exist.
+   ========================================================================== */
+.wa-cta {
+  position: fixed;
+  z-index: 65;
+  right: calc(20px + env(safe-area-inset-right, 0px));
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 18px 8px 8px;
+
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .16), 0 2px 6px rgba(0, 0, 0, .07);
+
+  font-family: var(--serif);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+
+  /* Hidden until the component reveals it. `visibility` and not opacity alone:
+     a 0-opacity link is still tabbable and still announced, so the button
+     would exist for a keyboard or screen-reader user a second and a half
+     before it exists for anyone else. */
+  opacity: 0;
+  visibility: hidden;
+  translate: 0 14px;
+  transition:
+    opacity .3s ease,
+    translate .34s cubic-bezier(.2, .8, .3, 1),
+    visibility .3s,
+    scale .2s cubic-bezier(.2, .8, .3, 1),
+    box-shadow .22s ease,
+    border-color .18s ease,
+    padding .38s cubic-bezier(.2, .8, .3, 1);
+}
+
+.wa-cta.is-in { opacity: 1; visibility: visible; translate: 0 0; }
+
+.wa-cta:hover {
+  text-decoration: none;
+  color: var(--ink);
+  scale: 1.05;
+  border-color: color-mix(in srgb, #25d366 55%, var(--rule));
+  box-shadow: 0 16px 38px rgba(0, 0, 0, .22), 0 2px 6px rgba(0, 0, 0, .08);
+}
+.wa-cta:active { scale: .97; }
+.wa-cta:focus-visible { outline: 2px solid var(--spot); outline-offset: 3px; }
+
+/* On the dark ground a light-alpha shadow does nothing — the lift has to come
+   from a deeper shadow, not a softer one. */
+:root[data-ink="dark"] .wa-cta {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .55), 0 2px 8px rgba(0, 0, 0, .4);
+}
+:root[data-ink="dark"] .wa-cta:hover {
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .62), 0 2px 8px rgba(0, 0, 0, .45);
+}
+
+/* ---------- the disc ----------
+   The four depth cues from the header comment, in order: gradient, rim, shade,
+   green cast. Nothing here animates. */
+.wa-cta__mark {
+  position: relative;   /* the nudge ring is drawn off this */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  /* Hard-coded on purpose: this is WhatsApp's colour, not ours, and it must
+     read identically on both grounds. Running it through a theme token would
+     make the one recognisable thing in the control theme-dependent. */
+  background: radial-gradient(circle at 33% 27%, #5cec8d 0%, #2bdc6d 42%, #25d366 64%, #14a851 100%);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 255, 255, .5),
+    inset 0 -2.5px 4px rgba(0, 60, 25, .28),
+    0 4px 10px rgba(18, 163, 78, .45),
+    0 1px 2px rgba(0, 0, 0, .2);
+  color: #fff;
+}
+/* The glyph sits on a lit surface, so it casts too — without this it looks
+   printed on the disc rather than resting in front of it. */
+.wa-cta__mark svg { filter: drop-shadow(0 1px 1px rgba(0, 50, 20, .32)); }
+
+/* ---------- the nudge ----------
+   One expanding ring off the disc, twice, plus a green cast on the pill while
+   it runs. Fired once per session after the reader goes still — see
+   WhatsAppCta.tsx for when it fires and why it never repeats.
+
+   Two passes of one ring, not two rings chasing each other: the chase reads as
+   a notification demanding to be dealt with, and this is an offer. The ring is
+   a pseudo-element running `transform` and `opacity` only, so it stays on the
+   compositor and costs no layout. It expands past the pill's edge on purpose —
+   a halo that stays inside the paper reads as a hover state, not as movement. */
+.wa-cta__mark::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid #25d366;
+  opacity: 0;
+  pointer-events: none;
+}
+.wa-cta.is-nudging .wa-cta__mark::after {
+  /* Exactly two. The count is the design. */
+  animation: wa-ring 1.5s ease-out 2;
+}
+@keyframes wa-ring {
+  0%   { transform: scale(1);   opacity: .65; }
+  70%  { transform: scale(2.1); opacity: 0; }
+  100% { transform: scale(2.1); opacity: 0; }
+}
+
+/* The pill picks up the disc's colour while the nudge runs — a soft green cast
+   under the paper, so the ring reads as one lit object announcing itself rather
+   than as a circle flying off an unrelated white lozenge. This is the whole of
+   the pill's part in the nudge: it never moves, hops or wobbles. */
+.wa-cta.is-nudging {
+  border-color: color-mix(in srgb, #25d366 55%, var(--rule));
+  box-shadow:
+    0 0 0 5px rgba(37, 211, 102, .12),
+    0 14px 34px rgba(18, 163, 78, .26),
+    0 2px 6px rgba(0, 0, 0, .08);
+}
+:root[data-ink="dark"] .wa-cta.is-nudging {
+  box-shadow:
+    0 0 0 5px rgba(37, 211, 102, .15),
+    0 14px 36px rgba(0, 0, 0, .55),
+    0 2px 8px rgba(0, 0, 0, .4);
+}
+
+.wa-cta__label { white-space: nowrap; }
+
+/* Phones: the label is closed to zero width, so the target is a 52px circle
+   that does not sit on a third of every line. It opens for the length of the
+   nudge — the one moment a mobile visitor is told in words what the green
+   circle does — then closes and stays closed. `max-width` and not `display`,
+   because a width of none cannot be transitioned. */
+@media (max-width: 560px) {
+  .wa-cta {
+    right: calc(16px + env(safe-area-inset-right, 0px));
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    padding: 8px;
+    gap: 0;
+  }
+  .wa-cta__label {
+    max-width: 0;
+    margin-left: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition:
+      max-width .4s cubic-bezier(.2, .8, .3, 1),
+      margin-left .4s cubic-bezier(.2, .8, .3, 1),
+      opacity .26s ease;
+  }
+  .wa-cta.is-nudging { padding-right: 18px; }
+  .wa-cta.is-nudging .wa-cta__label {
+    max-width: 12ch;
+    margin-left: 10px;
+    opacity: 1;
+  }
+}
+
+/* The nudge is already withheld in JS when reduce is set — this is the second
+   lock, so a future change that forgets the guard cannot start a ring pulsing
+   at someone who asked for stillness. The depth on the disc stays, because
+   none of it moves. */
+@media (prefers-reduced-motion: reduce) {
+  .wa-cta { transition: opacity .01ms linear, visibility .01ms linear; translate: none; }
+  .wa-cta.is-in { translate: none; }
+  .wa-cta:hover, .wa-cta:active { scale: 1; }
+  .wa-cta.is-nudging .wa-cta__mark::after { animation: none; }
+  .wa-cta__label { transition: none; }
+}
+
+@media print { .wa-cta { display: none; } }
