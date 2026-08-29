@@ -16,6 +16,11 @@ export function revalidateBlog(slug?: string | null) {
   revalidatePath("/blog");
   revalidatePath("/blog/[slug]", "page");
   if (slug) revalidatePath(`/blog/${slug}`);
+  // The home page carries the blog strip, and it was the one surface this
+  // helper missed. Its own revalidate is the longest on the site because the
+  // rest of the page is near-static, so a just-published post sat off the
+  // most-linked page of the site far longer than it sat off /blog.
+  revalidatePath("/");
   // The feeds are built from the same list and would otherwise advertise a
   // post that 404s, or keep advertising one that was deleted.
   revalidatePath("/blog/rss.xml");

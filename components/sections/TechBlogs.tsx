@@ -15,17 +15,30 @@ import Link from "next/link";
 import { IconArrowRight } from "@tabler/icons-react";
 import { BLOG_POSTS } from "@/components/utils/portfolio-data";
 import { listPosts, type PortfolioPost } from "@/components/utils/portfolio-api";
+import { MIN_PUBLIC_VIEWS } from "@/components/utils/engagement-config";
 import { formatISTDate } from "@/components/utils/date";
 import SectionHead from "./SectionHead";
 
 /** One lead article plus two rows under it. */
 const HOME_POSTS = 3;
+const HOME_ROWS = HOME_POSTS - 1;
 
-/* Longer than the API client's 300s default on purpose. The lowest `revalidate`
-   of any fetch in a route sets that route's own revalidation, and the home page
-   is otherwise a daily regeneration (see app/page.tsx) — a 5-minute blog
-   listing would quietly turn the whole page into a 5-minute one. Fifteen
-   minutes is well inside "a post published today shows up today". */
+/**
+ * How deep to look for the rows under the lead.
+ *
+ * The lead only ever needs the newest featured post, but the rows are a
+ * ranking, and a ranking over three candidates is not one. Twelve is roughly
+ * the whole featured shelf today (14 of 56 posts) without pulling the entire
+ * table onto the home page's render.
+ */
+const TOP_POOL = 12;
+
+/* Matches the home page's own revalidate (app/page.tsx). It used to be longer
+   than the API client's 300s default, on the belief that the lowest fetch
+   revalidate in a route drags the whole route down to it — it does not, and
+   the cost of that belief was a blog strip that could not update between daily
+   regenerations. The page number is the one that matters now; this just avoids
+   holding a data-cache entry that outlives the HTML built from it. */
 const FEED_REVALIDATE = 900;
 
 type HomePost = {
@@ -36,6 +49,9 @@ type HomePost = {
   readTime: string;
   tags: string[];
   featured: boolean;
+  /** Unique visitors. 0 for the hand-written fallback posts, which are not
+   *  measured — see the ranking note in `topRows`. */
+  views: number;
 };
 
 const fromDb = (p: PortfolioPost): HomePost => ({
@@ -46,6 +62,7 @@ const fromDb = (p: PortfolioPost): HomePost => ({
   readTime: p.readTime,
   tags: p.tags ?? [],
   featured: Boolean(p.featured),
+  views: p.views ?? 0,
 });
 
 /** A post the article page will answer `noindex` for has no business taking one
@@ -56,41 +73,80 @@ const indexable = (p: PortfolioPost) =>
 const byDateDesc = (a: HomePost, b: HomePost) =>
   new Date(b.date).getTime() - new Date(a.date).getTime();
 
-async function getHomePosts(): Promise<HomePost[]> {
+const byViewsDesc = (a: HomePost, b: HomePost) => b.views - a.views || byDateDesc(a, b);
+
+/**
+ * The rows under the lead: the best of the shelf, not the next two off the
+ * press.
+ *
+ * ═══ WHY THIS IS NOT SIMPLY "ORDER BY VIEWS" ═══
+ * That is the obvious implementation and today it would be a random number
+ * generator. Across 56 published posts the most-read has 19 unique visitors,
+ * one other post is in double digits, and 39 are on zero. Sorting that is
+ * sorting noise: the ordering would be decided by which posts happened to
+ * catch a crawler, it would pin an August hackathon write-up to the home page
+ * indefinitely, and every genuinely good post sits at zero next to it.
+ *
+ * MIN_PUBLIC_VIEWS is the site's existing answer to exactly this question —
+ * it is the count below which no number is shown anywhere, because a number
+ * that small argues against the thing it sits on. The same threshold decides
+ * whether a number is worth RANKING by, and reusing it means there is one
+ * place to change the site's mind about when traffic starts to mean something.
+ *
+ * So: rank by views among the posts that clear the floor, and fall back to the
+ * editorial signal — the featured flag, newest first — for the slots that
+ * leaves. Today that is both rows, and the strip reads as curated picks.
+ * Nothing has to be changed for it to become a real popularity ranking; it
+ * turns into one on its own, one row at a time, as posts cross the floor.
+ */
+function topRows(pool: HomePost[], lead: HomePost): HomePost[] {
+  const rest = pool.filter((p) => p.slug !== lead.slug);
+
+  const proven = rest.filter((p) => p.views >= MIN_PUBLIC_VIEWS).sort(byViewsDesc);
+  const unproven = rest
+    .filter((p) => p.views < MIN_PUBLIC_VIEWS)
+    .sort((a, b) => Number(b.featured) - Number(a.featured) || byDateDesc(a, b));
+
+  return [...proven, ...unproven].slice(0, HOME_ROWS);
+}
+
+async function getHomePosts(): Promise<{ lead: HomePost; rows: HomePost[] } | null> {
   const [featured, latest] = await Promise.all([
-    listPosts({ featured: true, limit: HOME_POSTS, revalidate: FEED_REVALIDATE }),
+    listPosts({ featured: true, limit: TOP_POOL, revalidate: FEED_REVALIDATE }),
     listPosts({ limit: HOME_POSTS, revalidate: FEED_REVALIDATE }),
   ]);
-
-  const seen = new Set<string>();
-  const out: HomePost[] = [];
-  const push = (p: HomePost) => {
-    if (!p.slug || seen.has(p.slug)) return;
-    seen.add(p.slug);
-    out.push(p);
-  };
 
   const fromApi = (posts: PortfolioPost[]) =>
     posts.filter(indexable).map(fromDb).sort(byDateDesc);
 
-  // Featured first, newest of them leading; the latest posts then top the
-  // section up when fewer than three articles are flagged.
-  fromApi(featured.posts).forEach(push);
-  fromApi(latest.posts).forEach(push);
+  const flagged = fromApi(featured.posts);
+  const recent = fromApi(latest.posts);
 
-  // Static fallback, featured first for the same reason.
-  [...BLOG_POSTS]
-    .sort((a, b) => Number(b.featured) - Number(a.featured) || byDateDesc(a, b))
-    .forEach(push);
+  // The lead is the newest FEATURED post, not the newest post. Three articles
+  // a day come off the pipeline and the flag is the one gate between them and
+  // the site's most-linked page; leading with whatever published last would
+  // hand that slot to an unvetted draft. Newest-overall is the fallback for a
+  // shelf with nothing flagged on it yet.
+  const pool = [...flagged];
+  const seen = new Set(pool.map((p) => p.slug));
+  [...recent, ...BLOG_POSTS.map((p) => ({ ...p, views: 0 }))].forEach((p) => {
+    if (p.slug && !seen.has(p.slug)) {
+      seen.add(p.slug);
+      pool.push(p);
+    }
+  });
 
-  return out.slice(0, HOME_POSTS);
+  const lead = flagged[0] ?? pool[0];
+  if (!lead) return null;
+
+  return { lead, rows: topRows(pool, lead) };
 }
 
 export default async function TechBlogs() {
-  const posts = await getHomePosts();
-  const [lead, ...rest] = posts;
+  const picked = await getHomePosts();
+  if (!picked) return null;
 
-  if (!lead) return null;
+  const { lead, rows: rest } = picked;
 
   return (
     <section className="bs-wrap bs-section" id="tech-blogs">
@@ -131,7 +187,13 @@ export default async function TechBlogs() {
 
         {rest.length > 0 && (
           <section className="bs-wrap bs-section--tight" style={{ paddingTop: 40 }}>
-            <p className="bs-list-head">More articles</p>
+            {/* The heading has to agree with the sort. Calling a curated pair
+                "Most read" while nothing has been read is the kind of claim a
+                reader can check in one click, and the label flips on its own
+                the moment the ranking becomes a real one. */}
+            <p className="bs-list-head">
+              {rest.some((p) => p.views >= MIN_PUBLIC_VIEWS) ? "Most read" : "Also worth reading"}
+            </p>
             <div className="bs-mt-4">
               {rest.map((post, index) => (
                 <article key={post.slug} className="blog-row">
