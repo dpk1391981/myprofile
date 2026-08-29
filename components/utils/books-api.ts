@@ -165,6 +165,36 @@ type FetchOpts = {
   jsonStatuses?: number[];
 };
 
+/**
+ * Render an upstream error `detail` as something a human can act on.
+ *
+ * FastAPI answers a 422 with an ARRAY of validation objects, not a string, so
+ * interpolating it straight into a template literal produced the single least
+ * useful error this admin has shown: `Books API 422: [object Object]`. The
+ * field that was actually rejected — and its limit — was sitting in `loc` and
+ * `msg` the whole time.
+ *
+ * `loc` starts with "body" for a JSON payload; that is noise to the person
+ * reading the message, so it is dropped.
+ */
+function describeDetail(detail: unknown): string {
+  if (!detail) return "";
+  if (typeof detail === "string") return detail;
+  if (Array.isArray(detail)) {
+    return detail
+      .map((d: any) => {
+        const where = Array.isArray(d?.loc)
+          ? d.loc.filter((p: unknown) => p !== "body").join(".")
+          : "";
+        const msg = d?.msg || d?.message || JSON.stringify(d);
+        return where ? `${where}: ${msg}` : String(msg);
+      })
+      .join("; ")
+      .slice(0, 300);
+  }
+  return JSON.stringify(detail).slice(0, 300);
+}
+
 async function apiFetchRaw<T>(
   path: string,
   opts: FetchOpts = {}
@@ -197,6 +227,7 @@ async function apiFetchRaw<T>(
         : { next: { revalidate: revalidate === false ? 0 : revalidate } }),
     });
 
+
     // Read the body once — a stream cannot be consumed twice.
     const raw = await res.text().catch(() => "");
 
@@ -211,7 +242,7 @@ async function apiFetchRaw<T>(
       let detail = raw.slice(0, 300);
       try {
         const parsed = JSON.parse(raw);
-        detail = parsed?.detail || parsed?.error || detail;
+        detail = describeDetail(parsed?.detail ?? parsed?.error) || detail;
       } catch {
         /* keep the raw text */
       }
@@ -230,12 +261,65 @@ async function apiFetch<T>(path: string, opts: FetchOpts = {}): Promise<T> {
 }
 
 
+/* ── Markdown that leaked into the plain-text fields ──────────────────────────
+ *
+ * The author agent writes Markdown. The service converts the BODY to HTML, but
+ * `description`, `subtitle`, the outcomes and the chapter summaries are plain
+ * text columns and get no conversion at all — so a description that opens
+ * "**JavaScript Core Engineer** is a deep technical guide … and `this` to
+ * promises" renders with the asterisks and backticks on the page.
+ *
+ * WHY IT IS STRIPPED HERE AND NOT RENDERED AS <strong> AT THE CALL SITE. These
+ * are not display strings with one consumer. `description` alone becomes the
+ * meta description, the og:description, the JSON-LD `description` on both the
+ * book page and the index, and the text drawn into the OpenGraph image — and in
+ * four of those five an asterisk is not merely ugly, it is a literal asterisk
+ * in a search snippet. A field that is plain text everywhere it is used should
+ * arrive plain, once, at the boundary; the alternative is a markdown renderer
+ * threaded through every consumer and remembered by every future one.
+ *
+ * The HTML body fields keep their own repair — see components/books/chapter-html.ts,
+ * where the same markers DO mean <strong> and <code> because that content is
+ * markup.
+ *
+ * Admin reads are deliberately NOT cleaned: that editor shows what is stored,
+ * and quietly hiding the markers is how a defect stays in the database forever.
+ */
+const MD_BOLD = /\*\*(?!\s)([^*\n]{1,300}?)(?<!\s)\*\*/g;
+const MD_CODE = /`([^`\n]{1,300})`/g;
+
+const plain = (v: unknown): string =>
+  typeof v === "string" ? v.replace(MD_BOLD, "$1").replace(MD_CODE, "$1") : (v as string);
+
+/** The plain-text fields of a book, cleaned in place. Body HTML is untouched. */
+function cleanBook<T extends Book>(book: T): T {
+  if (!book) return book;
+  return {
+    ...book,
+    title: plain(book.title),
+    subtitle: plain(book.subtitle),
+    description: plain(book.description),
+    topic: plain(book.topic),
+    audience: plain(book.audience),
+    prerequisites: plain(book.prerequisites),
+    seoTitle: plain(book.seoTitle),
+    seoDescription: plain(book.seoDescription),
+    outcomes: (book.outcomes ?? []).map(plain),
+    ...(book.toc
+      ? { toc: book.toc.map((c) => ({ ...c, heading: plain(c.heading), summary: plain(c.summary) })) }
+      : {}),
+    ...(book.body
+      ? { body: book.body.map((c) => ({ ...c, heading: plain(c.heading), summary: plain(c.summary) })) }
+      : {}),
+  };
+}
+
 /* ── Public reads (degrade, never throw) ──────────────────────────────────── */
 
 export async function listBooks(): Promise<Book[]> {
   try {
     const { books } = await apiFetch<{ books: Book[] }>("/books", { revalidate: 300 });
-    return books ?? [];
+    return (books ?? []).map(cleanBook);
   } catch (err) {
     console.error("[books] listBooks failed:", err);
     return [];
@@ -244,7 +328,9 @@ export async function listBooks(): Promise<Book[]> {
 
 export async function getBook(slug: string): Promise<Book | null> {
   try {
-    return await apiFetch<Book>(`/books/${encodeURIComponent(slug)}`, { revalidate: 300 });
+    return cleanBook(
+      await apiFetch<Book>(`/books/${encodeURIComponent(slug)}`, { revalidate: 300 })
+    );
   } catch (err) {
     console.error(`[books] getBook(${slug}) failed:`, err);
     return null;
@@ -278,10 +364,22 @@ export async function getChapter(
   ordinal: number
 ): Promise<ChapterPage | null> {
   try {
-    return await apiFetch<ChapterPage>(
+    const page = await apiFetch<ChapterPage>(
       `/books/${encodeURIComponent(slug)}/chapters/${ordinal}`,
       { revalidate: 600 }
     );
+    return {
+      ...page,
+      book: cleanBook(page.book),
+      // `html` is markup and keeps its own repair; the heading and the summary
+      // are the plain-text pair that reaches the <h1>, the standfirst and the
+      // meta description.
+      chapter: {
+        ...page.chapter,
+        heading: plain(page.chapter.heading),
+        summary: plain(page.chapter.summary),
+      },
+    };
   } catch (err) {
     console.error(`[books] getChapter(${slug}, ${ordinal}) failed:`, err);
     return null;
@@ -296,9 +394,11 @@ export async function getChapter(
  * (unconfirmed address, unsubscribed) instead of rendering an empty book.
  */
 export async function downloadBook(slug: string, token: string): Promise<Book> {
-  return apiFetch<Book>(
-    `/books/${encodeURIComponent(slug)}/download?token=${encodeURIComponent(token)}`,
-    { revalidate: false }
+  return cleanBook(
+    await apiFetch<Book>(
+      `/books/${encodeURIComponent(slug)}/download?token=${encodeURIComponent(token)}`,
+      { revalidate: false }
+    )
   );
 }
 

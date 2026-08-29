@@ -12,7 +12,7 @@ import ViewTracker from "@/components/shared/ViewTracker";
 import ViewCountText from "@/components/shared/ViewCountText";
 import { belowFloorClass } from "@/components/utils/engagement-config";
 import { bookLd, bookFaq } from "@/components/books/book-seo";
-import { repairEmphasis } from "@/components/books/chapter-html";
+import { prepareBody } from "@/components/books/chapter-html";
 
 /**
  * The book landing page — the one that has to rank.
@@ -53,10 +53,14 @@ export async function generateMetadata(
   if (!book) return pageMeta({ title: "Book not found", description: "", path: `/books/${params.slug}` });
 
   const title = book.seoTitle || `${book.title}${book.subtitle ? ` — ${book.subtitle}` : ""}`;
-  const description =
+  // `description` is stored as several paragraphs separated by blank lines; a
+  // meta tag is one line, so the breaks collapse rather than travelling into
+  // the snippet as literal whitespace.
+  const description = (
     book.seoDescription ||
     book.description ||
-    `A free ${book.pages}-page book on ${book.topic || book.title} for ${book.audience || "developers"}.`;
+    `A free ${book.pages}-page book on ${book.topic || book.title} for ${book.audience || "developers"}.`
+  ).replace(/\s+/g, " ").trim();
 
   const base = pageMeta({
       title,
@@ -192,7 +196,17 @@ export default async function BookPage({ params }: { params: { slug: string } })
           surrounding context, because that is how it will be quoted. */}
       {book.description && (
         <section style={{ marginTop: 34, paddingLeft: 20, borderLeft: "2px solid var(--spot)" }}>
-          <p className="bs-lede" style={{ margin: 0 }}>{book.description}</p>
+          {/* The field holds three or four paragraphs separated by blank lines.
+              Rendered as one string they arrive as one 200-word block — HTML
+              treats the blank line as a space — which is the hardest possible
+              shape to read at lede size, and this is the first prose on the
+              page. Split, so the paragraphs the author wrote are the paragraphs
+              the reader gets. */}
+          {book.description.split(/\n\s*\n+/).map((para, i) => (
+            <p key={i} className="bs-lede" style={{ margin: i ? "14px 0 0" : 0 }}>
+              {para.trim()}
+            </p>
+          ))}
         </section>
       )}
 
@@ -278,7 +292,7 @@ export default async function BookPage({ params }: { params: { slug: string } })
           <div
             className="bk-prose" style={{ marginTop: 20 }}
             dangerouslySetInnerHTML={{
-              __html: repairEmphasis((book.prefaceHtml || "") + (book.introHtml || "")),
+              __html: prepareBody((book.prefaceHtml || "") + (book.introHtml || "")),
             }}
           />
         </section>

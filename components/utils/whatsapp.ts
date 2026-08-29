@@ -95,20 +95,69 @@ const MESSAGES: Record<string, string> = {
   "/success":
     `Hi ${PERSONAL_INFO.firstName} — I just sent a message through ${SITE} and wanted to follow it up here too. ` +
     `The short version:`,
+
+  "/blog":
+    `Hi ${PERSONAL_INFO.firstName} — I've been reading your writing on ${SITE} and I'd like to talk about some work. ` +
+    `Do you have a few minutes this week?`,
+
+  "/books":
+    `Hi ${PERSONAL_INFO.firstName} — I was going through your books on ${SITE} and I have a question. ` +
+    `Are you free for a short chat?`,
 };
+
+/**
+ * Prefix → message, for the two sections whose pages are generated.
+ *
+ * These cannot go in MESSAGES: there is one entry per article and one per
+ * chapter, and both are written by the agent. The prefill therefore says WHAT
+ * the visitor was reading — an article, a chapter of a book — without quoting a
+ * title it would have to derive from a slug. "javascript-core-engineer"
+ * un-slugified is "Javascript Core Engineer", and a prefill that gets the
+ * reader's own book title wrong is worse than one that does not attempt it.
+ *
+ * Longest prefix wins, so /books/x/3 takes the chapter line rather than the
+ * section line above it.
+ */
+const PREFIX_MESSAGES: [RegExp, string][] = [
+  [
+    /^\/blog\/[^/]+$/,
+    `Hi ${PERSONAL_INFO.firstName} — I've just read one of your articles on ${SITE} and had a question about it. ` +
+      `Is this a good place to ask?`,
+  ],
+  [
+    /^\/books\/[^/]+\/\d+$/,
+    `Hi ${PERSONAL_INFO.firstName} — I'm partway through a chapter of one of your books on ${SITE} and had a question about it. ` +
+      `Can I ask it here?`,
+  ],
+  [
+    /^\/books\/[^/]+$/,
+    `Hi ${PERSONAL_INFO.firstName} — I'm looking at one of your books on ${SITE} and I'd like to talk about some work. ` +
+      `Do you have a few minutes this week?`,
+  ],
+];
 
 /**
  * Routes the CTA stays off.
  *
- * Blog and books are reading surfaces. A button parked over the last two lines
- * of every screen is a reading tax, and both already carry their own conversion
- * furniture — the book offer modal, the share row, the author bio — which this
- * would either duplicate or physically collide with.
+ * Blog and books USED to be listed here, on the argument that a reading surface
+ * should not carry a floating ask. They are back on: those two sections are
+ * where the site's traffic actually lands, and a reader who has just been given
+ * 30,000 words for free is the most likely person on the site to want a
+ * conversation — which is precisely the reader the old rule sent away with no
+ * way to start one. The reading-tax objection is answered by the button's own
+ * behaviour rather than by hiding it: it stays out of the first paint, reveals
+ * on the first real scroll, and nudges once per session, never again.
+ *
+ * What stays off is the transactional pair. Someone confirming an address or
+ * unsubscribing is mid-flow on a page with exactly one thing to do, and a
+ * second, louder call to action there is an interruption, not an offer.
  *
  * /admin and the whole-book reader are not listed because they never mount it:
  * the CTA is rendered inside the public branch of SiteChrome, which drops both.
+ * The reader is the one reading surface that genuinely has no room for this —
+ * it is a book, not a page of the site.
  */
-const OFF_ROUTES = [/^\/blog(\/|$)/, /^\/books(\/|$)/];
+const OFF_ROUTES = [/^\/books\/(confirm|unsubscribe)$/];
 
 /** Strip the trailing slash so "/about" and "/about/" resolve to one entry. */
 const normalise = (pathname: string) => pathname.replace(/\/+$/, "") || "/";
@@ -123,6 +172,9 @@ export function whatsAppMessage(pathname: string): string {
 
   const exact = MESSAGES[path];
   if (exact) return exact;
+
+  const prefixed = PREFIX_MESSAGES.find(([re]) => re.test(path));
+  if (prefixed) return prefixed[1];
 
   // Keyword landing pages. The label is read off the page's own h1 rather than
   // restated here, so a headline edit cannot leave the prefill quoting a page

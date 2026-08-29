@@ -56,10 +56,26 @@ body {
   transition: background .25s ease, color .25s ease;
 }
 
-body.bs-body h1,
-body.bs-body h2,
-body.bs-body h3,
-body.bs-body h4 {
+/*
+  The heading baseline: display face, tight tracking, and NO margin, because
+  every heading on a composed page positions itself with the block it belongs
+  to rather than with a margin of its own.
+
+  IT IS `.bs-body` AND NOT `body.bs-body` ON PURPOSE. With the element name in
+  front, this selector scores (0,1,2) — one point more than `.bk-prose h2` or
+  `.blog-content h2`, which are (0,1,1). So it beat every prose rule in the
+  stylesheet, and `margin: 0` won on headings the prose rules had carefully
+  spaced: a chapter h2 landed hard against the last line of the paragraph above
+  it, and a blog h2 dropped its 52px of air while KEEPING the hairline rule the
+  same block draws — a section rule sitting directly on the previous sentence.
+  Dropping `body` levels the specificity, so the later, more specific prose
+  rules win on margin and line-height while everything they do not set still
+  falls back here.
+*/
+.bs-body h1,
+.bs-body h2,
+.bs-body h3,
+.bs-body h4 {
   font-family: var(--serif);
   font-weight: 600;
   letter-spacing: -0.018em;

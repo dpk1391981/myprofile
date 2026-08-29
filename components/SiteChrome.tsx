@@ -48,8 +48,9 @@ export default function SiteChrome({
       {footer}
       {/* Public pages only, which is the whole reason it is mounted here and
           not in the root layout: both early returns above — the admin panel and
-          the whole-book reader — drop it for free. The remaining exclusions
-          (blog, books) are the CTA's own, in components/utils/whatsapp.ts. */}
+          the whole-book reader — drop it for free. Blog and book pages DO carry
+          it; the only remaining exclusions are the CTA's own, in
+          components/utils/whatsapp.ts. */}
       <WhatsAppCta />
     </>
   );
