@@ -36,22 +36,29 @@ export async function POST(req: Request) {
 
   // Rejects private/loopback/metadata targets, on the first URL and on every
   // redirect it follows — see lib/safe-url.ts.
-  const fetched = await fetchPublicHtml(body?.url);
+  // Sites that block server-side fetches (Medium and friends) fall back to the
+  // reader proxy, which hands back markdown instead of HTML.
+  const fetched = await fetchPublicHtml(body?.url, { readerFallback: true });
   if ("error" in fetched) {
     return NextResponse.json({ error: fetched.error }, { status: 400 });
   }
-  const { html: rawHtml, url } = fetched;
+  const { html: rawHtml, url, contentType } = fetched;
 
-  // Strip scripts, styles, nav, header, footer — keep article body text
-  const stripped = rawHtml
-    .replace(/<script[\s\S]*?<\/script>/gi, "")
-    .replace(/<style[\s\S]*?<\/style>/gi, "")
-    .replace(/<nav[\s\S]*?<\/nav>/gi, "")
-    .replace(/<header[\s\S]*?<\/header>/gi, "")
-    .replace(/<footer[\s\S]*?<\/footer>/gi, "")
-    .replace(/<aside[\s\S]*?<\/aside>/gi, "")
-    .replace(/<[^>]+>/g, " ")
-    .replace(/\s{2,}/g, " ")
+  const stripped = (
+    contentType === "text"
+      ? // Already clean markdown — keep the line breaks, they carry the structure.
+        rawHtml.replace(/[ \t]{2,}/g, " ").replace(/\n{3,}/g, "\n\n")
+      : // Strip scripts, styles, nav, header, footer — keep article body text
+        rawHtml
+          .replace(/<script[\s\S]*?<\/script>/gi, "")
+          .replace(/<style[\s\S]*?<\/style>/gi, "")
+          .replace(/<nav[\s\S]*?<\/nav>/gi, "")
+          .replace(/<header[\s\S]*?<\/header>/gi, "")
+          .replace(/<footer[\s\S]*?<\/footer>/gi, "")
+          .replace(/<aside[\s\S]*?<\/aside>/gi, "")
+          .replace(/<[^>]+>/g, " ")
+          .replace(/\s{2,}/g, " ")
+  )
     .trim()
     .slice(0, 12000); // Limit to 12k chars for OpenAI
 
