@@ -660,7 +660,7 @@ const ElectionDashboard = dynamic(() =&gt; import('./ElectionDashboard'), {
 <p>At <strong>India Today Group</strong>, we needed an intelligent search system that could understand editorial queries like "find articles about economic policy impact on rural India" — not just keyword matching, but <strong>semantic understanding</strong>. Here's how I built it using RAG (Retrieval-Augmented Generation).</p>
 
 <h2>What is RAG?</h2>
-<p>RAG combines a retrieval system (finding relevant documents) with a generation model (LLM like GPT-4) to produce accurate, context-aware answers grounded in your actual data — not hallucinated facts.</p>
+<p>RAG combines a retrieval system (finding relevant documents) with a generation model (an LLM such as GPT-4o) to produce accurate, context-aware answers grounded in your actual data — not hallucinated facts.</p>
 
 <h2>Architecture Overview</h2>
 <pre><code>User Query → Embed Query (OpenAI) → Vector Search (MongoDB Atlas)
@@ -702,7 +702,7 @@ await MongoDBAtlasVectorSearch.fromDocuments(docs, embeddings, {
 import { RetrievalQAChain } from 'langchain/chains';
 
 const llm = new ChatOpenAI({
-  modelName: 'gpt-4-turbo-preview',
+  modelName: 'gpt-4o',
   temperature: 0.2,
 });
 
@@ -755,7 +755,7 @@ export async function POST(req: Request) {
   const { messages } = await req.json();
 
   const response = await openai.chat.completions.create({
-    model: 'gpt-4-turbo-preview',
+    model: 'gpt-4o',
     stream: true,
     messages,
   });
@@ -790,7 +790,7 @@ export default function Chat() {
 <h2>4. AI-Powered Article Summarization</h2>
 <p>One of our most popular features — editors paste a 2000-word article and get a 3-line summary instantly:</p>
 <pre><code>const summary = await openai.chat.completions.create({
-  model: 'gpt-4-turbo-preview',
+  model: 'gpt-4o',
   messages: [{
     role: 'system',
     content: 'Summarize the following news article in exactly 3 concise sentences for an Indian audience.'
@@ -806,7 +806,7 @@ export default function Chat() {
 <p>By deploying AI routes to Vercel Edge Functions, we reduced response latency from ~800ms to ~200ms for the initial token. The <code>runtime = 'edge'</code> directive is all it takes.</p>
 
 <h2>6. Error Handling & Rate Limiting</h2>
-<p>In production, always handle: API rate limits (implement exponential backoff), token limits (truncate context), and model fallbacks (GPT-4 → GPT-3.5 on quota errors).</p>
+<p>In production, always handle: API rate limits (implement exponential backoff), token limits (truncate context), and model fallbacks (a smaller, cheaper model such as gpt-4o-mini on quota errors).</p>
 
 <h2>Key Takeaway</h2>
 <p>AI integration in Next.js is now a first-class experience. With streaming, edge functions, and the Vercel AI SDK, you can ship AI features that feel instant — not like waiting for a loading spinner.</p>

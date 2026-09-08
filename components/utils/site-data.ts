@@ -529,7 +529,7 @@ export const LANDING_PAGES: LandingPage[] = [
         body:
           "Typed props and isolated state, route-level code splitting, memoisation applied only where the render tree is genuinely expensive, and Core Web Vitals treated as a budget enforced in CI rather than a report read after launch. On Next.js I default to server components and streaming, and drop to the client only where interactivity actually requires it.",
         bullets: [
-          "React 18, Next.js App Router, TypeScript, Redux Toolkit / Zustand, React Query",
+          "React with the App Router, Next.js, TypeScript, Redux Toolkit / Zustand, React Query",
           "SSR, ISR and streaming — chosen per route against its real cache behaviour",
           "Accessibility and semantic markup checked in review, not retrofitted",
           "Testing at the seams: component tests where logic lives, e2e on the paths that earn money",
@@ -692,7 +692,7 @@ export const LANDING_PAGES: LandingPage[] = [
         body:
           "The same language from the React component down to the ingestion worker is the reason a small team can move quickly. My work has run that full span: browser rendering under live data, Node services normalising feeds from several upstreams at once, and the streaming transport joining them without a polling loop in sight.",
         bullets: [
-          "Browser — React 18, Next.js App Router, Redux Toolkit, React Query, Zustand",
+          "Browser — React with the App Router, Next.js, Redux Toolkit, React Query, Zustand",
           "Server — Node.js, Express.js, NestJS, REST APIs, serverless handlers, BullMQ workers",
           "Real-time — Socket.io, WebRTC signalling, server-sent events over Redis pub/sub",
           "Types — TypeScript end to end, with shared contracts between client and API",
@@ -877,7 +877,7 @@ export const LANDING_PAGES: LandingPage[] = [
       {
         heading: "Retrieval is the product, not the model",
         body:
-          "Swapping GPT-4o for a newer model rarely fixes a bad answer; the retrieval step usually does. At India Today Group I built RAG over an editorial archive on MongoDB Atlas Vector Search, where the work that actually moved quality was chunking tuned to how the corpus is written, hybrid retrieval so exact names survive embedding, and a measured evaluation set built from real queries rather than invented ones.",
+          "Swapping in whatever model shipped this month rarely fixes a bad answer; the retrieval step usually does. At India Today Group I built RAG over an editorial archive on MongoDB Atlas Vector Search, where the work that actually moved quality was chunking tuned to how the corpus is written, hybrid retrieval so exact names survive embedding, and a measured evaluation set built from real queries rather than invented ones.",
         bullets: [
           "Chunking and embedding strategy tuned per corpus, then measured — not assumed",
           "Hybrid keyword + vector retrieval, so proper nouns and rare terms still match",
