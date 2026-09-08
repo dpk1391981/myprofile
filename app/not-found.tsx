@@ -26,12 +26,23 @@ import { listPosts } from "@/components/utils/portfolio-api";
  * Both fetches degrade to empty — a 404 whose own data source is down must
  * still render, or the error page becomes an error.
  *
- * NOINDEX is NOT set here on purpose. Next injects `<meta name="robots"
- * content="noindex">` on not-found itself, and adding a second one produced two
- * robots tags in the head. Google combines duplicates and takes the most
- * restrictive, so it was harmless — but two contradictory-looking directives in
- * one head is the kind of thing that gets "fixed" wrongly later. `follow` is the
- * default when unspecified, so nothing is lost by leaving it to Next.
+ * NOINDEX is NOT set here on purpose, and this head still carries TWO robots
+ * tags — verified, not assumed:
+ *
+ *     <meta name="robots" content="noindex">        <- injected by Next
+ *     <meta name="robots" content="index, follow">  <- NEXT_SEO_DEFAULT
+ *
+ * The second one comes from the ROOT LAYOUT, not from this file: seo_config's
+ * NEXT_SEO_DEFAULT sets `robots: { index: true, follow: true }` site-wide and
+ * nothing here overrides it. So removing a robots key from this file never
+ * collapsed the pair to one, and adding one back would make it three.
+ *
+ * It is harmless — Google combines duplicates and takes the most restrictive,
+ * so the 404 is correctly noindexed. Leave it alone. The only real fix is to
+ * stop the layout asserting a default this page contradicts, which would mean
+ * setting robots explicitly on every other page instead; that is a much larger
+ * change for no ranking gain. `follow` is the default when unspecified, so
+ * nothing is lost by leaving the directive to Next.
  */
 export const metadata: Metadata = {
   title: "Page not found — Deepak Kumar",
