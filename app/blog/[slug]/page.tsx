@@ -13,6 +13,7 @@ import ReadingProgress from "@/components/blog/ReadingProgress";
 import ShareRow from "@/components/shared/ShareRow";
 import SocialIconLink from "@/components/shared/SocialIconLink";
 import ViewCounter from "@/components/shared/ViewCounter";
+import { authorBio } from "@/components/utils/author-bio";
 import { withHeadingAnchors, countWords, type Heading } from "@/components/utils/article-html";
 import {
   istStamp, formatISTDate, formatISTDateTime, formatISTTime, hasTimeOfDay,
@@ -676,11 +677,12 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                   {PERSONAL_INFO.title} at {PERSONAL_INFO.currentWork.company}
                   {" · "}{PERSONAL_INFO.currentWork.focus.join(" · ")}
                 </p>
-                <p className="blog-author-bio">
-                  I build production web applications and Generative AI systems — React and
-                  Next.js on the front, Node.js and RAG pipelines behind them. I write here
-                  about what those systems actually do once real traffic hits them.
-                </p>
+                {/*
+                  Bio varies by what the post is ABOUT — see components/utils/author-bio.ts.
+                  One fixed paragraph under every article says nothing about why this author
+                  is worth trusting on this particular subject.
+                */}
+                <p className="blog-author-bio">{authorBio(post.category, post.tags)}</p>
                 <div className="blog-author-links">
                   <Link href="/about" className="blog-author-link">
                     About <IconArrowNarrowRight size={15} />
