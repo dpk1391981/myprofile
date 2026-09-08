@@ -11,6 +11,18 @@ import { unsubscribeEmail } from "@/components/utils/books-api";
  */
 export const dynamic = "force-dynamic";
 
+/*
+  noindex, follow — same reasoning as /books/confirm: no metadata meant it
+  inherited the site-wide `index: true`.
+
+  A token-driven unsubscribe page must never be indexed. Beyond being thin, a
+  crawler that follows an indexed unsubscribe URL carrying a real token
+  unsubscribes that person.
+*/
+export const metadata = {
+  robots: { index: false, follow: true },
+};
+
 export default async function UnsubscribePage(
   { searchParams }: { searchParams: { token?: string } }
 ) {

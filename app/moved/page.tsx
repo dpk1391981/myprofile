@@ -1,7 +1,21 @@
+/*
+  noindex, follow.
+
+  This page exists to move a human from the old imdeepak.in domain to this one.
+  It was deliberately left out of sitemap.ts but never told a crawler not to
+  index it, and omission from a sitemap prevents nothing — Google indexes what
+  it can reach. An indexed "this site has moved" notice competes with the real
+  home page for the same name queries and adds a thin page to the site's
+  quality profile.
+
+  `follow` is the important half: the link out to the new location must still
+  pass through.
+*/
 export const metadata = {
   title: "Portfolio Moved | Deepak Kumar",
   description:
     "Deepak Kumar's developer portfolio has moved from imdeepak.in to officialdeepak.in. Visit the new website for updated projects and professional information.",
+  robots: { index: false, follow: true },
 };
 
 export default function MovedPage() {

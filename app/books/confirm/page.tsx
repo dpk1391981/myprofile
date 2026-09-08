@@ -14,6 +14,20 @@ import RememberToken from "@/components/books/RememberToken";
  */
 export const dynamic = "force-dynamic";
 
+/*
+  noindex, follow — this page had no metadata at all, so it inherited the
+  site-wide `index: true` from the root layout.
+
+  It is the landing page for a one-time token from a delivery email: its content
+  depends entirely on `?token=`, and the version a crawler sees is the "that
+  link is not valid" branch. Indexing it puts a broken-looking page in the index
+  under this domain, and any indexed variant leaks a subscriber's token into
+  search results.
+*/
+export const metadata = {
+  robots: { index: false, follow: true },
+};
+
 export default async function ConfirmPage(
   { searchParams }: { searchParams: { token?: string } }
 ) {

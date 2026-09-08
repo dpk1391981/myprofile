@@ -204,7 +204,9 @@ export default function ContactPage() {
           Looking for something more specific? I keep separate pages for{" "}
           <Link href="/react-developer-in-india">React</Link>,{" "}
           <Link href="/javascript-developer-in-india">JavaScript</Link>,{" "}
-          <Link href="/full-stack-developer-in-india">full stack</Link> and{" "}
+          <Link href="/full-stack-developer-in-india">full stack</Link>,{" "}
+          <Link href="/ai-engineer-in-india">AI engineering</Link>,{" "}
+          <Link href="/llm-engineer-in-india">LLM and RAG systems</Link> and{" "}
           <Link href="/software-developer-in-india">general software engineering</Link> work in India.
         </p>
       </section>
