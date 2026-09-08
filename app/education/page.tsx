@@ -19,10 +19,10 @@ export const metadata = pageMeta({
   path: "/education",
   keywords: [
     "Deepak Kumar education",
-    "AWS certified solutions architect India",
+    "AWS solutions architect coursework India",
     "AI ML postgraduate India",
     "Delhi University software engineer",
-    "certified React developer India",
+    "MERN stack certification India",
   ],
 });
 

@@ -26,7 +26,7 @@ export const metadata = pageMeta({
     "Node.js developer India",
     "TypeScript developer India",
     "MERN stack skills",
-    "AWS certified developer India",
+    "AWS developer India",
     "LangChain RAG developer India",
   ],
 });
@@ -43,7 +43,7 @@ export default function SkillsPage() {
 
       <PageHeader
         crumbs={[{ label: "Home", href: "/" }, { label: "Skills" }]}
-        dateline={["Technical stack", "Front end to infrastructure", "AWS Certified SA Associate"]}
+        dateline={["Technical stack", "Front end to infrastructure", "AWS SA Associate coursework"]}
         kicker="Skills"
         title="The stack, and how deep each part goes."
         lede="Not a list of everything I have ever opened — the tools I have shipped production systems with, grouped by where they sit in the stack."

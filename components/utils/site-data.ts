@@ -234,7 +234,7 @@ export const CAPABILITIES: Capability[] = [
     items:
       "AWS (Solutions Architect Associate coursework) · Docker · CI/CD · Git · Linux · Agile / Scrum",
     detail:
-      "AWS-certified architecture with containerised services, pipeline-gated deploys, and observability wired in before launch — logs, metrics and alerts that name the failing component.",
+      "AWS architecture with containerised services, pipeline-gated deploys, and observability wired in before launch — logs, metrics and alerts that name the failing component.",
   },
 ];
 
@@ -590,13 +590,17 @@ export const LANDING_PAGES: LandingPage[] = [
       "remote software developer India",
       "freelance software developer India",
       "MERN stack developer India",
-      "AWS certified developer India",
+      "AWS developer India",
       "Deepak Kumar software developer",
     ],
     proof: [
       { value: `${YEARS_WHOLE} yrs`, label: "Since Dec 2016" },
       { value: "7", label: "Companies" },
-      { value: "AWS", label: "Certified SA Associate" },
+      // "Certified" was a leftover. The SAA-C03 was Udemy COURSEWORK, not the
+      // exam — every other surface on the site already says so, including this
+      // page's own body copy two sections down. A proof tile is the most
+      // emphatic claim a page makes, so an overstated credential is worst here.
+      { value: "AWS", label: "SA Associate coursework" },
       { value: "99.99%", label: "Uptime at peak" },
     ],
     sections: [
