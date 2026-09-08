@@ -12,6 +12,29 @@ import type { LandingPage } from "../utils/site-data";
 import { breadcrumbLd, faqLd } from "../utils/seo";
 
 /** One keyword landing page, rendered from its LANDING_PAGES entry. */
+/*
+  "a" vs "an" for the keyword in the FAQ heading.
+
+  Hardcoding "a" read fine for every keyword this template had when it was
+  written (React, JavaScript, full stack, software, AI) and broke the moment a
+  page targeted an initialism: "Hiring a LLM engineer in India".
+
+  The rule is PRONUNCIATION, not spelling — "an LLM" because the letter L is
+  said "el", while "a UI developer" keeps "a" because U is said "you". A bare
+  vowel check gets both of those wrong, so the initialism case is handled by
+  the sound of its first letter and everything else falls back to the vowel.
+*/
+const VOWEL_SOUND_LETTERS = new Set(["A", "E", "F", "H", "I", "L", "M", "N", "O", "R", "S", "X"]);
+
+function indefiniteArticle(phrase: string): string {
+  const first = phrase.trim().split(/\s+/)[0] ?? "";
+  // An initialism — two or more capitals, e.g. "LLM", "AI", "UI".
+  if (/^[A-Z]{2,}$/.test(first)) {
+    return VOWEL_SOUND_LETTERS.has(first[0]) ? "an" : "a";
+  }
+  return /^[aeiou]/i.test(first) ? "an" : "a";
+}
+
 export default function KeywordLanding({ page }: { page: LandingPage }) {
   return (
     <>
@@ -83,7 +106,7 @@ export default function KeywordLanding({ page }: { page: LandingPage }) {
       <Faq
         items={page.faqs}
         kicker="Straight answers"
-        title={`Hiring a ${page.keyword} — the usual questions.`}
+        title={`Hiring ${indefiniteArticle(page.keyword)} ${page.keyword} — the usual questions.`}
         id={`${page.slug}-faq`}
       />
 

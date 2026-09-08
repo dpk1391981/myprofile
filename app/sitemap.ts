@@ -44,6 +44,7 @@ const STATIC_ROUTES: { path: string; priority: number; lastModified: string; cha
   { path: "/javascript-developer-in-india", priority: 0.95, lastModified: "2026-08-19", changeFrequency: "weekly" },
   { path: "/full-stack-developer-in-india", priority: 0.95, lastModified: "2026-08-19", changeFrequency: "weekly" },
   { path: "/ai-engineer-in-india",          priority: 0.95, lastModified: "2026-08-19", changeFrequency: "weekly" },
+  { path: "/llm-engineer-in-india",         priority: 0.95, lastModified: "2026-09-08", changeFrequency: "weekly" },
 ];
 // Deliberately absent: /success (noindex — a form receipt), /moved (a redirect
 // notice), /admin (disallowed in robots.ts), /blog?topic=… (noindex, follow —

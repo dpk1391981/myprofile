@@ -476,7 +476,7 @@ export const LANDING_PAGES: LandingPage[] = [
       },
     ],
     related: [
-      { label: "Software developer in India", href: "/software-developer-in-india" },
+      { label: "LLM engineer in India", href: "/llm-engineer-in-india" },
       { label: "Full stack developer in India", href: "/full-stack-developer-in-india" },
       { label: "React developer in India", href: "/react-developer-in-india" },
     ],
@@ -827,6 +827,122 @@ export const LANDING_PAGES: LandingPage[] = [
       { label: "React developer in India", href: "/react-developer-in-india" },
       { label: "JavaScript developer in India", href: "/javascript-developer-in-india" },
       { label: "Software developer in India", href: "/software-developer-in-india" },
+    ],
+  },
+  {
+    /*
+      LLM / RAG is split out of /ai-engineer-in-india deliberately.
+
+      "AI engineer" and "LLM engineer" are not the same query. The first is a
+      job-title search; the second is someone who already knows they need
+      retrieval, evaluation and cost control and is looking for a person who has
+      done it. The AI page was carrying both, and the Search Console export for
+      the 28 days to 2026-09-08 shows it at position 13.4 on 14 impressions —
+      it was not competing for either.
+
+      Keep the claims here to work that shipped. Everything below is either the
+      India Today production work or the agent pipelines that run this site.
+    */
+    slug: "llm-engineer-in-india",
+    keyword: "LLM engineer in India",
+    h1: "LLM engineer in India — Deepak Kumar",
+    title: "LLM Engineer in India | RAG, Evaluation & Production LLM Systems",
+    description:
+      "LLM engineer in India building retrieval, evaluation and guardrails into production — RAG on MongoDB Atlas Vector Search and multi-agent pipelines running daily, unattended.",
+    kicker: "LLM systems · RAG · Evaluation · Agents",
+    lede:
+      "Most LLM work fails after the demo, on retrieval quality, cost, or the absence of any way to tell whether output got worse. I build the parts that come after the model call — and I run several of these pipelines unattended, in production, every day.",
+    keywords: [
+      "LLM engineer in India",
+      "LLM developer India",
+      "hire LLM engineer India",
+      "RAG developer India",
+      "RAG engineer India",
+      "LangChain developer India",
+      "OpenAI developer India",
+      "LLM application developer India",
+      "vector search developer India",
+      "AI agent developer India",
+      "LLM evaluation engineer",
+      "Deepak Kumar LLM engineer",
+    ],
+    proof: [
+      { value: "RAG", label: "On Atlas Vector Search" },
+      { value: "Daily", label: "Agent pipelines unattended" },
+      { value: "80%", label: "Faster podcast production" },
+      { value: "Delhi", label: "Based in India (IST)" },
+    ],
+    sections: [
+      {
+        heading: "Retrieval is the product, not the model",
+        body:
+          "Swapping GPT-4o for a newer model rarely fixes a bad answer; the retrieval step usually does. At India Today Group I built RAG over an editorial archive on MongoDB Atlas Vector Search, where the work that actually moved quality was chunking tuned to how the corpus is written, hybrid retrieval so exact names survive embedding, and a measured evaluation set built from real queries rather than invented ones.",
+        bullets: [
+          "Chunking and embedding strategy tuned per corpus, then measured — not assumed",
+          "Hybrid keyword + vector retrieval, so proper nouns and rare terms still match",
+          "Evaluation sets built from real user queries before a change is promoted",
+          "Retrieval quality tracked separately from generation quality, so failures are attributable",
+        ],
+      },
+      {
+        heading: "Agents that run unattended, and the gates that make that safe",
+        body:
+          "This site's own blog and its technical books are written by multi-agent pipelines I built and run on a schedule, with no human in the loop per article. That only works because the interesting engineering is in the refusal path: deterministic quality gates that reject a draft before it publishes, a critic pass that is calibrated against its own rubric, and a fail-closed verifier that blocks anything it cannot support from source.",
+        bullets: [
+          "Deterministic gates — specificity scoring, repetition shingling, length floors — ahead of any LLM judge",
+          "Fail-closed verification: an article nobody could verify does not publish",
+          "Structural fixes over prompt pleading — a model that returns short output needs more slots, not a firmer instruction",
+          "Cost and latency budgeted per call, with resume-from-checkpoint so a failed run is not a full re-spend",
+        ],
+      },
+      {
+        heading: "The parts teams discover too late",
+        body:
+          "An LLM call is a network call to a probabilistic service that bills per token. It needs the things any other dependency needs — a timeout, a fallback, a cost ceiling, monitoring that names the failing component — plus one thing they do not: a way to notice that output quality has drifted when nothing errored. Building that in at the start costs days; retrofitting it after a bad answer reaches a customer costs considerably more.",
+        bullets: [
+          "Graceful degradation — the product still works when the model is slow, rate-limited or down",
+          "Provider errors distinguished from quality rejections, so a dead API key never reads as a bad draft",
+          "Guardrails on output, plus human review wherever output is published under a real name",
+          "Token and latency cost tracked per feature, alerting like any other service dependency",
+        ],
+      },
+      {
+        heading: "Full stack behind the LLM work",
+        body:
+          `The retrieval pipeline, the API, the interface and the deployment come from the same person. ${YEARS_WHOLE} years of MERN and Next.js sits behind the AI work, which is usually the difference between an LLM feature that ships and a notebook that gets demoed once.`,
+      },
+    ],
+    faqs: [
+      {
+        question: "What does an LLM engineer do that an AI engineer does not?",
+        answer:
+          "In practice the title signals depth in the layer around the model rather than the model itself: retrieval design, chunking and embedding choices, evaluation harnesses, guardrails, prompt and context engineering, agent orchestration, and per-call cost and latency control. Deepak Kumar builds these in production at India Today Group and runs several unattended multi-agent pipelines of his own.",
+      },
+      {
+        question: "How do you evaluate an LLM feature before it goes live?",
+        answer:
+          "With an evaluation set built from real queries rather than invented ones, scored on retrieval and generation separately so a regression is attributable to one or the other. Deterministic checks run ahead of any model-based judge — an LLM critic grades fluent-but-empty output generously, because fluent-but-empty is what it would have written itself.",
+      },
+      {
+        question: "Can you add RAG to an existing product?",
+        answer:
+          "Yes, and it is the most common engagement. Retrieval over your own content, semantic search, or content and voice automation, added to a working product with an evaluation set, guardrails, cost and latency budgets, and a fallback path for when the model is unavailable.",
+      },
+      {
+        question: "Which LLM stack do you work with?",
+        answer:
+          "OpenAI and GPT models, LangChain and LangGraph, MongoDB Atlas Vector Search for retrieval, embeddings and hybrid search, ElevenLabs for voice, and Python with FastAPI for ingestion — integrated into Node.js and Next.js applications rather than left standing alone.",
+      },
+      {
+        question: "Are you available for LLM contract work from outside India?",
+        answer:
+          "Yes. Deepak is based in New Delhi (IST) and works fully remote for clients abroad, as well as on-site across Delhi NCR. Send a short description of the problem through the contact page for a reply within 24 hours.",
+      },
+    ],
+    related: [
+      { label: "AI engineer in India", href: "/ai-engineer-in-india" },
+      { label: "Full stack developer in India", href: "/full-stack-developer-in-india" },
+      { label: "React developer in India", href: "/react-developer-in-india" },
     ],
   },
 ];

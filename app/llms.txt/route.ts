@@ -82,6 +82,7 @@ const LANDING_PAGES: { path: string; label: string; description: string }[] = [
   { path: "/javascript-developer-in-india", label: "JavaScript developer in India", description: `JavaScript and TypeScript specifics — language-level practice across ${YEARS_WHOLE} years of production code.` },
   { path: "/full-stack-developer-in-india", label: "Full stack developer in India", description: "End-to-end delivery: MERN stack, API design, database modelling and deployment." },
   { path: "/ai-engineer-in-india",          label: "AI engineer in India",          description: "Generative AI engineering — RAG systems, vector search, LangChain and OpenAI in production, not demos." },
+  { path: "/llm-engineer-in-india",         label: "LLM engineer in India",         description: "The layer around the model — retrieval design, evaluation harnesses, guardrails, agent orchestration and per-call cost control in production." },
 ];
 
 const CORE_PAGES: { path: string; label: string; description: string }[] = [

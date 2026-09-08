@@ -314,11 +314,51 @@ const personSchema = {
     addressRegion: "Delhi",
     addressCountry: "IN",
   },
+  /*
+    sameAs — the profiles that corroborate this entity.
+
+    This is the property Google and answer engines use to decide that the
+    Deepak Kumar on LinkedIn, on GitHub and on this domain are ONE person. A
+    self-hosted page asserting its own authority is the claim search engines
+    discount hardest; every independent profile here that links BACK to
+    officialdeepak.in is what makes the claim resolvable.
+
+    ONLY REAL, LIVE PROFILES BELONG HERE. A sameAs pointing at a URL that does
+    not exist, or at an account belonging to a different Deepak Kumar, is worse
+    than a short list: it teaches the resolver that this node's assertions are
+    unreliable, and the reconciliation it was meant to help fails instead.
+
+    Facebook and Instagram were already rendered in the site footer (see
+    components/utils/SocailLinks.tsx) but were never declared here, so two
+    genuine corroborating profiles were invisible to every consumer of this
+    graph.
+
+    Worth adding when the accounts exist, in rough order of value for entity
+    resolution — do NOT add them speculatively:
+      - a Wikidata item (answer engines lean on it hardest for "who is X")
+      - Stack Overflow, npm, Dev.to / Hashnode / Medium
+      - Peerlist, Topmate, Crunchbase
+  */
   sameAs: [
     "https://x.com/deepakkutniyal",
     "https://www.linkedin.com/in/dpk1391981/",
     "https://github.com/dpk1391981",
+    "https://www.facebook.com/dpk1391981/",
+    "https://www.instagram.com/deepak_kutniyal/",
     SITE_URL,
+  ],
+  /*
+    The four products he owns and runs. `owns` is defined on Person, and each
+    target is a full node below rather than a bare string, so a consumer that
+    follows the reference gets a described entity instead of a URL it has to
+    guess about. This is the strongest available signal that the "17+ products
+    shipped" claim on the landing pages is backed by things that exist.
+  */
+  owns: [
+    { "@id": `${SITE_URL}/#plantoday` },
+    { "@id": `${SITE_URL}/#trendmetoday` },
+    { "@id": `${SITE_URL}/#vtechxhub` },
+    { "@id": `${SITE_URL}/#think4buysale` },
   ],
   alumniOf: [
     {
@@ -424,6 +464,84 @@ const personSchema = {
   },
 };
 
+/*
+  1b. The products he owns and runs.
+
+  WHY THESE ARE THEIR OWN NODES. Before this, PlanToday and TrendMeToday existed
+  only as prose — a sentence in the bio and a card on /projects. Prose is not an
+  entity: nothing connected "Deepak Kumar" to "PlanToday.in" in a form a
+  resolver could follow, so four live products contributed nothing to the
+  identity graph they are the best evidence for.
+
+  Each is a WebApplication (SoftwareApplication -> CreativeWork), which is what
+  they actually are — browser-delivered software, not a downloadable app and not
+  an Organization. `author` and `publisher` are CreativeWork properties, so they
+  are in domain here; `founder` is NOT (it is Organization-only) and is
+  deliberately absent, even though it reads like the natural word.
+
+  Every type and property here was checked against scripts/schemaorg-vocab.json.
+  See the CommunicateAction note below for why that rule exists.
+
+  THE BACKLINK IS THE OTHER HALF. This node asserts the relationship from one
+  side; it is worth real ranking only when plantoday.in, trendmetoday.com,
+  vtechxhub.com and think4buysale.in each link back to officialdeepak.in. Those
+  are separate sites — this file cannot do it for them.
+*/
+const productSchemas = [
+  {
+    "@type": "WebApplication",
+    "@id": `${SITE_URL}/#plantoday`,
+    name: "PlanToday.in",
+    url: "https://plantoday.in/",
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Web browser",
+    description:
+      "AI-powered wedding and event vendor marketplace for India. Hosts describe what they need in plain English or Hinglish and an NLP intent parser returns budget-aware, hyperlocal vendor matches; vendors get a profile, a lead inbox and a token wallet.",
+    author: { "@id": `${SITE_URL}/#person` },
+    publisher: { "@id": `${SITE_URL}/#person` },
+    inLanguage: ["en-IN", "hi-IN"],
+  },
+  {
+    "@type": "WebApplication",
+    "@id": `${SITE_URL}/#trendmetoday`,
+    name: "TrendMeToday.com",
+    url: "https://trendmetoday.com/",
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Web browser",
+    description:
+      "Real-time trend intelligence for India. An ingestion pipeline clusters publisher RSS coverage into single stories roughly every 15 minutes and scores each 0-100 on momentum, listing the named outlets reporting it.",
+    author: { "@id": `${SITE_URL}/#person` },
+    publisher: { "@id": `${SITE_URL}/#person` },
+    inLanguage: "en-IN",
+  },
+  {
+    "@type": "WebApplication",
+    "@id": `${SITE_URL}/#vtechxhub`,
+    name: "VTechXHub.com",
+    url: "https://vtechxhub.com/",
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Web browser",
+    description:
+      "SEO-driven technical content publishing platform, run on an automated multi-agent editorial pipeline.",
+    author: { "@id": `${SITE_URL}/#person` },
+    publisher: { "@id": `${SITE_URL}/#person` },
+    inLanguage: "en",
+  },
+  {
+    "@type": "WebApplication",
+    "@id": `${SITE_URL}/#think4buysale`,
+    name: "Think4BuySale",
+    url: "https://www.think4buysale.in/",
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Web browser",
+    description:
+      "Real-estate listing and enquiry marketplace, currently on its development build.",
+    author: { "@id": `${SITE_URL}/#person` },
+    publisher: { "@id": `${SITE_URL}/#person` },
+    inLanguage: "en-IN",
+  },
+];
+
 // 2. WebSite schema (enables sitelinks in Google)
 const websiteSchema = {
   "@type": "WebSite",
@@ -474,7 +592,7 @@ const faqSchema = {
 // discard both. The home page adds `HOME_FAQ_STRUCT_DATA` alongside this.
 export const STRUCT_DATA = {
   "@context": "https://schema.org",
-  "@graph": [personSchema, websiteSchema, profilePageSchema],
+  "@graph": [personSchema, websiteSchema, profilePageSchema, ...productSchemas],
 };
 
 // The home page's own FAQPage block.
