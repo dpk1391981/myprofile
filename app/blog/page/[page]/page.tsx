@@ -26,29 +26,34 @@ function parsePage(raw: string): number | null {
 }
 
 export async function generateMetadata(
-  { params, searchParams }: { params: { page: string }; searchParams: { topic?: string } }
+  { params, searchParams }: { params: { page: string }; searchParams: { topic?: string; q?: string } }
 ): Promise<Metadata> {
   const page = parsePage(params.page);
   if (page === null) return {};
-  return buildBlogIndexMetadata({ page, topic: searchParams?.topic || "" });
+  return buildBlogIndexMetadata({ page, topic: searchParams?.topic || "", q: searchParams?.q || "" });
 }
 
 export default async function BlogArchivePage(
-  { params, searchParams }: { params: { page: string }; searchParams: { topic?: string } }
+  { params, searchParams }: { params: { page: string }; searchParams: { topic?: string; q?: string } }
 ) {
   const page = parsePage(params.page);
   if (page === null) notFound();
 
   const topic = searchParams?.topic || "";
+  const q = searchParams?.q || "";
+  const search = new URLSearchParams();
+  if (topic) search.set("topic", topic);
+  if (q) search.set("q", q);
+  const qs = search.toString() ? `?${search}` : "";
 
   // /blog/page/1 is /blog under a second URL. Redirect rather than render, so
   // the duplicate never gets crawled or linked.
-  if (page === 1) redirect(topic ? `/blog?topic=${encodeURIComponent(topic)}` : "/blog");
+  if (page === 1) redirect(`/blog${qs}`);
 
   // Past the end of the archive there is no page — a soft 200 on an empty list
   // is the "soft 404" Search Console flags.
-  const total = await blogPageCount(topic);
+  const total = await blogPageCount(topic, q);
   if (page > total) notFound();
 
-  return <BlogIndexView page={page} topic={topic} />;
+  return <BlogIndexView page={page} topic={topic} q={q} />;
 }

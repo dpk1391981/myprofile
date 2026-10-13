@@ -554,7 +554,9 @@ const websiteSchema = {
   author: { "@id": `${SITE_URL}/#person` },
   potentialAction: {
     "@type": "SearchAction",
-    target: `${SITE_URL}/?q={search_term_string}`,
+    // /blog?q= is the site search (components/utils/blog-search.ts); the home
+    // page ignores `q`, so pointing here was a claim nothing answered.
+    target: `${SITE_URL}/blog?q={search_term_string}`,
     "query-input": "required name=search_term_string",
   },
 };

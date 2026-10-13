@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import BlogIndexView, { buildBlogIndexMetadata } from "@/components/blog/BlogIndexView";
 
 /**
- * RENDERING. The index reads `searchParams` for the topic filter, so Next
+ * RENDERING. The index reads `searchParams` for the topic filter and search, so Next
  * renders it per request. That is cheaper than it looks: `apiFetch` caches the
  * upstream GET for 300s, so a burst of requests costs one call to the agent
  * service, and the article pages — the ones Core Web Vitals are actually
@@ -14,13 +14,13 @@ import BlogIndexView, { buildBlogIndexMetadata } from "@/components/blog/BlogInd
 export const revalidate = 300;
 
 export async function generateMetadata(
-  { searchParams }: { searchParams: { topic?: string } }
+  { searchParams }: { searchParams: { topic?: string; q?: string } }
 ): Promise<Metadata> {
-  return buildBlogIndexMetadata({ page: 1, topic: searchParams?.topic || "" });
+  return buildBlogIndexMetadata({ page: 1, topic: searchParams?.topic || "", q: searchParams?.q || "" });
 }
 
 export default async function BlogPage(
-  { searchParams }: { searchParams: { topic?: string } }
+  { searchParams }: { searchParams: { topic?: string; q?: string } }
 ) {
-  return <BlogIndexView page={1} topic={searchParams?.topic || ""} />;
+  return <BlogIndexView page={1} topic={searchParams?.topic || ""} q={searchParams?.q || ""} />;
 }

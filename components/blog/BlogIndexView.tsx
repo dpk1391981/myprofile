@@ -8,11 +8,14 @@
 import { YEARS_WHOLE } from "@/components/utils/site-data";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BLOG_POSTS, PERSONAL_INFO } from "@/components/utils/portfolio-data";
+import { PERSONAL_INFO } from "@/components/utils/portfolio-data";
 import { IconArrowRight, IconRss } from "@tabler/icons-react";
-import { listAllPosts, getSeoConfig } from "@/components/utils/portfolio-api";
+import { getSeoConfig } from "@/components/utils/portfolio-api";
+import { getAllPosts } from "@/components/utils/blog-index-posts";
 import ViewCountText from "@/components/shared/ViewCountText";
 import AdSlot from "@/components/blog/AdSlot";
+import BlogSearch from "@/components/blog/BlogSearch";
+import { searchPosts, normaliseQuery } from "@/components/utils/blog-search";
 import { TopicsFigure } from "@/components/bs/HeadFigure";
 import { POSTS_PER_PAGE, pageCount, indexPath } from "@/components/utils/blog-pagination";
 import {
@@ -23,71 +26,16 @@ const SLOT_TOP    = process.env.NEXT_PUBLIC_ADSENSE_SLOT_BLOG_TOP    ?? "0000000
 const SLOT_INFEED = process.env.NEXT_PUBLIC_ADSENSE_SLOT_BLOG_INFEED ?? "1111111111";
 const SITE_URL    = (process.env.NEXT_PUBLIC_WEB_SITE || "https://officialdeepak.in").replace(/\/+$/, "");
 
-export type IndexPost = {
-  slug: string;
-  title: string;
-  description: string;
-  date: string;
-  /** The full release instant, "2026-08-21T11:04:00+05:30".
-   *
-   *  Separate from `date` on purpose. `date` stays a bare YYYY-MM-DD because
-   *  sorting, the `dateTime` attribute and the JSON-LD all want a plain day;
-   *  this is the only field that knows the time, and it is empty for the
-   *  hand-written fallback posts, which never had one. */
-  publishedAt: string;
-  readTime: string;
-  tags: string[];
-  coverEmoji: string;
-  featured: boolean;
-  category: string;
-  /** True when the post's own page will answer `noindex`. */
-  noIndex: boolean;
-  /** Unique readers. Display only here — the index does not track anything;
-   *  the count is written by the article page's own beacon. */
-  views: number;
-};
+// The post loader lives in its own module so the search API route can share it
+// without pulling this React tree into its graph.
+import type { IndexPost } from "@/components/utils/blog-index-posts";
+export type { IndexPost };
 
 // ── Fetch page-level SEO config ───────────────────────────────────────────
 // Served by the agent service (see components/utils/portfolio-api.ts for why
 // this is an HTTP call and not a database read).
 async function getBlogIndexSeo() {
   return getSeoConfig("blog-index");
-}
-
-// ── Fetch published posts ─────────────────────────────────────────────────
-// Returns [] if the API is unreachable, so the page still renders. The static
-// BLOG_POSTS below then carry the index on their own.
-async function getDbPosts(): Promise<IndexPost[]> {
-  const posts = await listAllPosts();
-  return posts.map((p) => ({
-    slug:        p.slug,
-    title:       p.title,
-    description: p.description,
-    date:        (p.date || p.publishedAt || "").slice(0, 10),
-    publishedAt: p.publishedAt || "",
-    readTime:    p.readTime,
-    tags:        p.tags ?? [],
-    coverEmoji:  p.coverEmoji,
-    featured:    p.featured,
-    category:    p.category || "",
-    noIndex:     Boolean(p.noIndex) || Boolean(p.robots?.includes("noindex")),
-    views:       p.views ?? 0,
-  }));
-}
-
-/** Every post the index knows about, newest first. */
-async function getAllPosts(): Promise<IndexPost[]> {
-  const dbPosts = await getDbPosts();
-  const staticPosts: IndexPost[] = BLOG_POSTS.filter(
-    (sp) => !dbPosts.some((dp) => dp.slug === sp.slug)
-    // No `publishedAt`: these were hand-written and only ever carried a day.
-    // formatISTDateTime() falls back to the date alone rather than inventing a
-    // midnight for them.
-  ).map((p) => ({ ...p, category: "", noIndex: false, publishedAt: "", views: 0 }));
-
-  return [...dbPosts, ...staticPosts].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
 }
 
 /** "2026-08-14" → "Aug 2026". A bare ISO date in a figure reads as data the
@@ -101,6 +49,22 @@ function formatMonth(iso: string): string {
 const matchesTopic = (p: IndexPost, topic: string) =>
   !topic ||
   [p.category, ...p.tags].some((t) => String(t).toLowerCase() === topic.toLowerCase());
+
+/** Topic filter, then search. With a query the list is ranked by relevance
+ *  (newest first among equals); without one it stays newest first. */
+function filterPosts(all: IndexPost[], topic: string, q: string): IndexPost[] {
+  const byTopic = topic ? all.filter((p) => matchesTopic(p, topic)) : all;
+  return q ? searchPosts(byTopic, q) : byTopic;
+}
+
+/** Query string for an index URL — the topic and search survive pagination. */
+function indexQuery(topic: string, q: string): string {
+  const params = new URLSearchParams();
+  if (topic) params.set("topic", topic);
+  if (q) params.set("q", q);
+  const qs = params.toString();
+  return qs ? `?${qs}` : "";
+}
 
 // ── Metadata ──────────────────────────────────────────────────────────────
 
@@ -136,10 +100,11 @@ const DEFAULT_INDEX_KEYWORDS = [
 ];
 
 export async function buildBlogIndexMetadata(
-  { page = 1, topic = "" }: { page?: number; topic?: string }
+  { page = 1, topic = "", q = "" }: { page?: number; topic?: string; q?: string }
 ): Promise<Metadata> {
   const cfg = await getBlogIndexSeo();
   topic = topic.trim();
+  q = normaliseQuery(q);
 
   const title       = cfg?.pageTitle      || DEFAULT_INDEX_TITLE;
   const description = cfg?.metaDescription || DEFAULT_INDEX_DESC;
@@ -165,7 +130,9 @@ export async function buildBlogIndexMetadata(
     *different* URL sends Google two contradictory instructions about the same
     document — the one case Search Central explicitly warns against.
   */
-  const filtered = Boolean(topic);
+  // Search results are the same case, only more so: one thin page per query
+  // anyone ever types. Same treatment — followable, never indexed.
+  const filtered = Boolean(topic || q);
   const indexable = !filtered && !robotsIndex.includes("noindex");
   const followable = !robotsFollow?.includes("nofollow");
 
@@ -173,7 +140,7 @@ export async function buildBlogIndexMetadata(
   // of page 1 — they list different articles — and each one is the only URL
   // that links to the posts in its own slice.
   const path = indexPath(page);
-  const query = filtered ? `?topic=${encodeURIComponent(topic)}` : "";
+  const query = indexQuery(topic, q);
   const canonical = filtered || page > 1
     ? `${SITE_URL}${path}${query}`
     : cfg?.canonicalUrl || `${SITE_URL}/blog`;
@@ -186,7 +153,9 @@ export async function buildBlogIndexMetadata(
     choice, and silently replacing it on the archive pages would be surprising.
   */
   const pageSuffix = page > 1 ? ` — Page ${page}` : "";
-  const pageTitle = filtered
+  const pageTitle = q
+    ? `Search: ${q}${topic ? ` in ${topic}` : ""}${pageSuffix} | ${PERSONAL_INFO.fullName} Blog`
+    : filtered
     ? `${topic} Tech Blogs${pageSuffix} | ${PERSONAL_INFO.fullName}`
     : page > 1
       ? (cfg?.pageTitle
@@ -244,15 +213,15 @@ export async function buildBlogIndexMetadata(
 }
 
 /** Total number of index pages — `app/blog/page/[page]` uses it to 404 past the end. */
-export async function blogPageCount(topic = ""): Promise<number> {
+export async function blogPageCount(topic = "", q = ""): Promise<number> {
   const all = await getAllPosts();
-  return pageCount(all.filter((p) => matchesTopic(p, topic.trim())).length);
+  return pageCount(filterPosts(all, topic.trim(), normaliseQuery(q)).length);
 }
 
 // ── View ──────────────────────────────────────────────────────────────────
 
 export default async function BlogIndexView(
-  { page = 1, topic = "" }: { page?: number; topic?: string }
+  { page = 1, topic = "", q: rawQuery = "" }: { page?: number; topic?: string; q?: string }
 ) {
   const [cfg, allPosts] = await Promise.all([getBlogIndexSeo(), getAllPosts()]);
 
@@ -299,7 +268,8 @@ export default async function BlogIndexView(
     .slice(0, 12);
 
   const activeTopic = topic.trim();
-  const matching = allPosts.filter((p) => matchesTopic(p, activeTopic));
+  const q = normaliseQuery(rawQuery);
+  const matching = filterPosts(allPosts, activeTopic, q);
 
   const totalPages = pageCount(matching.length);
   const start = (page - 1) * POSTS_PER_PAGE;
@@ -311,11 +281,13 @@ export default async function BlogIndexView(
     to the newest featured post, falling back to the newest post overall. Only
     page 1 has a lead; deeper pages are the archive and read as a list.
   */
-  const lead = page === 1 ? (posts.find((p) => p.featured) ?? posts[0]) : undefined;
+  // Search results get no lead either: the top result is the best match, and
+  // promoting a featured post over it would put the ranking second.
+  const lead = page === 1 && !q ? (posts.find((p) => p.featured) ?? posts[0]) : undefined;
   const rest = lead ? posts.filter((p) => p.slug !== lead.slug) : posts;
 
   const latestDate = allPosts[0]?.date || "";
-  const qs = activeTopic ? `?topic=${encodeURIComponent(activeTopic)}` : "";
+  const qs = indexQuery(activeTopic, q);
   const pageUrl = `${SITE_URL}${indexPath(page)}${qs}`;
 
   // ── Structured data — Blog + ItemList + BreadcrumbList ─────────────
@@ -456,6 +428,10 @@ export default async function BlogIndexView(
           </div>
         </div>
 
+        <div className="bs-mt-5">
+          <BlogSearch initialQuery={q} topic={activeTopic} suggestions={topics.slice(0, 8).map(([t]) => t)} />
+        </div>
+
         {/* Topic rail — a filtered view of the same list, one URL per topic. */}
         {topics.length > 0 && (
           <nav className="bs-mt-5" aria-label="Filter by topic">
@@ -486,6 +462,7 @@ export default async function BlogIndexView(
         )}
       </header>
 
+      <div id="blog-results">
       <section className="bs-wrap bs-section--tight" style={{ paddingTop: 40 }}>
         {/*
           Ad slot 1 — top banner. Sits below the complete page header with a
@@ -494,7 +471,19 @@ export default async function BlogIndexView(
         */}
         <AdSlot slot={SLOT_TOP} format="horizontal" className="blog-ad-banner" />
 
-        {activeTopic && (
+        {q && (
+          <p className="bs-quiet bs-mt-4" style={{ fontSize: 15 }} role="status">
+            {matching.length} result{matching.length === 1 ? "" : "s"} for{" "}
+            <strong style={{ color: "var(--ink)" }}>&ldquo;{q}&rdquo;</strong>
+            {activeTopic ? <> in <strong style={{ color: "var(--ink)" }}>{activeTopic}</strong></> : null}.{" "}
+            <Link href={activeTopic ? `/blog?topic=${encodeURIComponent(activeTopic)}` : "/blog"}
+              className="bs-link-plain" style={{ textDecoration: "underline" }}>
+              Clear search
+            </Link>
+          </p>
+        )}
+
+        {activeTopic && !q && (
           <p className="bs-quiet bs-mt-4" style={{ fontSize: 15 }}>
             Showing {matching.length} article{matching.length === 1 ? "" : "s"} tagged{" "}
             <strong style={{ color: "var(--ink)" }}>{activeTopic}</strong>.{" "}
@@ -506,7 +495,7 @@ export default async function BlogIndexView(
 
         {posts.length === 0 && (
           <p className="bs-quiet bs-mt-5" style={{ fontSize: 16 }}>
-            Nothing published under this topic yet.{" "}
+            {q ? "No articles match that search — try a broader term." : "Nothing published under this topic yet."}{" "}
             <Link href="/blog" className="bs-link-plain" style={{ textDecoration: "underline" }}>
               See all articles
             </Link>
@@ -550,7 +539,7 @@ export default async function BlogIndexView(
       {rest.length > 0 && (
         <section className="bs-wrap bs-section--tight" id="all-articles" style={{ paddingTop: 52 }}>
           <p className="bs-list-head">
-            {activeTopic ? "More on this topic" : page > 1 ? `Archive · page ${page}` : "All articles"}
+            {q ? "Search results" : activeTopic ? "More on this topic" : page > 1 ? `Archive · page ${page}` : "All articles"}
           </p>
 
           <div className="bs-mt-4">
@@ -637,6 +626,7 @@ export default async function BlogIndexView(
           </div>
         </nav>
       )}
+      </div>
 
       <section className="bs-wrap bs-section">
         <div className="bs-rail-thick" />
