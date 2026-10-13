@@ -155,6 +155,18 @@ body {
 /* The years figure, in spot colour. `white-space: nowrap` keeps "9+ years"
    from ever breaking between the number and its unit at a wrap point. */
 .bs-h1-accent { color: var(--spot); white-space: nowrap; }
+/* The name-and-role line that opens the home H1 (components/sections/Hero.tsx):
+   set as an eyebrow so the tagline still reads as the headline. */
+.bs-h1-kicker {
+  display: block;
+  margin-bottom: 14px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--spot);
+}
 .bs-h2 {
   font-size: clamp(1.8rem, 3.6vw, 2.7rem);
   letter-spacing: -.025em;
@@ -343,6 +355,44 @@ a:hover { color: var(--spot-deep); text-decoration: underline; text-underline-of
 /* On the dark ground, lift dark-on-transparent marks so they stay readable. */
 :root[data-ink="dark"] .bs-logo { filter: brightness(1.08) contrast(1.04); }
 
+/* ---------- hero: side column (components/sections/Hero.tsx) ---------- */
+.bs-side { display: flex; flex-direction: column; gap: 22px; }
+/* The current role is the one thing in the rail that is a credential rather
+   than a link list, so it is the one set as a card. */
+.bs-side-current {
+  display: block; padding: 18px 20px;
+  background: var(--surface);
+  border-left: 3px solid var(--spot);
+  color: inherit; text-decoration: none;
+  transition: background .15s ease;
+}
+.bs-side-current:hover { text-decoration: none; background: color-mix(in srgb, var(--spot) 7%, var(--surface)); }
+.bs-side-current-row { display: flex; align-items: center; gap: 14px; margin-top: 12px; }
+.bs-side-title { margin: 0; font-size: 17px; font-weight: 600; line-height: 1.3; }
+.bs-side-block { padding-top: 16px; border-top: 1px solid var(--hair); }
+.bs-side-list { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 12px; }
+.bs-side-link {
+  font-size: 15px; font-weight: 600; line-height: 1.35; color: var(--ink);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+a:hover .bs-side-link, .bs-side-link:hover { color: var(--spot); }
+.bs-side-meta { display: block; margin: 3px 0 0; font-size: 12.5px; color: var(--quiet); }
+.bs-side-more { display: inline-block; margin-top: 12px; font-size: 13.5px; font-weight: 600; }
+.bs-side-book { display: flex; align-items: center; gap: 14px; margin-top: 10px; color: inherit; }
+.bs-side-book:hover { text-decoration: none; }
+.bs-side-book-cover {
+  flex: 0 0 44px; height: 56px; display: grid; place-items: center;
+  font-size: 24px; background: var(--surface); border: 1px solid var(--hair);
+}
+/* Stacked, the rail stays — its post and book links are the home page's
+   freshest internal links, and Google ranks the mobile render, so they are
+   kept visible rather than display:none. Only the role card goes: the lede
+   names the company and the Career section opens on it right after. */
+@media (max-width: 1024px) {
+  .bs-side-current { display: none; }
+  .bs-side { gap: 18px; }
+}
+
 /* ---------- figures / proof ---------- */
 .bs-proof {
   display: grid;
@@ -430,6 +480,9 @@ a:hover { color: var(--spot-deep); text-decoration: underline; text-underline-of
 */
 .bs-role--lead { border-top: 3px solid var(--ink); padding-top: 26px; }
 .bs-role--lead .bs-role-company { font-size: 26px; }
+.bs-role-lead-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; align-items: start; }
+.bs-role-lead-grid .bs-arrow-list li { font-size: 14.5px; }
+@media (max-width: 1024px) { .bs-role-lead-grid { grid-template-columns: minmax(0, 1fr); gap: 20px; } }
 
 /* One past role. A card, not a row: at half width the text sets to a natural
    measure instead of stopping two thirds of the way across the page. */
@@ -535,8 +588,8 @@ a:hover { color: var(--spot-deep); text-decoration: underline; text-underline-of
 */
 .bs-brand {
   display: flex;
-  align-items: baseline;
-  gap: 11px;
+  align-items: center;
+  gap: 12px;
   color: var(--ink);
   font-size: 21px;
   font-weight: 600;
@@ -544,6 +597,13 @@ a:hover { color: var(--spot-deep); text-decoration: underline; text-underline-of
   margin-right: auto;
   text-decoration: none;
   white-space: nowrap;
+}
+.bs-brand-text { display: flex; align-items: baseline; gap: 11px; }
+.bs-brand-avatar {
+  width: 40px; height: 40px; flex-shrink: 0;
+  border-radius: 50%;
+  object-fit: cover; object-position: top center;
+  border: 1px solid var(--rule);
 }
 .bs-brand:hover { color: var(--ink); text-decoration: none; }
 .bs-brand:hover .bs-brand-role { color: var(--spot-deep); }
@@ -752,14 +812,9 @@ a:hover { color: var(--spot-deep); text-decoration: underline; text-underline-of
   .bs-burger { display: inline-flex; }
   /* Name over role rather than side by side: on a 390px screen the two on one
      line either wrap mid-title or push the burger off the edge. */
-  .bs-brand {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 3px;
-    font-size: 19px;
-    line-height: 1.15;
-    white-space: normal;
-  }
+  .bs-brand { gap: 10px; font-size: 19px; line-height: 1.15; white-space: normal; }
+  .bs-brand-text { flex-direction: column; align-items: flex-start; gap: 3px; }
+  .bs-brand-avatar { width: 36px; height: 36px; }
   .bs-brand-role { padding-left: 0; border-left: none; font-size: 10.5px; }
   .bs-masthead-inner { gap: 16px; padding: 12px var(--gutter); }
   .bs-icon-btn { width: 42px; height: 42px; }

@@ -114,16 +114,44 @@ function RoleRow({ r, detailed, lead }: { r: ExperienceItem; detailed: boolean; 
         </div>
 
         <p className="bs-quiet bs-mt-1" style={{ fontSize: 16, fontWeight: 600 }}>{r.role}</p>
-        <p className="bs-mt-2" style={{ fontSize: 15, lineHeight: 1.65, maxWidth: "70ch" }}>
-          {r.description}
-        </p>
 
-        {r.children?.length ? (
-          <p className="bs-small bs-quiet bs-mt-2">
-            <span style={{ color: "var(--ink)", fontWeight: 600 }}>Products &amp; clients — </span>
-            {r.children.map((c) => `${c.company} (${c.dateLabel})`).join(" · ")}
-          </p>
-        ) : null}
+        {/* On the front page the lead role used to stop at 70ch and leave the
+            right half of the page empty. It now sets the summary and tags
+            beside the first three highlights, so the row uses the measure
+            and says what the work actually is. */}
+        <div className={lead && !detailed ? "bs-role-lead-grid bs-mt-2" : "bs-mt-2"}>
+          <div>
+            <p style={{ fontSize: 15, lineHeight: 1.65, maxWidth: "70ch", margin: 0 }}>
+              {r.description}
+            </p>
+
+            {r.children?.length ? (
+              <p className="bs-small bs-quiet bs-mt-2">
+                <span style={{ color: "var(--ink)", fontWeight: 600 }}>Products &amp; clients — </span>
+                {r.children.map((c) => `${c.company} (${c.dateLabel})`).join(" · ")}
+              </p>
+            ) : null}
+
+            {lead && !detailed ? (
+              <div className="bs-tags bs-mt-3" style={{ gap: 7 }}>
+                {r.tools.map((t) => (
+                  <span key={t} className="bs-tag">{t}</span>
+                ))}
+              </div>
+            ) : null}
+          </div>
+
+          {lead && !detailed && r.highlights?.length ? (
+            <ul className="bs-arrow-list">
+              {r.highlights.slice(0, 3).map((h) => (
+                <li key={h}>
+                  <span aria-hidden="true" style={{ color: "var(--spot)", marginTop: 2 }}>—</span>
+                  <span className="bs-quiet">{h}</span>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
 
         {detailed && r.highlights?.length ? (
           <ul className="bs-arrow-list bs-mt-3">
@@ -149,11 +177,13 @@ function RoleRow({ r, detailed, lead }: { r: ExperienceItem; detailed: boolean; 
           </div>
         ) : null}
 
-        <div className="bs-tags bs-mt-3" style={{ gap: 7 }}>
-          {r.tools.map((t) => (
-            <span key={t} className="bs-tag">{t}</span>
-          ))}
-        </div>
+        {lead && !detailed ? null : (
+          <div className="bs-tags bs-mt-3" style={{ gap: 7 }}>
+            {r.tools.map((t) => (
+              <span key={t} className="bs-tag">{t}</span>
+            ))}
+          </div>
+        )}
       </div>
     </article>
   );

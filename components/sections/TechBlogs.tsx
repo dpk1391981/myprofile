@@ -110,7 +110,7 @@ function topRows(pool: HomePost[], lead: HomePost): HomePost[] {
   return [...proven, ...unproven].slice(0, HOME_ROWS);
 }
 
-async function getHomePosts(): Promise<{ lead: HomePost; rows: HomePost[] } | null> {
+export async function getHomePosts(): Promise<{ lead: HomePost; rows: HomePost[] } | null> {
   const [featured, latest] = await Promise.all([
     listPosts({ featured: true, limit: TOP_POOL, revalidate: FEED_REVALIDATE }),
     listPosts({ limit: HOME_POSTS, revalidate: FEED_REVALIDATE }),

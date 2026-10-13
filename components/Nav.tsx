@@ -2,6 +2,7 @@
 
 import SocialIconLink from "@/components/shared/SocialIconLink";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -42,9 +43,23 @@ const Nav = () => {
               grey it used to share with the nav links. It is the line that
               says what this site is, and it stays visible on mobile now
               (stacked under the name) instead of being hidden below 860px. */}
+          {/* The portrait lives here now rather than in the home hero: a small
+              face beside the name on every page, phones included. That puts
+              the image (same file, same name) on every crawled page instead
+              of one, which is more for image search, not less. */}
           <Link href="/" className="bs-brand" aria-label="Deepak Kumar — home">
-            <span>{PERSONAL_INFO.fullName}</span>
-            <span className="bs-brand-role">Software &amp; AI Engineer</span>
+            <Image
+              src={PERSONAL_INFO.profileImage}
+              alt="Deepak Kumar, software and AI engineer in New Delhi"
+              width={40}
+              height={40}
+              loading="eager"
+              className="bs-brand-avatar"
+            />
+            <span className="bs-brand-text">
+              <span>{PERSONAL_INFO.fullName}</span>
+              <span className="bs-brand-role">Software &amp; AI Engineer</span>
+            </span>
           </Link>
 
           <nav className="bs-nav" aria-label="Main navigation">
