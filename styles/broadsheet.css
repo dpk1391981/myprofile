@@ -845,6 +845,18 @@ a:hover .bs-side-link, .bs-side-link:hover { color: var(--spot); }
      strip with the right third of the screen blank. Pretty fills each line
      and only guards against a lone last word. */
   .bs-h1 { line-height: .98; text-wrap: pretty; }
+  /* The name-and-role kicker on one line. 46 uppercase characters at .06em
+     tracking measure about 31em, so the size is the column width over 31:
+     ~10.8px on a 375px phone, ~9px at 320px, never above 12px. */
+  .bs-h1-kicker {
+    white-space: nowrap;
+    letter-spacing: .06em;
+    font-size: min(12px, calc((100vw - 2 * var(--gutter)) / 31));
+    /* 14px under a ~11px line left a visible hole above the headline. */
+    margin-bottom: 4px;
+  }
+  /* Headline to lede: 24px read as a section break on a phone. */
+  .bs-h1 + .bs-lede { margin-top: 12px; }
   /* On a phone the figure is the full column, capped only by the gutter. Any
      narrower and the labels inside the viewBox scale down past legibility. */
   .bs-headfig { max-width: 100%; }
