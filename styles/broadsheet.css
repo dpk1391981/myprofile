@@ -166,6 +166,9 @@ body {
   letter-spacing: .12em;
   text-transform: uppercase;
   color: var(--spot);
+  /* The h1's `balance` would otherwise split this into two half-width lines
+     on a phone, leaving the right side of the column empty. */
+  text-wrap: wrap;
 }
 .bs-h2 {
   font-size: clamp(1.8rem, 3.6vw, 2.7rem);
@@ -837,7 +840,11 @@ a:hover .bs-side-link, .bs-side-link:hover { color: var(--spot); }
   .bs-head-body { padding-top: 26px; }
   /* The headline is the tallest thing above the fold; a slightly tighter
      leading buys back most of a line without changing its size. */
-  .bs-h1 { line-height: .98; }
+  /* `pretty` rather than `balance`: on a 335px column balance pulls every
+     line in to the width of the shortest, so the headline reads as a narrow
+     strip with the right third of the screen blank. Pretty fills each line
+     and only guards against a lone last word. */
+  .bs-h1 { line-height: .98; text-wrap: pretty; }
   /* On a phone the figure is the full column, capped only by the gutter. Any
      narrower and the labels inside the viewBox scale down past legibility. */
   .bs-headfig { max-width: 100%; }
@@ -850,6 +857,10 @@ a:hover .bs-side-link, .bs-side-link:hover { color: var(--spot); }
   .bs-mt-5 { margin-top: 24px; }
   .bs-mt-6 { margin-top: 28px; }
   .bs-mt-7 { margin-top: 28px; }
+  /* Home career heading on one line: at the stock h2 size "been." wraps alone
+     onto a second line. Scaled to the viewport so it still fits at 320px. */
+  .bs-career-head .bs-h2 { font-size: clamp(1.25rem, 6.4vw, 1.8rem); }
+  .bs-career-lead { margin-top: 16px; }
   .bs-dateline { gap: 6px 14px; font-size: 10px; }
   .bs-proof { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 20px; }
   .bs-proof-value { font-size: 27px; }

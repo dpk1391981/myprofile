@@ -209,7 +209,9 @@ export default function Career({ detailed = false }: { detailed?: boolean }) {
         line only has to say what the section is.
       */}
       {detailed ? null : (
-        <SectionHead kicker="Career" title="Where the work has been." />
+        <div className="bs-career-head">
+          <SectionHead kicker="Career" title="Where the work has been." />
+        </div>
       )}
 
       {detailed ? (
@@ -220,7 +222,7 @@ export default function Career({ detailed = false }: { detailed?: boolean }) {
         </div>
       ) : (
         <>
-          <div className="bs-mt-7">
+          <div className="bs-mt-7 bs-career-lead">
             <RoleRow r={lead} detailed={false} lead />
           </div>
           <div className="bs-split bs-split--even bs-mt-6">
