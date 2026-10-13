@@ -1164,6 +1164,11 @@ button.blog-share-btn { cursor: pointer; font: inherit; padding: 0; appearance: 
 .blog-author-name a:hover { color: var(--spot); }
 .blog-author-role { font-size: 13.5px; color: var(--quiet); margin: 4px 0 0; }
 .blog-author-bio { font-size: 15px; line-height: 1.65; margin: 11px 0 0; max-width: 58ch; }
+.blog-author-hire {
+  color: var(--ink); font-weight: 600; text-decoration: underline;
+  text-decoration-color: var(--spot); text-underline-offset: 3px;
+}
+.blog-author-hire:hover { color: var(--spot); }
 .blog-author-links { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 14px; align-items: center; }
 .blog-author-link {
   display: inline-flex; align-items: center; gap: 6px;

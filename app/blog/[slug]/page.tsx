@@ -14,7 +14,7 @@ import ArticleSearch from "@/components/blog/ArticleSearch";
 import ShareRow from "@/components/shared/ShareRow";
 import SocialIconLink from "@/components/shared/SocialIconLink";
 import ViewCounter from "@/components/shared/ViewCounter";
-import { authorBio } from "@/components/utils/author-bio";
+import { authorBio, hireLink } from "@/components/utils/author-bio";
 import { withHeadingAnchors, countWords, type Heading } from "@/components/utils/article-html";
 import {
   istStamp, formatISTDate, formatISTDateTime, formatISTTime, hasTimeOfDay,
@@ -684,7 +684,13 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                   One fixed paragraph under every article says nothing about why this author
                   is worth trusting on this particular subject.
                 */}
-                <p className="blog-author-bio">{authorBio(post.category, post.tags)}</p>
+                <p className="blog-author-bio">
+                  {authorBio(post.category, post.tags)}{" "}
+                  {/* Contextual link to the matching hiring page — see hireLink(). */}
+                  <Link href={hireLink(post.category, post.tags).href} className="blog-author-hire">
+                    {hireLink(post.category, post.tags).text}
+                  </Link>
+                </p>
                 <div className="blog-author-links">
                   <Link href="/about" className="blog-author-link">
                     About <IconArrowNarrowRight size={15} />

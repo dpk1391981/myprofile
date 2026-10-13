@@ -86,3 +86,59 @@ export function authorBio(category?: string, tags?: string[]): string {
   }
   return BY_CATEGORY[(category || "").trim()] ?? DEFAULT_AUTHOR_BIO;
 }
+
+/*
+  THE HIRE LINK — one contextual link from every article to the landing page
+  that matches its subject.
+
+  WHY. Search Console (3 months to 2026-10-13): the blog earns ~6,300
+  impressions while the six /*-in-india pages earn a few dozen each, and not
+  one article linked to any of them. Internal links are how a site tells Google
+  which of its pages matter for a topic; the blog was spending all of that on
+  itself. A link inside the author bio is contextual (it sits in prose about
+  the same subject) and appears on every post, so each landing page gets links
+  from exactly the articles that are about its keyword.
+
+  The anchor text carries the page's keyword, worded as a sentence a reader
+  would actually click. Hand-written per page, like the bios above — "an AI
+  engineer", not a template that renders "a AI engineer".
+
+  Tags win over category, same as the bio: a post filed under "AI/ML" that is
+  tagged "rag" belongs to the LLM page, not the general AI one.
+*/
+export type HireLink = { href: string; text: string };
+
+const HIRE: Record<string, HireLink> = {
+  llm:   { href: "/llm-engineer-in-india",        text: "Hiring an LLM engineer in India? Here is how I work." },
+  ai:    { href: "/ai-engineer-in-india",         text: "Hiring an AI engineer in India? Here is how I work." },
+  react: { href: "/react-developer-in-india",     text: "Hiring a React developer in India? Here is how I work." },
+  js:    { href: "/javascript-developer-in-india", text: "Hiring a JavaScript developer in India? Here is how I work." },
+  full:  { href: "/full-stack-developer-in-india", text: "Hiring a full stack developer in India? Here is how I work." },
+  sw:    { href: "/software-developer-in-india",  text: "Hiring a software developer in India? Here is how I work." },
+};
+
+const HIRE_BY_TAG: Record<string, keyof typeof HIRE> = {
+  llm: "llm", llms: "llm", rag: "llm", langchain: "llm", openai: "llm", gpt: "llm",
+  "prompt engineering": "llm", agents: "llm", "ai agents": "llm", claude: "llm",
+  ai: "ai", "machine learning": "ai", ml: "ai", "generative ai": "ai", "artificial intelligence": "ai",
+  react: "react", "react.js": "react", reactjs: "react", "next.js": "react", nextjs: "react",
+  javascript: "js", typescript: "js",
+  "node.js": "full", nodejs: "full", mongodb: "full", mern: "full", "full stack": "full",
+};
+
+const HIRE_BY_CATEGORY: Record<string, keyof typeof HIRE> = {
+  "AI/ML": "ai", AI: "ai",
+  React: "react",
+  JavaScript: "js", TypeScript: "js",
+  "Node.js": "full", Database: "full", Web: "full",
+};
+
+/** The landing page an article should point at; the general software page
+ *  when nothing more specific fits, so every post links somewhere useful. */
+export function hireLink(category?: string, tags?: string[]): HireLink {
+  for (const raw of tags ?? []) {
+    const key = HIRE_BY_TAG[raw.trim().toLowerCase()];
+    if (key) return HIRE[key];
+  }
+  return HIRE[HIRE_BY_CATEGORY[(category || "").trim()] ?? "sw"];
+}
