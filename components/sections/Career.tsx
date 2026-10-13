@@ -92,7 +92,7 @@ function RoleCard({ r }: { r: ExperienceItem }) {
 function RoleRow({ r, detailed, lead }: { r: ExperienceItem; detailed: boolean; lead?: boolean }) {
   return (
     <article className={`bs-role ${lead ? "bs-role--lead" : ""}`}>
-      <div>
+      <div className="bs-role-meta">
         <p className="bs-small bs-quiet" style={{ letterSpacing: ".06em", textTransform: "uppercase" }}>
           {r.dateLabel}
         </p>

@@ -92,7 +92,7 @@ body {
   margin: 0 auto;
   padding: 0 var(--gutter);
 }
-.bs-section { padding-top: 110px; }
+.bs-section { padding-top: 88px; }
 .bs-section--tight { padding-top: 72px; }
 .bs-section--first { padding-top: 0; }
 
@@ -742,7 +742,7 @@ a:hover { color: var(--spot-deep); text-decoration: underline; text-underline-of
      illustration under the lede, and a full-width one would push the first
      section of the page off the screen entirely. */
   .bs-headfig { max-width: 340px; }
-  .bs-section { padding-top: 84px; }
+  .bs-section { padding-top: 64px; }
   .bs-footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px; }
 }
 
@@ -766,7 +766,13 @@ a:hover { color: var(--spot-deep); text-decoration: underline; text-underline-of
   .bs-drawer-link { padding: 17px 0; font-size: 18px; }
   .bs-ledger-head { display: none; }
   .bs-ledger-row { grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 24px 0; }
-  .bs-role { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .bs-role { grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 22px 0; }
+  .bs-role--lead { padding-top: 18px; }
+  /* Stacked, the date column would spend three lines (date, tenure, logo) on
+     what reads fine as one: logo, then the dates beside it. */
+  .bs-role-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 12px; }
+  .bs-role-meta > * { margin: 0; }
+  .bs-role-meta .bs-logo { order: -1; width: 28px; height: 28px; }
   .bs-split--even { grid-template-columns: minmax(0, 1fr); gap: 36px; }
 }
 
@@ -782,7 +788,13 @@ a:hover { color: var(--spot-deep); text-decoration: underline; text-underline-of
   .bs-headfig { max-width: 100%; }
   .bs-headfig .bs-headfig-box { padding-top: 16px; }
   body { font-size: 15.5px; }
-  .bs-section { padding-top: 68px; }
+  .bs-section { padding-top: 48px; }
+  /* Section rhythm at phone scale. The desktop steps (44px, 56px between a
+     heading and its content) left a heading floating half a screen above
+     the thing it introduces. */
+  .bs-mt-5 { margin-top: 24px; }
+  .bs-mt-6 { margin-top: 28px; }
+  .bs-mt-7 { margin-top: 28px; }
   .bs-dateline { gap: 6px 14px; font-size: 10px; }
   .bs-proof { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 20px; }
   .bs-proof-value { font-size: 27px; }
