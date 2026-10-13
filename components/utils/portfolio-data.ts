@@ -530,7 +530,7 @@ export const FAQS: FaqItem[] = [
   {
     question: "Has Deepak Kumar built and launched his own products?",
     answer:
-      "Yes. Deepak Kumar owns and operates four independent products end-to-end: PlanToday.in (an AI-powered wedding and event vendor marketplace), TrendMeToday.com (a real-time trend intelligence platform with momentum-based heat scoring), VTechXHub.com (an SEO-driven content publishing platform) and Think4BuySale (a real-estate marketplace, currently on its development build). He handles product, architecture, engineering and SEO on all four.",
+      "Yes. Deepak Kumar owns and operates four independent products end-to-end: PlanToday.in (an AI-powered wedding and event vendor marketplace), TrendMeToday.com (a real-time trend intelligence platform with momentum-based heat scoring), VTechXHub.com (an SEO-driven content publishing platform) and Think4BuySale (a live real-estate marketplace for buying, selling and renting property in India). He handles product, architecture, engineering and SEO on all four.",
   },
   {
     question: "Why should a company hire Deepak Kumar?",

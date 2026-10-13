@@ -535,7 +535,7 @@ const productSchemas = [
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web browser",
     description:
-      "Real-estate listing and enquiry marketplace, currently on its development build.",
+      "Real-estate marketplace in India for buying, selling and renting property, with zero-brokerage listings and AI-powered property search.",
     author: { "@id": `${SITE_URL}/#person` },
     publisher: { "@id": `${SITE_URL}/#person` },
     inLanguage: "en-IN",

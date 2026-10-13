@@ -294,7 +294,7 @@ export const ABOUT_STORY: { heading: string; paras: string[] }[] = [
   {
     heading: "The products I own",
     paras: [
-      "Alongside full-time work I build and run four of my own products. PlanToday.in is an AI-powered wedding and event vendor marketplace, where hosts search in plain English or Hinglish and an NLP parser turns that into a budget-aware vendor query. TrendMeToday.com is a real-time trend intelligence platform that clusters publisher coverage and scores each story 0–100 on measured momentum. VTechXHub.com is an SEO-driven content publishing platform, and Think4BuySale is a real-estate marketplace currently running on its development build.",
+      "Alongside full-time work I build and run four of my own products. PlanToday.in is an AI-powered wedding and event vendor marketplace, where hosts search in plain English or Hinglish and an NLP parser turns that into a budget-aware vendor query. TrendMeToday.com is a real-time trend intelligence platform that clusters publisher coverage and scores each story 0–100 on measured momentum. VTechXHub.com is an SEO-driven content publishing platform, and Think4BuySale is a live real-estate marketplace for buying, selling and renting property in India.",
       "On both I own product, architecture, engineering and SEO. Running something end to end changes how you write code: you stop optimising for the pull request and start optimising for the invoice, the crawl budget and the on-call pager.",
     ],
   },
