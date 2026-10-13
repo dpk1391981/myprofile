@@ -1270,106 +1270,204 @@ button.blog-share-btn { cursor: pointer; font: inherit; padding: 0; appearance: 
 .blog-search[data-pending] .blog-search-icon { color: var(--spot); }
 body:has(.blog-search[data-pending]) #blog-results { opacity: .55; transition: opacity .15s; }
 
-/* ---------- mobile search: floating button + full-screen sheet ----------
-   Bottom-LEFT, because the WhatsApp pill owns bottom-right. Same 16px inset
-   and safe-area handling as that pill so the two read as one system. */
+/* ---------- floating search: button + panel ----------
+   One component, two shapes. Phones: a round button bottom-LEFT (the WhatsApp
+   pill owns bottom-right) opening a full-screen sheet. Wider screens: a
+   "Search /" pill in the same corner opening a centred dialog. Same 16/20px
+   insets and safe-area handling as the WhatsApp pill so they read as a pair. */
 .blog-search-fab {
-  display: none;
   position: fixed; z-index: 64;
-  left: calc(16px + env(safe-area-inset-left, 0px));
-  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-  width: 52px; height: 52px; border-radius: 50%;
-  align-items: center; justify-content: center;
+  left: calc(20px + env(safe-area-inset-left, 0px));
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  display: inline-flex; align-items: center; gap: 9px;
+  height: 48px; padding: 0 16px 0 15px; border-radius: 999px;
+  font: inherit; font-size: 14.5px; font-weight: 600;
   color: var(--paper); background: var(--ink); border: 0; cursor: pointer;
   box-shadow: 0 6px 20px rgba(0,0,0,.22), 0 1px 3px rgba(0,0,0,.18);
-  opacity: 0; transform: translateY(14px) scale(.9); pointer-events: none;
+  opacity: 0; transform: translateY(14px) scale(.92); pointer-events: none;
   transition: opacity .2s ease, transform .25s cubic-bezier(.2,.9,.3,1.2);
   -webkit-tap-highlight-color: transparent;
 }
 .blog-search-fab[data-show] { opacity: 1; transform: none; pointer-events: auto; }
-.blog-search-fab:active { transform: scale(.92); }
+.blog-search-fab:active { transform: scale(.94); }
+.blog-search-fab-kbd {
+  font: inherit; font-size: 11.5px; font-weight: 500; line-height: 1;
+  padding: 3px 7px; border-radius: 4px;
+  border: 1px solid color-mix(in srgb, var(--paper) 35%, transparent);
+  color: color-mix(in srgb, var(--paper) 75%, transparent);
+}
 
-.blog-sheet { display: none; }
+.blog-sheet-backdrop {
+  position: fixed; inset: 0; z-index: 94;
+  background: rgba(10,10,10,.42);
+  opacity: 0; visibility: hidden;
+  transition: opacity .18s ease, visibility 0s linear .18s;
+}
+.blog-sheet-backdrop[data-open] { opacity: 1; visibility: visible; transition: opacity .18s ease; }
 
+/* Desktop / tablet: the dialog. */
+.blog-sheet {
+  position: fixed; z-index: 95;
+  top: 12vh; left: 50%;
+  width: min(680px, calc(100% - 32px)); max-height: 72vh;
+  display: flex; flex-direction: column;
+  background: var(--paper); color: var(--ink);
+  border: 1px solid var(--rule); border-radius: 12px;
+  box-shadow: 0 24px 64px rgba(0,0,0,.28), 0 2px 8px rgba(0,0,0,.12);
+  overflow: hidden;
+  opacity: 0; visibility: hidden;
+  transform: translate(-50%, -8px) scale(.985);
+  transition: opacity .16s ease, transform .2s cubic-bezier(.2,.8,.2,1), visibility 0s linear .2s;
+}
+.blog-sheet[data-open] {
+  opacity: 1; visibility: visible; transform: translate(-50%, 0);
+  transition: opacity .16s ease, transform .2s cubic-bezier(.2,.8,.2,1);
+}
+
+.blog-sheet-bar {
+  flex: none; display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; border-bottom: 1px solid var(--hair);
+}
+.blog-sheet-field {
+  flex: 1; min-width: 0;
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 10px; height: 42px; border-radius: 10px;
+  background: color-mix(in srgb, var(--ink) 7%, transparent);
+  color: var(--quiet);
+}
+.blog-sheet-field input {
+  flex: 1; min-width: 0; height: 100%;
+  font: inherit; font-size: 16px; color: var(--ink);   /* 16px: no iOS zoom */
+  background: transparent; border: 0; outline: 0;
+}
+.blog-sheet-field input::placeholder { color: var(--quiet); }
+.blog-sheet-field input::-webkit-search-cancel-button { -webkit-appearance: none; }
+.blog-sheet-clear {
+  flex: none; display: inline-flex; align-items: center; justify-content: center;
+  width: 20px; height: 20px; min-width: 0; min-height: 0; padding: 0;
+  border-radius: 50%; border: 0; cursor: pointer;
+  color: var(--paper); background: var(--quiet);
+}
+.blog-sheet-cancel {
+  flex: none; font: inherit; font-size: 15px; color: var(--spot);
+  background: none; border: 0; padding: 6px 0; cursor: pointer;
+}
+
+.blog-sheet-body {
+  flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px 16px calc(20px + env(safe-area-inset-bottom, 0px));
+}
+.blog-sheet-body .blog-topic {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: none; font: inherit; font-size: 13px; padding: 7px 12px; cursor: pointer;
+}
+
+.blog-sheet-recent, .blog-sheet-suggest { list-style: none; margin: 8px 0 0; padding: 0; }
+.blog-sheet-suggest { margin: 0 0 10px; }
+.blog-sheet-recent button, .blog-sheet-suggest button {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  font: inherit; font-size: 15px; color: var(--ink); text-align: left;
+  background: none; border: 0; border-bottom: 1px solid var(--hair);
+  padding: 11px 0; cursor: pointer;
+}
+.blog-sheet-recent svg, .blog-sheet-suggest svg { color: var(--quiet); flex: none; }
+.blog-sheet-suggest span { flex: 1; min-width: 0; }
+.blog-sheet-suggest mark { background: none; color: var(--quiet); }
+.blog-sheet-suggest-fill { transform: rotate(-90deg); }
+
+.blog-sheet-topics { margin: 0 0 14px; }
+
+.blog-sheet-summary {
+  display: flex; align-items: flex-start; gap: 8px;
+  margin: 0 0 4px; font-size: 13.5px; line-height: 1.45; color: var(--quiet);
+}
+.blog-sheet-summary svg { color: var(--spot); flex: none; margin-top: 2px; }
+.blog-sheet-summary strong { color: var(--ink); }
+
+.blog-sheet-results { list-style: none; margin: 0; padding: 0; transition: opacity .15s; }
+.blog-sheet-results[data-stale] { opacity: .5; }
+.blog-sheet-results a {
+  display: block; padding: 13px 10px; margin: 0 -10px;
+  border-bottom: 1px solid var(--hair); border-radius: 6px;
+  color: var(--ink); text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.blog-sheet-results a[data-active],
+.blog-sheet-results a:active { background: color-mix(in srgb, var(--ink) 6%, transparent); }
+.blog-sheet-best {
+  display: inline-block; margin-bottom: 5px;
+  font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--spot);
+}
+.blog-sheet-title { display: block; font-size: 16px; line-height: 1.3; font-weight: 600; }
+.blog-sheet-desc {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  margin-top: 4px; font-size: 13.5px; line-height: 1.45; color: var(--quiet);
+}
+.blog-sheet-title mark, .blog-sheet-desc mark {
+  background: color-mix(in srgb, var(--spot) 14%, transparent); color: inherit;
+  border-radius: 2px; padding: 0 1px;
+}
+.blog-sheet-meta { display: block; margin-top: 6px; font-size: 12.5px; color: var(--quiet); }
+.blog-sheet-all { margin-top: 16px; }
+.blog-sheet-note { font-size: 15px; margin-top: 8px; }
+
+.blog-sheet-keys { margin: 16px 0 0; font-size: 12px; color: var(--quiet); }
+.blog-sheet-keys kbd {
+  font: inherit; font-size: 11px; padding: 1px 6px; margin-right: 3px;
+  border: 1px solid var(--rule); border-radius: 4px;
+}
+
+/* Loading skeleton — shown only before the first answer for a query. */
+.blog-sheet-skeleton { list-style: none; margin: 4px 0 0; padding: 0; }
+.blog-sheet-skeleton li { padding: 14px 0; border-bottom: 1px solid var(--hair); }
+.blog-sheet-skeleton span {
+  display: block; height: 14px; border-radius: 4px; width: 82%;
+  background: linear-gradient(90deg,
+    color-mix(in srgb, var(--ink) 6%, transparent) 25%,
+    color-mix(in srgb, var(--ink) 12%, transparent) 50%,
+    color-mix(in srgb, var(--ink) 6%, transparent) 75%);
+  background-size: 200% 100%;
+  animation: blog-shimmer 1.1s linear infinite;
+}
+.blog-sheet-skeleton span + span { width: 46%; height: 10px; margin-top: 9px; }
+@keyframes blog-shimmer { to { background-position: -200% 0; } }
+
+/* Phones: round button, full-screen sheet. */
 @media (max-width: 720px) {
-  .blog-search-fab { display: inline-flex; }
+  .blog-search-fab {
+    left: calc(16px + env(safe-area-inset-left, 0px));
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    width: 52px; height: 52px; padding: 0; justify-content: center;
+  }
+  .blog-search-fab-label, .blog-search-fab-kbd { display: none; }
+  .blog-sheet-backdrop { display: none; }
+  .blog-sheet-keys { display: none; }
 
+  /* Pinned to the VISIBLE viewport (set from visualViewport in JS), so with
+     the keyboard up the bar stays at the top and results end above the keys.
+     It fades in rather than sliding up from below the screen: an input that
+     is still off-screen when focused makes the browser scroll to reveal it,
+     which is what left the bar half under the toolbar. */
   .blog-sheet {
-    display: flex; flex-direction: column;
-    position: fixed; inset: 0; z-index: 95;
-    background: var(--paper); color: var(--ink);
-    visibility: hidden;
-    transform: translateY(100%);
-    transition: transform .28s cubic-bezier(.32,.72,0,1), visibility 0s linear .28s;
+    top: var(--vv-top, 0px); left: 0; right: 0; bottom: auto;
+    width: auto; height: var(--vv-h, 100dvh); max-height: none;
+    border: 0; border-radius: 0; box-shadow: none;
+    transform: translateY(10px);
   }
-  .blog-sheet[data-open] {
-    visibility: visible; transform: none;
-    transition: transform .32s cubic-bezier(.32,.72,0,1), visibility 0s;
-  }
+  .blog-sheet[data-open] { transform: none; }
+  .blog-sheet-bar { padding-top: calc(10px + env(safe-area-inset-top, 0px)); }
+  .blog-sheet-results a { margin: 0; padding: 14px 0; border-radius: 0; }
+}
 
-  .blog-sheet-bar {
-    display: flex; align-items: center; gap: 12px;
-    padding: calc(10px + env(safe-area-inset-top, 0px)) 16px 10px;
-    border-bottom: 1px solid var(--hair);
-  }
-  .blog-sheet-field {
-    flex: 1; min-width: 0; position: relative;
-    display: flex; align-items: center; gap: 8px;
-    padding: 0 10px; height: 40px; border-radius: 10px;
-    background: color-mix(in srgb, var(--ink) 7%, transparent);
-    color: var(--quiet);
-  }
-  .blog-sheet-field input {
-    flex: 1; min-width: 0; height: 100%;
-    font: inherit; font-size: 16px; color: var(--ink);   /* 16px: no iOS zoom */
-    background: transparent; border: 0; outline: 0;
-  }
-  .blog-sheet-field input::-webkit-search-cancel-button { -webkit-appearance: none; }
-  .blog-sheet-clear {
-    flex: none; display: inline-flex; align-items: center; justify-content: center;
-    width: 20px; height: 20px; min-width: 0; min-height: 0; padding: 0;
-    border-radius: 50%; border: 0; cursor: pointer;
-    color: var(--paper); background: var(--quiet);
-  }
-  .blog-sheet-cancel {
-    font: inherit; font-size: 15px; color: var(--spot);
-    background: none; border: 0; padding: 6px 0; cursor: pointer;
-  }
-
-  .blog-sheet-body {
-    flex: 1; overflow-y: auto; overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
-    padding: 18px 16px calc(24px + env(safe-area-inset-bottom, 0px));
-  }
-  .blog-sheet-body .blog-topic { background: none; font: inherit; font-size: 13px; padding: 7px 12px; }
-
-  .blog-sheet-recent { list-style: none; margin: 8px 0 0; padding: 0; }
-  .blog-sheet-recent button {
-    display: flex; align-items: center; gap: 10px; width: 100%;
-    font: inherit; font-size: 15px; color: var(--ink); text-align: left;
-    background: none; border: 0; border-bottom: 1px solid var(--hair);
-    padding: 12px 0; cursor: pointer;
-  }
-  .blog-sheet-recent svg { color: var(--quiet); flex: none; }
-
-  .blog-sheet-count { margin: 0 0 4px; }
-  .blog-sheet-note { font-size: 15px; margin-top: 8px; }
-  .blog-sheet-results { list-style: none; margin: 0; padding: 0; transition: opacity .15s; }
-  .blog-sheet-results[data-stale] { opacity: .5; }
-  .blog-sheet-results a {
-    display: block; padding: 14px 0; border-bottom: 1px solid var(--hair);
-    color: var(--ink); text-decoration: none;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .blog-sheet-results a:active { background: color-mix(in srgb, var(--ink) 5%, transparent); }
-  .blog-sheet-title { display: block; font-size: 16px; line-height: 1.3; font-weight: 600; }
-  .blog-sheet-title mark { background: none; color: var(--spot); }
-  .blog-sheet-meta { display: block; margin-top: 5px; font-size: 12.5px; color: var(--quiet); }
-  .blog-sheet-all { margin-top: 18px; }
+@media (hover: none) {
+  .blog-search-fab-kbd, .blog-sheet-keys { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .blog-search-fab, .blog-sheet, .blog-sheet[data-open] { transition: none; }
+  .blog-search-fab, .blog-sheet, .blog-sheet[data-open],
+  .blog-sheet-backdrop, .blog-sheet-backdrop[data-open] { transition: none; }
+  .blog-sheet-skeleton span { animation: none; }
 }
 
 .blog-lead {

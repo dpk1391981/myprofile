@@ -34,7 +34,8 @@ export default function BlogSearch({
   const [pending, startTransition] = useTransition();
   const lastSent = useRef(initialQuery.trim());
   const formRef = useRef<HTMLFormElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  /** Set by a search; consumed once its results have rendered. */
+  const wantScroll = useRef(false);
 
   // Back/forward or a topic link changes the query under us — follow it. The
   // echo of our own replace() is skipped: by the time the server answers, the
@@ -49,6 +50,7 @@ export default function BlogSearch({
     const trimmed = q.trim();
     if (trimmed === lastSent.current) return;
     lastSent.current = trimmed;
+    wantScroll.current = Boolean(trimmed);
 
     const params = new URLSearchParams();
     if (topic) params.set("topic", topic);
@@ -60,25 +62,41 @@ export default function BlogSearch({
     });
   }
 
+  /*
+    Bring the results to the reader. The box sits below the hero, so on most
+    screens the list it updates starts below the fold and typing appeared to
+    do nothing. Once results land, the box is scrolled up to sit just under the
+    sticky masthead, leaving the count and the list in view beneath it (on a
+    phone, above the keyboard). Skipped when already there, so successive
+    keystrokes do not jiggle the page.
+  */
+  const scrollToResults = (behavior: ScrollBehavior) => {
+    const form = formRef.current;
+    if (!form) return;
+    const head = document.querySelector(".bs-masthead")?.getBoundingClientRect().height ?? 0;
+    const delta = form.getBoundingClientRect().top - head - 16;
+    if (Math.abs(delta) < 24) return;
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    window.scrollBy({ top: delta, behavior: reduce ? "auto" : behavior });
+  };
+
+  useEffect(() => {
+    if (pending || !wantScroll.current) return;
+    wantScroll.current = false;
+    scrollToResults("smooth");
+  }, [pending]);
+
+  // Arriving on a shared /blog?q=… link: start at the results, not the hero.
+  useEffect(() => {
+    if (initialQuery.trim()) scrollToResults("auto");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     const t = setTimeout(() => navigate(value), DEBOUNCE_MS);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
-
-  // "/" focuses the box from anywhere on the page, as on most search-heavy
-  // sites — unless the reader is already typing into something.
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey) return;
-      const t = e.target as HTMLElement | null;
-      if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
-      e.preventDefault();
-      inputRef.current?.focus();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
 
   return (
     <>
@@ -98,7 +116,6 @@ export default function BlogSearch({
       <div className="blog-search-field">
         <IconSearch size={16} aria-hidden="true" className="blog-search-icon" />
         <input
-          ref={inputRef}
           id="blog-search-input"
           type="search"
           name="q"

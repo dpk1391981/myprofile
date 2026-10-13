@@ -15,7 +15,7 @@ import { getAllPosts } from "@/components/utils/blog-index-posts";
 import ViewCountText from "@/components/shared/ViewCountText";
 import AdSlot from "@/components/blog/AdSlot";
 import BlogSearch from "@/components/blog/BlogSearch";
-import { searchPosts, normaliseQuery } from "@/components/utils/blog-search";
+import { search, normaliseQuery, type SearchOutcome } from "@/components/utils/blog-search";
 import { TopicsFigure } from "@/components/bs/HeadFigure";
 import { POSTS_PER_PAGE, pageCount, indexPath } from "@/components/utils/blog-pagination";
 import {
@@ -52,9 +52,9 @@ const matchesTopic = (p: IndexPost, topic: string) =>
 
 /** Topic filter, then search. With a query the list is ranked by relevance
  *  (newest first among equals); without one it stays newest first. */
-function filterPosts(all: IndexPost[], topic: string, q: string): IndexPost[] {
+function filterPosts(all: IndexPost[], topic: string, q: string): SearchOutcome<IndexPost> {
   const byTopic = topic ? all.filter((p) => matchesTopic(p, topic)) : all;
-  return q ? searchPosts(byTopic, q) : byTopic;
+  return q ? search(byTopic, q) : { results: byTopic, topics: [], completions: [] };
 }
 
 /** Query string for an index URL — the topic and search survive pagination. */
@@ -215,7 +215,7 @@ export async function buildBlogIndexMetadata(
 /** Total number of index pages — `app/blog/page/[page]` uses it to 404 past the end. */
 export async function blogPageCount(topic = "", q = ""): Promise<number> {
   const all = await getAllPosts();
-  return pageCount(filterPosts(all, topic.trim(), normaliseQuery(q)).length);
+  return pageCount(filterPosts(all, topic.trim(), normaliseQuery(q)).results.length);
 }
 
 // ── View ──────────────────────────────────────────────────────────────────
@@ -269,7 +269,8 @@ export default async function BlogIndexView(
 
   const activeTopic = topic.trim();
   const q = normaliseQuery(rawQuery);
-  const matching = filterPosts(allPosts, activeTopic, q);
+  const outcome = filterPosts(allPosts, activeTopic, q);
+  const matching = outcome.results;
 
   const totalPages = pageCount(matching.length);
   const start = (page - 1) * POSTS_PER_PAGE;
@@ -473,8 +474,15 @@ export default async function BlogIndexView(
 
         {q && (
           <p className="bs-quiet bs-mt-4" style={{ fontSize: 15 }} role="status">
-            {matching.length} result{matching.length === 1 ? "" : "s"} for{" "}
-            <strong style={{ color: "var(--ink)" }}>&ldquo;{q}&rdquo;</strong>
+            {outcome.corrected && (
+              <>Showing results for <strong style={{ color: "var(--ink)" }}>&ldquo;{outcome.corrected}&rdquo;</strong> — you typed &ldquo;{q}&rdquo;.<br /></>
+            )}
+            {outcome.partial ? (
+              <>No article matches every word, so these are the {matching.length} closest</>
+            ) : (
+              <>{matching.length} result{matching.length === 1 ? "" : "s"} for{" "}
+                <strong style={{ color: "var(--ink)" }}>&ldquo;{outcome.corrected ?? q}&rdquo;</strong></>
+            )}
             {activeTopic ? <> in <strong style={{ color: "var(--ink)" }}>{activeTopic}</strong></> : null}.{" "}
             <Link href={activeTopic ? `/blog?topic=${encodeURIComponent(activeTopic)}` : "/blog"}
               className="bs-link-plain" style={{ textDecoration: "underline" }}>

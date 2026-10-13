@@ -12,7 +12,7 @@
  */
 import { NextResponse } from "next/server";
 import { getAllPosts } from "@/components/utils/blog-index-posts";
-import { searchPosts, normaliseQuery } from "@/components/utils/blog-search";
+import { search, normaliseQuery } from "@/components/utils/blog-search";
 import { rateLimit } from "@/lib/rate-limit";
 
 /** Rows sent to the sheet. The full list is one tap away at /blog?q=. */
@@ -22,7 +22,7 @@ const MAX_REQUESTS_PER_IP_PER_MINUTE = 120;
 export async function GET(req: Request) {
   const q = normaliseQuery(new URL(req.url).searchParams.get("q"));
   if (!q) {
-    return NextResponse.json({ q, total: 0, results: [] });
+    return NextResponse.json({ q, total: 0, results: [], topics: [], completions: [] });
   }
 
   const ip =
@@ -37,11 +37,15 @@ export async function GET(req: Request) {
     );
   }
 
-  const matches = searchPosts(await getAllPosts(), q);
+  const { results: matches, corrected, partial, topics, completions } = search(await getAllPosts(), q);
 
   return NextResponse.json(
     {
       q,
+      corrected: corrected ?? null,
+      partial: Boolean(partial),
+      topics,
+      completions,
       total: matches.length,
       results: matches.slice(0, MAX_RESULTS).map((p) => ({
         slug: p.slug,
