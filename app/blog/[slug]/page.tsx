@@ -10,6 +10,7 @@ import { getPost as apiGetPost, getSeoConfig } from "@/components/utils/portfoli
 import AdSlot from "@/components/blog/AdSlot";
 import BookPromo from "@/components/books/BookPromo";
 import ReadingProgress from "@/components/blog/ReadingProgress";
+import ArticleSearch from "@/components/blog/ArticleSearch";
 import ShareRow from "@/components/shared/ShareRow";
 import SocialIconLink from "@/components/shared/SocialIconLink";
 import ViewCounter from "@/components/shared/ViewCounter";
@@ -389,6 +390,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
   return (
     <div className="blog-article-shell" style={{ paddingTop: 30, paddingBottom: 20 }}>
       <ReadingProgress />
+      <ArticleSearch tags={[post.category, ...post.tags].filter(Boolean) as string[]} />
       <script type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
 

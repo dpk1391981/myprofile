@@ -78,12 +78,16 @@ function formatDay(iso: string): string {
 }
 
 export default function BlogSearchSheet({
-  anchor, suggestions = [],
+  anchor, suggestions = [], suggestionsLabel = "Popular topics",
 }: {
-  /** The inline search form; the button shows only while it is off screen. */
-  anchor: React.RefObject<HTMLElement>;
+  /** The inline search form; the button shows only while it is off screen.
+   *  Pages without one (an article) show the button once the reader has
+   *  scrolled past the first screen instead. */
+  anchor?: React.RefObject<HTMLElement>;
   /** Topic names offered before anything is typed. */
   suggestions?: string[];
+  /** Heading over those suggestions. */
+  suggestionsLabel?: string;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -102,8 +106,19 @@ export default function BlogSearchSheet({
 
   // ── Button visibility: only once the inline box has scrolled away ──────
   useEffect(() => {
-    const el = anchor.current;
-    if (!el || typeof IntersectionObserver === "undefined") return;
+    const el = anchor?.current;
+    if (!el) {
+      // No inline box: keep the first screen — title, byline — uncluttered.
+      let raf = 0;
+      const onScroll = () => {
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(() => setAnchorVisible(window.scrollY < window.innerHeight * 0.6));
+      };
+      onScroll();
+      window.addEventListener("scroll", onScroll, { passive: true });
+      return () => { cancelAnimationFrame(raf); window.removeEventListener("scroll", onScroll); };
+    }
+    if (typeof IntersectionObserver === "undefined") return;
     const io = new IntersectionObserver(([e]) => setAnchorVisible(e.isIntersecting));
     io.observe(el);
     return () => io.disconnect();
@@ -164,7 +179,7 @@ export default function BlogSearchSheet({
       const slash = e.key === "/" && !e.metaKey && !e.ctrlKey && !e.altKey && !typing;
       if (!cmdK && !slash) return;
       e.preventDefault();
-      const inline = anchor.current?.querySelector("input");
+      const inline = anchor?.current?.querySelector("input");
       if (slash && anchorVisible && inline) inline.focus();
       else openSheet();
     };
@@ -329,7 +344,7 @@ export default function BlogSearchSheet({
               )}
               {suggestions.length > 0 && (
                 <section style={{ marginTop: recent.length ? 22 : 0 }}>
-                  <p className="bs-eyebrow">Popular topics</p>
+                  <p className="bs-eyebrow">{suggestionsLabel}</p>
                   <div className="blog-topics">
                     {suggestions.map((s) => (
                       <button key={s} type="button" className="blog-topic" onClick={() => setQ(s)}>{s}</button>
