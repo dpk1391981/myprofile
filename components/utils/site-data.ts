@@ -110,7 +110,7 @@ export const PRODUCT_LOGOS: Record<string, { src: string; width: number; height:
   plantoday:     { src: "/assets/products/plantoday.png",     width: 36,  height: 36 },  // 256×256
   trendmetoday:  { src: "/assets/products/trendmetoday.png",  width: 108, height: 36 },  // 2172×724
   vtechxhub:     { src: "/assets/products/vtecxhub.jpeg",     width: 36,  height: 36 },  // 500×500
-  think4buysale: { src: "/assets/products/think4buysale.png", width: 98,  height: 36 },  // 160×59
+  think4buysale: { src: "/assets/products/think4buysale-icon.png", width: 36, height: 36 },  // 256×256
 };
 
 // ---------- selected work ledger ----------
