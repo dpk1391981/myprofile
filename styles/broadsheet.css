@@ -3090,3 +3090,146 @@ body:has(.blog-search[data-pending]) #blog-results { opacity: .55; transition: o
 }
 
 @media print { .wa-cta { display: none; } }
+
+/* ---------- sponsored posts ----------
+   The contact page's "Sponsored posts" card and the form's enquiry switch.
+   Motion is limited to a slow sheen on the card's border and a soft pulse on
+   the "New" badge; both stop under prefers-reduced-motion (below). */
+.bs-new-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 999px;
+  background: var(--mag); color: var(--paper);
+  animation: bs-badge-pulse 2.4s ease-in-out infinite;
+}
+@keyframes bs-badge-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--mag) 45%, transparent); }
+  50%      { box-shadow: 0 0 0 5px color-mix(in srgb, var(--mag) 0%, transparent); }
+}
+
+.bs-sponsor-card {
+  position: relative; display: flex; flex-direction: column; gap: 8px;
+  padding: 18px 18px 16px; border-radius: 4px;
+  text-decoration: none; color: var(--ink);
+  background:
+    linear-gradient(var(--spot-tint), var(--spot-tint)) padding-box,
+    linear-gradient(110deg, var(--rule) 30%, var(--spot) 45%, var(--mag) 55%, var(--rule) 70%) border-box;
+  background-size: 100% 100%, 300% 100%;
+  border: 1.5px solid transparent;
+  animation: bs-sheen 5s linear infinite;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.bs-sponsor-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px color-mix(in srgb, var(--spot) 18%, transparent);
+}
+.bs-sponsor-card:focus-visible { outline: 2px solid var(--spot); outline-offset: 3px; }
+@keyframes bs-sheen { from { background-position: 0 0, 100% 0; } to { background-position: 0 0, -200% 0; } }
+.bs-sponsor-card__head { display: inline-flex; align-items: center; gap: 8px; color: var(--spot-deep); }
+.bs-sponsor-card__title { font-size: 16.5px; font-weight: 600; line-height: 1.4; }
+.bs-sponsor-card__cta { font-size: 14px; color: var(--spot-deep); font-weight: 600; }
+.bs-sponsor-card:hover .bs-sponsor-card__cta { text-decoration: underline; }
+
+/* Enquiry switch at the top of the contact form. */
+.bs-kind {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px;
+  border: 1px solid var(--rule); border-radius: 4px; background: var(--surface);
+}
+.bs-kind__opt {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px 12px; border: 0; border-radius: 3px; cursor: pointer;
+  font: inherit; font-size: 14.5px; color: var(--quiet); background: transparent;
+  transition: background .2s ease, color .2s ease, box-shadow .2s ease;
+}
+.bs-kind__opt:hover { color: var(--ink); }
+.bs-kind__opt[aria-checked="true"] {
+  background: var(--paper); color: var(--ink); font-weight: 600;
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--ink) 14%, transparent);
+}
+.bs-kind__opt:focus-visible { outline: 2px solid var(--spot); outline-offset: 2px; }
+@media (max-width: 420px) { .bs-kind__opt { font-size: 13.5px; padding: 10px 6px; } }
+
+/* /sponsor "How it works" list. */
+.bs-steps { margin: 16px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 14px; }
+.bs-steps li { font-size: 15.5px; line-height: 1.6; color: var(--quiet); }
+.bs-steps li strong { color: var(--ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  .bs-new-badge, .bs-sponsor-card { animation: none; }
+  .bs-sponsor-card { transition: none; }
+  .bs-sponsor-card:hover { transform: none; }
+}
+
+/* /sponsor head figure: the price tag swings a few degrees about its pin. */
+.bs-tag-swing { animation: bs-tag-swing 4.5s ease-in-out infinite; }
+@keyframes bs-tag-swing {
+  0%, 100% { transform: rotate(-3deg); }
+  50%      { transform: rotate(3deg); }
+}
+@media (prefers-reduced-motion: reduce) { .bs-tag-swing { animation: none; } }
+
+/* "Starts at only ₹999" — the highlighted price under the /sponsor lede. The
+   amount sits on a marker-pen sweep that draws in once on load; the sheen
+   matches the contact page's sponsor card. Both still under reduced motion. */
+.bs-price-callout {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 14px 20px;
+  padding: 14px 16px 14px 18px; border-radius: 4px; max-width: 34rem;
+  background:
+    linear-gradient(var(--spot-tint), var(--spot-tint)) padding-box,
+    linear-gradient(110deg, var(--rule) 30%, var(--spot) 45%, var(--mag) 55%, var(--rule) 70%) border-box;
+  background-size: 100% 100%, 300% 100%;
+  border: 1.5px solid transparent;
+  animation: bs-sheen 5s linear infinite;
+}
+.bs-price-callout__text { font-size: 18px; color: var(--ink); flex: 1 1 auto; }
+.bs-price-callout__amount {
+  font-size: 1.55em; font-weight: 700; color: var(--mag); letter-spacing: -.02em;
+  padding: 0 .12em;
+  background: linear-gradient(transparent 58%, color-mix(in srgb, var(--mag) 22%, transparent) 58%) no-repeat 0 0 / 100% 100%;
+  animation: bs-marker .9s cubic-bezier(.2, .8, .3, 1) .3s both;
+}
+@keyframes bs-marker { from { background-size: 0% 100%; } to { background-size: 100% 100%; } }
+.bs-sponsor-card__price { font-size: 14.5px; color: var(--ink); }
+.bs-sponsor-card__price strong { color: var(--mag); font-size: 1.15em; }
+@media (prefers-reduced-motion: reduce) {
+  .bs-price-callout, .bs-price-callout__amount { animation: none; }
+}
+
+/* /sponsor "What you get" — numbered cards that rise in once, staggered. */
+.bs-includes {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px;
+}
+/* Below desktop five columns get too narrow to read, so the row becomes a
+   swipeable strip: one card and a peek of the next, snapping card by card.
+   The strip scrolls inside itself; the page never scrolls sideways. */
+@media (max-width: 1100px) {
+  .bs-includes {
+    display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
+    gap: 14px; padding-bottom: 12px;
+    scrollbar-width: thin; -webkit-overflow-scrolling: touch;
+  }
+  .bs-includes__item { flex: 0 0 min(78%, 280px); scroll-snap-align: start; }
+}
+.bs-includes__item {
+  position: relative; padding: 18px 16px 16px; border-radius: 4px;
+  background: var(--surface); border-top: 3px solid var(--spot);
+  animation: bkm-rise .6s cubic-bezier(.2, .8, .3, 1) both;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.bs-includes__item:nth-child(2) { animation-delay: .08s; }
+.bs-includes__item:nth-child(3) { animation-delay: .16s; }
+.bs-includes__item:nth-child(4) { animation-delay: .24s; }
+.bs-includes__item:nth-child(5) { animation-delay: .32s; border-top-color: var(--mag); }
+.bs-includes__item:hover { transform: translateY(-3px); box-shadow: 0 10px 24px color-mix(in srgb, var(--ink) 10%, transparent); }
+.bs-includes__num {
+  display: block; margin-bottom: 10px;
+  font-size: 13px; font-weight: 700; letter-spacing: .1em; color: var(--spot);
+}
+.bs-includes__item:nth-child(5) .bs-includes__num { color: var(--mag); }
+.bs-includes__item .bs-h4 { font-size: 17px; line-height: 1.3; }
+.bs-includes__item p { font-size: 14.5px; line-height: 1.6; }
+@media (prefers-reduced-motion: reduce) {
+  .bs-includes__item { animation: none; transition: none; }
+  .bs-includes__item:hover { transform: none; }
+}

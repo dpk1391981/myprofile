@@ -432,6 +432,82 @@ export function ReplyFigure({ rows }: { rows: { label: string; value: string }[]
   );
 }
 
+/* ── /sponsor — the price tag ────────────────────────────────────────── */
+
+/**
+ * The offer drawn small: one article with its "Sponsored" label, and the
+ * price hanging off it. Price and the label are the two facts the page sells
+ * on, so they are the two things the figure shows. The tag swings gently
+ * (`.bs-tag-swing` in broadsheet.css; still under reduced motion).
+ */
+export function PriceFigure({ price, rows }: { price: string; rows: { label: string; value: string }[] }) {
+  const height = 190 + rows.length * 34;
+  const MAG = "var(--mag)";
+  // The tag hangs from a pin by its hole; the swing turns about the pin so
+  // the string never detaches.
+  const pin = { x: 226, y: 8 };
+  const hole = { x: 240, y: 52 };
+
+  return (
+    <Figure
+      title={`Sponsored post on the blog, from ${price}`}
+      caption="One labelled post, written by me. The final price is agreed in writing per brief."
+      height={height}
+    >
+      {/* the article */}
+      <rect x="40" y="14" width="160" height="146" rx="3" fill={SURFACE} stroke={RULE} strokeWidth="1" />
+      <rect x="54" y="28" width="84" height="18" rx="9" fill="none" stroke={MAG} strokeWidth="1.2" />
+      <text x="96" y="41" textAnchor="middle" style={{ fontSize: 10, letterSpacing: "0.13em", fill: MAG }}>
+        SPONSORED
+      </text>
+      <rect x="54" y="60" width="128" height="9" rx="1" fill={INK} />
+      <rect x="54" y="75" width="92" height="9" rx="1" fill={INK} />
+      {[100, 112, 124, 136].map((y, i) => (
+        <rect key={y} x="54" y={y} width={[128, 118, 128, 74][i]} height="4" rx="1" fill={RULE} />
+      ))}
+
+      {/* the tag */}
+      <g className="bs-tag-swing" style={{ transformOrigin: `${pin.x}px ${pin.y}px`, transformBox: "view-box" }}>
+        <line x1={pin.x} y1={pin.y} x2={hole.x} y2={hole.y} stroke={QUIET} strokeWidth="1.2" />
+        <g transform={`translate(${hole.x} ${hole.y}) rotate(20) translate(-20 -36)`}>
+          <path d="M 0 36 L 22 0 H 140 V 72 H 22 Z" fill={SPOT} strokeLinejoin="round" />
+          <circle cx="20" cy="36" r="4.5" fill={PAPER} />
+          <text x="82" y="21" textAnchor="middle" style={{ fontSize: 10, letterSpacing: "0.13em", fill: PAPER }}>
+            FROM
+          </text>
+          <text
+            x="82"
+            y="49"
+            textAnchor="middle"
+            style={{ fontSize: 28, fontWeight: 600, fill: PAPER, letterSpacing: "-0.02em" }}
+          >
+            {price}
+          </text>
+          <text x="82" y="64" textAnchor="middle" style={{ fontSize: 10, letterSpacing: "0.13em", fill: PAPER }}>
+            PER POST
+          </text>
+        </g>
+      </g>
+      <circle cx={pin.x} cy={pin.y} r="3" fill={INK} />
+
+      {rows.map((row, i) => {
+        const y = 188 + i * 34;
+        return (
+          <g key={row.label}>
+            <line x1="0" y1={y - 20} x2={FIG_W} y2={y - 20} stroke={HAIR} strokeWidth="1" />
+            <text x="0" y={y} style={label()}>
+              {row.label.toUpperCase()}
+            </text>
+            <text x={FIG_W} y={y} textAnchor="end" style={{ fontSize: 13.5, fill: INK }}>
+              {row.value}
+            </text>
+          </g>
+        );
+      })}
+    </Figure>
+  );
+}
+
 /* ── /about — the portrait ───────────────────────────────────────────── */
 
 /**

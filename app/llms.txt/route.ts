@@ -95,6 +95,7 @@ const CORE_PAGES: { path: string; label: string; description: string }[] = [
   { path: "/reviews",    label: "Recommendations", description: "Written recommendations from managers and colleagues." },
   { path: "/blog",       label: "Engineering blog", description: "Technical articles on React performance, AI/ML engineering, and MERN architecture." },
   { path: "/contact",    label: "Contact",      description: "Direct contact form for roles, freelance work and consulting enquiries." },
+  { path: "/sponsor",    label: "Sponsored posts", description: "How to sponsor a labelled post on the blog; quoted per brief." },
 ];
 
 export async function GET() {

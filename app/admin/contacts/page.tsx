@@ -87,6 +87,14 @@ export default function ContactsPage() {
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                       <span className="truncate text-sm font-semibold text-slate-900">{c.email}</span>
+                      {/* Sponsored-post requests share this inbox; the submit route
+                          prefixes their subject (SPONSORED_PREFIX in
+                          pages/api/hire/submit.ts), which is what marks them here. */}
+                      {c.subject.startsWith("[Sponsored post]") && (
+                        <span className="rounded-full bg-pink-100 px-2 py-0.5 text-xs font-semibold text-pink-700">
+                          Sponsored post
+                        </span>
+                      )}
                       {c.organisation && (
                         <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500">
                           {c.organisation}

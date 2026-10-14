@@ -38,6 +38,7 @@ const STATIC_ROUTES: { path: string; priority: number; lastModified: string; cha
   // The hire page. Every article's author box and CTA points here, and it is
   // the destination /joinme now redirects to.
   { path: "/contact",    priority: 0.9,  lastModified: "2026-08-20", changeFrequency: "monthly" },
+  { path: "/sponsor",    priority: 0.5,  lastModified: "2026-10-14", changeFrequency: "monthly" },
   // Keyword landing pages — the phrases this site targets in search.
   { path: "/react-developer-in-india",      priority: 0.95, lastModified: "2026-08-19", changeFrequency: "weekly" },
   { path: "/software-developer-in-india",   priority: 0.95, lastModified: "2026-08-19", changeFrequency: "weekly" },

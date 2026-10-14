@@ -8,6 +8,15 @@ const accountSid = process.env.NEXT_TWILLIO_SID;
 const authToken = process.env.NEXT_TWILLIO_AUTH_TOKEN;
 const client = twilio(accountSid, authToken);
 
+/** Sponsored-post requests share this route with hire enquiries. They are
+ *  labelled HERE, from the `kind` the form sends, so the stored subject, the
+ *  admin email and the SMS all say so — the contacts table has no kind column,
+ *  and the subject prefix is how the inbox tells them apart. */
+export const SPONSORED_PREFIX = "[Sponsored post] ";
+
+const escapeHtml = (v: unknown) =>
+  String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
+
 export const sendSMS = async ({ email, organisation, subject, message }: any) => {
 
   // Check if the email sending is enabled via environment variable
@@ -39,7 +48,14 @@ export async function sendEmail(obj: any) {
   }
 
 
-  const { email, subject, message, organisation } = obj;
+  const { email, subject, message, organisation, sponsored, website } = obj;
+  // Sponsored requests get their own subject line and header so they stand
+  // out in the inbox; `subject` already carries the [Sponsored post] prefix.
+  const mailSubject = sponsored
+    ? `${subject} — from ${organisation || email}`
+    : subject;
+  const heading = sponsored ? "New Sponsored Post Request" : "New Contact Us Message";
+  const accent = sponsored ? "#d6006c" : "#4CAF50";
   
   // Create a transporter object using the default SMTP transport.
   const transporter = nodemailer.createTransport({
@@ -56,7 +72,7 @@ export async function sendEmail(obj: any) {
     const PARAMS = {
       from: `"Deepak Kumar (officialdeepak)" <${process.env.NEXT_PUBLIC_EMAIL_ID}>`,  // sender address
       to: process.env.NEXT_PUBLIC_EMAIL_ID,  // recipient address
-      subject: subject,  // Subject line
+      subject: mailSubject,  // Subject line
       html: `<!DOCTYPE html>
               <html lang="en">
               <head>
@@ -85,7 +101,7 @@ export async function sendEmail(obj: any) {
                     border-bottom: 2px solid #f2f2f2;
                   }
                   .header h1 {
-                    color: #4CAF50;
+                    color: ${accent};
                     font-size: 28px;
                   }
                   .content {
@@ -126,15 +142,17 @@ export async function sendEmail(obj: any) {
               <body>
                 <div class="container">
                   <div class="header">
-                    <h1>New Contact Us Message</h1>
+                    <h1>${heading}</h1>
                   </div>
 
                   <div class="content">
-                    <p><span class="bold">Email:</span>${email}</p>
-                    <p><span class="bold">Organisation:</span> ${organisation}</p>
-                    <p><span class="bold">Subject:</span> ${subject} </p>
+                    <p><span class="bold">Type:</span> ${sponsored ? "Sponsored post request" : "Hire / project enquiry"}</p>
+                    <p><span class="bold">Email:</span> ${escapeHtml(email)}</p>
+                    <p><span class="bold">Organisation:</span> ${escapeHtml(organisation)}</p>
+                    ${website ? `<p><span class="bold">Website:</span> ${escapeHtml(website)}</p>` : ""}
+                    <p><span class="bold">Subject:</span> ${escapeHtml(subject)}</p>
                     <p><span class="bold">Message:</span></p>
-                    <p>${message}</p>
+                    <p style="white-space:pre-wrap">${escapeHtml(message)}</p>
                   </div>
                 </div>
               </body>
@@ -161,11 +179,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     // Step 1: Destructure and validate the request body
-    const { email, subject, message, organisation, name, phone, company } = req.body;
+    const { email, message: rawMessage, organisation, name, phone, company, kind, website: rawWebsite } = req.body;
+    let { subject } = req.body;
 
-    if (!email || !subject || !message) {
+    if (!email || !subject || !rawMessage) {
       return res.status(400).json({ msg: 'Missing required fields', data: null });
     }
+
+    const sponsored = kind === 'sponsored';
+    const website = sponsored && typeof rawWebsite === 'string' ? rawWebsite.trim().slice(0, 500) : '';
+    if (sponsored && !String(subject).startsWith(SPONSORED_PREFIX)) subject = SPONSORED_PREFIX + subject;
+    // The link has no column upstream, so it rides at the top of the message.
+    const message = website ? `Website: ${website}\n\n${rawMessage}` : rawMessage;
 
     // Step 2: Validate the email format
     if (!MailChecker.isValid(email)) {
@@ -191,7 +216,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       subject,
       message,
       pageUrl:      (req.headers.referer as string) || "",
-      source:       "hire-form",
+      source:       sponsored ? "sponsor-form" : "hire-form",
       company:      company || "",   // honeypot — passed through untouched
     });
 
@@ -216,7 +241,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // production so this richer HTML mail is the only one that goes out;
     // setting both means two emails per enquiry.
     const [emailResult, smsResult] = await Promise.allSettled([
-      sendEmail({ email, subject, message, organisation }),
+      sendEmail({ email, subject, message, organisation, sponsored, website }),
       sendSMS({ email, organisation, subject, message }),
     ]);
 

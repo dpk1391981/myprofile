@@ -8,6 +8,7 @@ import {
   IconMail,
   IconMapPin,
   IconPhone,
+  IconSpeakerphone,
 } from "@tabler/icons-react";
 import PageHeader from "@/components/bs/PageHeader";
 import { ReplyFigure } from "@/components/bs/HeadFigure";
@@ -15,7 +16,7 @@ import Jsonld from "@/components/bs/Jsonld";
 import ContactForm from "@/components/sections/ContactForm";
 import Faq from "@/components/sections/Faq";
 import SectionHead from "@/components/sections/SectionHead";
-import { CONTACT_FAQ, CONTACT_REASONS, SITE_URL } from "@/components/utils/site-data";
+import { CONTACT_FAQ, CONTACT_REASONS, SITE_URL, SPONSOR_PRICE_FROM } from "@/components/utils/site-data";
 import { FOOTER, PERSONAL_INFO } from "@/components/utils/portfolio-data";
 import { breadcrumbLd, faqLd, pageMeta } from "@/components/utils/seo";
 
@@ -149,6 +150,20 @@ export default function ContactPage() {
                 <p className="bs-small bs-quiet bs-mt-1">Full overlap with Europe, partial with US east coast.</p>
               </div>
             </div>
+
+            {/* The one animated thing on this page — a slow sheen across the
+                border, so the new offer is noticed without competing with the
+                form. Static under prefers-reduced-motion (broadsheet.css). */}
+            <Link href="/sponsor" className="bs-sponsor-card bs-mt-5">
+              <span className="bs-sponsor-card__head">
+                <IconSpeakerphone size={18} />
+                <span className="bs-eyebrow" style={{ color: "var(--spot-deep)" }}>Sponsored posts</span>
+                <span className="bs-new-badge">New</span>
+              </span>
+              <span className="bs-sponsor-card__title">Have a dev or AI product? Sponsor a post on the blog.</span>
+              <span className="bs-sponsor-card__price">Starts at only <strong>₹{SPONSOR_PRICE_FROM}</strong> per post</span>
+              <span className="bs-sponsor-card__cta">See how it works →</span>
+            </Link>
 
             <div className="bs-actions bs-mt-5">
               <a href={FOOTER.resumePath} target="_blank" rel="noopener noreferrer" className="bs-btn bs-btn--outline">

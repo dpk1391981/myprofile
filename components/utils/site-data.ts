@@ -56,6 +56,7 @@ export const FOOTER_NAV: { title: string; links: { label: string; href: string }
       { label: "Blog", href: "/blog" },
       { label: "Free books", href: "/books" },
       { label: "RSS feed", href: "/blog/rss.xml" },
+      { label: "Sponsored posts", href: "/sponsor" },
     ],
   },
 ];
@@ -346,7 +347,88 @@ export const CONTACT_REASONS = [
   },
 ];
 
+// /sponsor. The rules are the product: a sponsored post only works for the
+// sponsor if readers still trust it, and only works for this site if Google
+// does — paid links must carry rel="sponsored" (Google's link-scheme policy).
+/** Starting price of a sponsored post, in INR. The only place it is set —
+ *  /sponsor's copy, FAQ and JSON-LD all read it. */
+export const SPONSOR_PRICE_FROM = 999;
+
+// What a sponsor gets. Deliberately no dofollow link: paid links must carry
+// rel="sponsored" (Google's link-scheme policy), and selling followed links
+// risks a manual action on the whole domain. Decided with Deepak 2026-10-14.
+// The value sold instead is brand visibility, real clicks and permanence.
+export const SPONSOR_INCLUDES = [
+  {
+    title: "Your brand in the headline",
+    body: "Named in the title and the article, where AI answers like ChatGPT and Perplexity pick it up.",
+  },
+  {
+    title: "Your URL and a direct link",
+    body: "Your full web address and a clickable sponsored link, so interested readers go straight to you.",
+  },
+  {
+    title: "A sponsor box at the top",
+    body: "A panel above the article with your name, a one-line pitch and your link.",
+  },
+  {
+    title: "Live for good",
+    body: "Never taken down. It stays on the blog and in search, sending readers for as long as the topic matters.",
+  },
+  {
+    title: "Add-on: social shares",
+    body: "On request, I share the post on my LinkedIn and X. Quoted with the brief.",
+  },
+];
+
+export const SPONSOR_RULES = [
+  {
+    title: "Clearly labelled",
+    body: "Every sponsored post says so at the top. Readers are told before they start reading, not in small print at the end.",
+  },
+  {
+    title: "Links marked sponsored",
+    body: "Links to your product carry rel=\"sponsored\", as Google requires for paid placements. If you are buying a backlink for SEO, this is not the right place.",
+  },
+  {
+    title: "Written or edited by me",
+    body: "I write the post, or edit your draft to the standard of the rest of the blog. You can check facts before it goes live. The opinions stay mine.",
+  },
+  {
+    title: "Relevant products only",
+    body: "Developer tools, AI and LLM products, cloud and web platform services. No gambling, crypto schemes, essay mills or anything I would not use myself.",
+  },
+];
+
+export const SPONSOR_FAQ = [
+  {
+    question: "How much does a sponsored post cost?",
+    answer:
+      `From ₹${SPONSOR_PRICE_FROM} per post. A short announcement sits at that price; a hands-on review that takes a day to test costs more. Send the details and you will get one fixed price in writing before any work starts.`,
+  },
+  {
+    question: "Can I send my own article to publish?",
+    answer:
+      "You can send a draft, but I edit it to match the rest of the blog and publish it under the same rules: labelled as sponsored, with sponsored links. I do not publish unedited third-party content.",
+  },
+  {
+    question: "Will the links be dofollow?",
+    answer:
+      "No. Paid links carry rel=\"sponsored\", which Google requires. The value of a post here is real readers who build with this technology, not link equity.",
+  },
+  {
+    question: "How long until the post is live?",
+    answer:
+      "Usually within a week of agreeing the brief, depending on how long the product takes to test properly. If you have a launch date, say so in the brief.",
+  },
+];
+
 export const CONTACT_FAQ = [
+  {
+    question: "Does Deepak Kumar accept sponsored blog posts?",
+    answer:
+      "Yes, for developer tools, AI and LLM products and web platform services. Each post is written or edited by me, labelled as sponsored, and its links carry rel=\"sponsored\". Pick \"Sponsored post\" on the form, or see officialdeepak.in/sponsor for the rules.",
+  },
   {
     question: "What is the fastest way to reach Deepak Kumar?",
     answer:
