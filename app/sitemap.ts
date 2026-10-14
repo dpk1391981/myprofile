@@ -1,7 +1,6 @@
 import type { MetadataRoute } from "next";
 import { BLOG_POSTS } from "@/components/utils/portfolio-data";
 import { sitemapPosts } from "@/components/utils/portfolio-api";
-import { pageCount, indexPath } from "@/components/utils/blog-pagination";
 import { listBooks, getBook } from "@/components/utils/books-api";
 
 const SITE_URL = (process.env.NEXT_PUBLIC_WEB_SITE || "https://officialdeepak.in").replace(/\/+$/, "");
@@ -168,23 +167,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }];
 
   /*
-    The archive pages. /blog is the entry point but only lists the newest
-    slice; the numbered pages are where the older articles are linked from, so
-    a crawler that never sees them treats the archive as orphaned.
-
-    The count is derived from the posts this file lists — which excludes any
-    post flagged noindex, so it can only ever run SHORT of the real archive,
-    never past its end into a 404.
+    The archive pages (/blog/page/N) are deliberately NOT listed. They are
+    still crawlable and still linked from /blog, so nothing is orphaned — every
+    article below is listed directly, which is what made them worth listing in
+    the first place. Removed 2026-10-14 after Search Console showed /blog/page/7
+    through /9 sitting in "Discovered – currently not indexed" alongside the
+    articles: a sitemap entry asks Google to INDEX a page, and a numbered list
+    of other pages' links is the thinnest page on the site to spend that on.
   */
-  const archivePages: MetadataRoute.Sitemap = Array.from(
-    { length: pageCount(merged.length) - 1 },
-    (_, i) => ({
-      url: `${SITE_URL}${indexPath(i + 2)}`,
-      lastModified: newestPost ?? now,
-      changeFrequency: "weekly" as const,
-      priority: 0.4,
-    })
-  );
 
   const blogEntries: MetadataRoute.Sitemap = merged
     // Newest first, so a crawler reading the file top-down meets fresh URLs
@@ -201,5 +191,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const bookEntries = await getBookEntries(now);
 
-  return [...staticEntries, ...blogIndex, ...archivePages, ...blogEntries, ...bookEntries];
+  return [...staticEntries, ...blogIndex, ...blogEntries, ...bookEntries];
 }

@@ -35,6 +35,23 @@ import {
  */
 export const revalidate = 86400;
 
+/*
+  WITHOUT THIS THE `revalidate` ABOVE DID NOTHING. In Next 14 a dynamic segment
+  with no generateStaticParams builds as λ (dynamic): every article rendered
+  from scratch on every request and shipped `cache-control: private, no-store`
+  — measured live 2026-10-14, x-vercel-cache MISS on repeat hits. That was the
+  Vercel CPU overage, and a slow uncached response is what makes Googlebot
+  crawl less. /books/[slug] had this and was cached all along.
+
+  An EMPTY list on purpose: nothing is prerendered at build (no build-time
+  fan-out over ~190 posts, no ISR write per post per deploy); each article is
+  rendered on its first request, then served from cache. `dynamicParams`
+  stays at its default (true) so new pipeline posts still resolve.
+*/
+export async function generateStaticParams() {
+  return [];
+}
+
 const SLOT_TOP     = process.env.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE_TOP    ?? "";
 const SLOT_MID     = process.env.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE_MID    ?? "";
 const SLOT_BOTTOM  = process.env.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE_BOTTOM ?? "";

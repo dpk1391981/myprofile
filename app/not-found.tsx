@@ -56,7 +56,14 @@ export const revalidate = 3600;
 export default async function NotFound() {
   const [books, posts] = await Promise.all([
     listBooks(),
-    listPosts({ limit: 4 }).then((r) => r.posts).catch(() => []),
+    // The explicit revalidate is load-bearing. Next 14 renders the root
+    // not-found INSIDE EVERY PAGE'S server tree (it is the notFound boundary
+    // passed to the layout), so this fetch's lifetime caps every route on the
+    // site. At the 300s default it held all pages — the 86400s articles
+    // included — to a 5-minute ISR cycle (measured in the build manifest,
+    // 2026-10-14). 3600 matches listBooks() beside it and this file's own
+    // revalidate.
+    listPosts({ limit: 4, revalidate: 3600 }).then((r) => r.posts).catch(() => []),
   ]);
 
   return (

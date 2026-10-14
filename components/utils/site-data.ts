@@ -472,6 +472,9 @@ export interface LandingPage {
   sections: LandingSection[];
   faqs: { question: string; answer: string }[];
   related: { label: string; href: string }[];
+  /** Blog topics (a post's category or any of its tags, case-insensitive —
+   *  the same match /blog?topic= uses) whose articles this page links to. */
+  blogTopics: string[];
 }
 
 export const LANDING_PAGES: LandingPage[] = [
@@ -559,6 +562,7 @@ export const LANDING_PAGES: LandingPage[] = [
           `For anything that ships, yes. Deepak brings ${YEARS_WHOLE} years of MERN and Next.js engineering behind the AI work, so the retrieval pipeline, the API, the interface and the deployment are built by one person rather than handed between specialists.`,
       },
     ],
+    blogTopics: ["AI/ML", "AI", "LLM", "RAG", "Generative AI"],
     related: [
       { label: "LLM engineer in India", href: "/llm-engineer-in-india" },
       { label: "Full stack developer in India", href: "/full-stack-developer-in-india" },
@@ -646,6 +650,7 @@ export const LANDING_PAGES: LandingPage[] = [
           "Rates depend on scope, seniority and engagement length rather than a fixed price list. Send a short description of the work through the contact page and you will get a scoped estimate and timeline within 24 hours.",
       },
     ],
+    blogTopics: ["React", "Next.js"],
     related: [
       { label: "JavaScript developer in India", href: "/javascript-developer-in-india" },
       { label: "Full stack developer in India", href: "/full-stack-developer-in-india" },
@@ -737,6 +742,7 @@ export const LANDING_PAGES: LandingPage[] = [
           "India Today's live election dashboard — live results to millions of daily users on counting night, fed by a Node.js ingestion pipeline over Redis pub/sub and delivered as server-sent events through the CDN.",
       },
     ],
+    blogTopics: ["Engineering", "DevOps", "Security", "Cloud", "AWS"],
     related: [
       { label: "React developer in India", href: "/react-developer-in-india" },
       { label: "JavaScript developer in India", href: "/javascript-developer-in-india" },
@@ -824,6 +830,7 @@ export const LANDING_PAGES: LandingPage[] = [
           "Yes. He has spent most of his career embedded in existing product teams — at India Today Group and across four Instant Systems portfolio companies — and mentors junior engineers on performance, accessibility and secure development.",
       },
     ],
+    blogTopics: ["JavaScript", "TypeScript", "Node.js"],
     related: [
       { label: "React developer in India", href: "/react-developer-in-india" },
       { label: "Software developer in India", href: "/software-developer-in-india" },
@@ -911,6 +918,7 @@ export const LANDING_PAGES: LandingPage[] = [
           "Send a short description of the product or problem through the contact page. You get a reply within 24 hours, a short call to scope it, and a written estimate with a timeline before any work begins.",
       },
     ],
+    blogTopics: ["Node.js", "Next.js", "Web Development", "React"],
     related: [
       { label: "React developer in India", href: "/react-developer-in-india" },
       { label: "JavaScript developer in India", href: "/javascript-developer-in-india" },
@@ -1027,6 +1035,7 @@ export const LANDING_PAGES: LandingPage[] = [
           "Yes. Deepak is based in New Delhi (IST) and works fully remote for clients abroad, as well as on-site across Delhi NCR. Send a short description of the problem through the contact page for a reply within 24 hours.",
       },
     ],
+    blogTopics: ["LLM", "RAG", "AI/ML", "AI", "Agents"],
     related: [
       { label: "AI engineer in India", href: "/ai-engineer-in-india" },
       { label: "Full stack developer in India", href: "/full-stack-developer-in-india" },
