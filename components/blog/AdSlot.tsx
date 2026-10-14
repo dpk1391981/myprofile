@@ -72,8 +72,10 @@ export default function AdSlot({
 
   const reservedMinHeight = FORMAT_MIN_HEIGHT[format] ?? 90;
 
-  // Switched off, or no publisher ID configured — render nothing at all.
-  if (!ADS_ENABLED || !PUB_ID) return null;
+  // Switched off, no publisher ID, or this placement has no ad-unit ID yet —
+  // render nothing. The last case lets the AdSense script go live for site
+  // review before any units exist, without empty reserved boxes on the page.
+  if (!ADS_ENABLED || !PUB_ID || !slot) return null;
 
   return (
     <div className={`blog-ad-slot ${className}`} style={style}>

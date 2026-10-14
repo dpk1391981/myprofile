@@ -23,8 +23,8 @@ import {
   istStamp, formatISTDate, formatISTDateTime, formatISTTime, hasTimeOfDay,
 } from "@/components/utils/date";
 
-const SLOT_TOP    = process.env.NEXT_PUBLIC_ADSENSE_SLOT_BLOG_TOP    ?? "0000000000";
-const SLOT_INFEED = process.env.NEXT_PUBLIC_ADSENSE_SLOT_BLOG_INFEED ?? "1111111111";
+const SLOT_TOP    = process.env.NEXT_PUBLIC_ADSENSE_SLOT_BLOG_TOP    ?? "";
+const SLOT_INFEED = process.env.NEXT_PUBLIC_ADSENSE_SLOT_BLOG_INFEED ?? "";
 const SITE_URL    = (process.env.NEXT_PUBLIC_WEB_SITE || "https://officialdeepak.in").replace(/\/+$/, "");
 
 // The post loader lives in its own module so the search API route can share it

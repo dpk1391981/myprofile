@@ -31,10 +31,10 @@ import {
  */
 export const revalidate = 300;
 
-const SLOT_TOP     = process.env.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE_TOP    ?? "2222222222";
-const SLOT_MID     = process.env.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE_MID    ?? "5555555555";
-const SLOT_BOTTOM  = process.env.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE_BOTTOM ?? "3333333333";
-const SLOT_SIDEBAR = process.env.NEXT_PUBLIC_ADSENSE_SLOT_SIDEBAR        ?? "4444444444";
+const SLOT_TOP     = process.env.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE_TOP    ?? "";
+const SLOT_MID     = process.env.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE_MID    ?? "";
+const SLOT_BOTTOM  = process.env.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE_BOTTOM ?? "";
+const SLOT_SIDEBAR = process.env.NEXT_PUBLIC_ADSENSE_SLOT_SIDEBAR        ?? "";
 
 const SITE_URL = (process.env.NEXT_PUBLIC_WEB_SITE || "https://officialdeepak.in").replace(/\/+$/, "");
 
