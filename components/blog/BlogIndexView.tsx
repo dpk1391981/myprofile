@@ -16,6 +16,7 @@ import ViewCountText from "@/components/shared/ViewCountText";
 import AdSlot from "@/components/blog/AdSlot";
 import BlogSearch from "@/components/blog/BlogSearch";
 import HireCta from "@/components/sections/HireCta";
+import SponsorCta from "@/components/blog/SponsorCta";
 import { search, normaliseQuery, type SearchOutcome } from "@/components/utils/blog-search";
 import { TopicsFigure } from "@/components/bs/HeadFigure";
 import { POSTS_PER_PAGE, pageCount, indexPath } from "@/components/utils/blog-pagination";
@@ -543,6 +544,10 @@ export default async function BlogIndexView(
             </div>
           </div>
         )}
+
+        {/* Tells readers the blog takes sponsored posts — after the lead
+            article, so it never sits above the first thing they came for. */}
+        <SponsorCta variant="banner" />
       </section>
 
       {rest.length > 0 && (

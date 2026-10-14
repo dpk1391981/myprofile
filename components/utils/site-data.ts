@@ -23,6 +23,7 @@ export const PRIMARY_NAV = [
   { label: "About", href: "/about" },
   { label: "Blog", href: "/blog" },
   { label: "Books", href: "/books" },
+  { label: "Sponsor", href: "/sponsor" },
   { label: "Contact", href: "/contact" },
 ];
 

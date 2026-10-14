@@ -9,6 +9,7 @@ import {
 import { BLOG_POST_REVALIDATE, getPost as apiGetPost, getSeoConfig } from "@/components/utils/portfolio-api";
 import AdSlot from "@/components/blog/AdSlot";
 import BookPromo from "@/components/books/BookPromo";
+import SponsorCta from "@/components/blog/SponsorCta";
 import ReadingProgress from "@/components/blog/ReadingProgress";
 import ArticleSearch from "@/components/blog/ArticleSearch";
 import ShareRow from "@/components/shared/ShareRow";
@@ -780,6 +781,10 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                   className="blog-share-row--sidebar"
                 />
               </div>
+
+              {/* Sponsored posts — the rail flows under the article below
+                  1024px, so phones meet this after the author box. */}
+              <SponsorCta />
 
               {/* Books — an editorial link from the part of the site that has
                   crawl equity into the part that needs it. Renders nothing
