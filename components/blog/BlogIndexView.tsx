@@ -15,6 +15,7 @@ import { getAllPosts } from "@/components/utils/blog-index-posts";
 import ViewCountText from "@/components/shared/ViewCountText";
 import AdSlot from "@/components/blog/AdSlot";
 import BlogSearch from "@/components/blog/BlogSearch";
+import HireCta from "@/components/sections/HireCta";
 import { search, normaliseQuery, type SearchOutcome } from "@/components/utils/blog-search";
 import { TopicsFigure } from "@/components/bs/HeadFigure";
 import { POSTS_PER_PAGE, pageCount, indexPath } from "@/components/utils/blog-pagination";
@@ -667,6 +668,9 @@ export default async function BlogIndexView(
           </div>
         </div>
       </section>
+
+      {/* Same closing ask as every other page — the index was the one page that ended without it. */}
+      <HireCta />
     </>
   );
 }
