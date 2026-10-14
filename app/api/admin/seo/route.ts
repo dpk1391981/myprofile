@@ -11,6 +11,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/require-admin";
 import { getSeoConfig, adminUpsertSeo } from "@/components/utils/portfolio-api";
+import { revalidateBlog } from "@/lib/revalidate-blog";
 
 /** Page keys the admin UI can configure. */
 const SEO_KEYS = ["blog-index", "blog-defaults"] as const;
@@ -20,7 +21,7 @@ export async function GET() {
   if (authError) return authError;
 
   try {
-    const results = await Promise.all(SEO_KEYS.map((k) => getSeoConfig(k)));
+    const results = await Promise.all(SEO_KEYS.map((k) => getSeoConfig(k, false)));
     // An unconfigured key yields null upstream; surface it as a bare row so the
     // admin form has something to render and edit.
     const configs = SEO_KEYS.map((key, i) => results[i] ?? { key });
@@ -43,6 +44,9 @@ export async function POST(req: Request) {
     }
 
     const { config } = await adminUpsertSeo(key, data);
+    // Blog pages cache for up to a day (BLOG_POST_REVALIDATE), so a saved SEO
+    // default must purge them or it would not reach the page until tomorrow.
+    revalidateBlog();
     return NextResponse.json({ config });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 502 });

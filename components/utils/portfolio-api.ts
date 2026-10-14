@@ -186,13 +186,33 @@ export async function listPosts(params: {
 const PAGE = 100;
 const MAX_PAGES = 20;
 
-export async function listAllPosts(): Promise<PortfolioPost[]> {
-  const first = await listPosts({ limit: PAGE, offset: 0 });
+/**
+ * CACHE INTERVALS for the blog, in seconds. Set 2026-10-14 after the Vercel
+ * Hobby account went over its ISR-write and CPU limits. At 300s every
+ * crawler pass over ~180 posts rebuilt nearly every one of them, though a
+ * published post does not change.
+ *
+ * These are safe for SEO and freshness because nothing relies on the timer:
+ *   - admin create/edit/delete purges on demand (lib/revalidate-blog.ts);
+ *   - a newly published slug has no cached page yet, so its first request
+ *     renders it fresh;
+ *   - listings (/blog, its pages) pick a new pipeline post up within 30 min,
+ *     and the sitemap/RSS within the hour, as before.
+ * In Next 14 a route regenerates as often as its SHORTEST fetch, so a page's
+ * own `revalidate` and the fetches inside it must be raised together.
+ */
+export const BLOG_POST_REVALIDATE = 86400;
+export const BLOG_LIST_REVALIDATE = 1800;
+
+export async function listAllPosts(
+  revalidate: number | false = BLOG_LIST_REVALIDATE
+): Promise<PortfolioPost[]> {
+  const first = await listPosts({ limit: PAGE, offset: 0, revalidate });
   const out = [...first.posts];
   const pages = Math.min(Math.ceil((first.total || 0) / PAGE), MAX_PAGES);
 
   for (let i = 1; i < pages; i++) {
-    const next = await listPosts({ limit: PAGE, offset: i * PAGE });
+    const next = await listPosts({ limit: PAGE, offset: i * PAGE, revalidate });
     if (!next.posts.length) break; // Upstream disagrees with its own total.
     out.push(...next.posts);
   }
@@ -204,7 +224,8 @@ export async function getPost(
 ): Promise<{ post: PortfolioPost; related: PortfolioPost[] } | null> {
   try {
     return await apiFetch<{ post: PortfolioPost; related: PortfolioPost[] }>(
-      `/portfolio/blogs/${encodeURIComponent(slug)}`
+      `/portfolio/blogs/${encodeURIComponent(slug)}`,
+      { revalidate: BLOG_POST_REVALIDATE }
     );
   } catch (err) {
     // A 404 here is an ordinary "no such post" and the caller renders notFound().
@@ -222,7 +243,7 @@ export async function sitemapPosts(): Promise<
   try {
     const data = await apiFetch<{
       posts: { slug: string; lastModified: string | null }[];
-    }>("/portfolio/blogs/sitemap", { revalidate: 900 });
+    }>("/portfolio/blogs/sitemap", { revalidate: 3600 });
     return data.posts ?? [];
   } catch (err) {
     console.error("[portfolio-api] sitemapPosts failed:", (err as Error).message);
@@ -289,11 +310,14 @@ export async function getBlogStats(
   }
 }
 
-export async function getSeoConfig(key: string): Promise<SeoConfig | null> {
+export async function getSeoConfig(
+  key: string,
+  revalidate: number | false = 900
+): Promise<SeoConfig | null> {
   try {
     const data = await apiFetch<{ config: SeoConfig | null }>(
       `/portfolio/seo/${encodeURIComponent(key)}`,
-      { revalidate: 900 }
+      { revalidate }
     );
     return data.config ?? null;
   } catch (err) {

@@ -39,7 +39,7 @@ import { prepareBody } from "@/components/books/chapter-html";
  * RENDERING: statically regenerated every 10 minutes. A book changes when it is
  * republished, which is rare, and Core Web Vitals are measured on this page.
  */
-export const revalidate = 600;
+export const revalidate = 3600;
 
 export async function generateStaticParams() {
   const books = await listBooks();

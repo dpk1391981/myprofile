@@ -10,7 +10,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PERSONAL_INFO } from "@/components/utils/portfolio-data";
 import { IconArrowRight, IconRss } from "@tabler/icons-react";
-import { getSeoConfig } from "@/components/utils/portfolio-api";
+import { BLOG_LIST_REVALIDATE, getSeoConfig } from "@/components/utils/portfolio-api";
 import { getAllPosts } from "@/components/utils/blog-index-posts";
 import ViewCountText from "@/components/shared/ViewCountText";
 import AdSlot from "@/components/blog/AdSlot";
@@ -36,7 +36,7 @@ export type { IndexPost };
 // Served by the agent service (see components/utils/portfolio-api.ts for why
 // this is an HTTP call and not a database read).
 async function getBlogIndexSeo() {
-  return getSeoConfig("blog-index");
+  return getSeoConfig("blog-index", BLOG_LIST_REVALIDATE);
 }
 
 /** "2026-08-14" → "Aug 2026". A bare ISO date in a figure reads as data the

@@ -11,7 +11,8 @@ import BlogIndexView, { buildBlogIndexMetadata } from "@/components/blog/BlogInd
  * Page 1 only. Pages 2…n live at /blog/page/[page]; both render the same view
  * (components/blog/BlogIndexView.tsx).
  */
-export const revalidate = 300;
+// Matches BLOG_LIST_REVALIDATE (portfolio-api.ts); literal because Next reads it statically.
+export const revalidate = 1800;
 
 export async function generateMetadata(
   { searchParams }: { searchParams: { topic?: string; q?: string } }

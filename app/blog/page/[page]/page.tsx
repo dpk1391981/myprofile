@@ -15,7 +15,8 @@ import BlogIndexView, { buildBlogIndexMetadata, blogPageCount } from "@/componen
  * precedence over /blog/[slug]; the cost is that "page" is not available as a
  * post slug.
  */
-export const revalidate = 300;
+// Matches BLOG_LIST_REVALIDATE (portfolio-api.ts); literal because Next reads it statically.
+export const revalidate = 1800;
 
 function parsePage(raw: string): number | null {
   // Only bare positive integers. "01", "2.0" and "2abc" are other spellings of

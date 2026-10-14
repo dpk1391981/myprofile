@@ -24,9 +24,10 @@ import BookOfferModal, { BookOfferButton } from "@/components/books/BookOfferMod
  * discovers the whole set, and link equity earned by a popular chapter flows to
  * the rest of the book instead of dead-ending.
  *
- * Statically generated per chapter and revalidated every 10 minutes.
+ * Statically generated per chapter and revalidated hourly (was 10 min; raised
+ * 2026-10-14 to cut Vercel ISR writes — fetches in books-api.ts match).
  */
-export const revalidate = 600;
+export const revalidate = 3600;
 
 export async function generateStaticParams() {
   const books = await listBooks();

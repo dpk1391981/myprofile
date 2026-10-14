@@ -318,7 +318,7 @@ function cleanBook<T extends Book>(book: T): T {
 
 export async function listBooks(): Promise<Book[]> {
   try {
-    const { books } = await apiFetch<{ books: Book[] }>("/books", { revalidate: 300 });
+    const { books } = await apiFetch<{ books: Book[] }>("/books", { revalidate: 3600 });
     return (books ?? []).map(cleanBook);
   } catch (err) {
     console.error("[books] listBooks failed:", err);
@@ -329,7 +329,7 @@ export async function listBooks(): Promise<Book[]> {
 export async function getBook(slug: string): Promise<Book | null> {
   try {
     return cleanBook(
-      await apiFetch<Book>(`/books/${encodeURIComponent(slug)}`, { revalidate: 300 })
+      await apiFetch<Book>(`/books/${encodeURIComponent(slug)}`, { revalidate: 3600 })
     );
   } catch (err) {
     console.error(`[books] getBook(${slug}) failed:`, err);
@@ -366,7 +366,7 @@ export async function getChapter(
   try {
     const page = await apiFetch<ChapterPage>(
       `/books/${encodeURIComponent(slug)}/chapters/${ordinal}`,
-      { revalidate: 600 }
+      { revalidate: 3600 }
     );
     return {
       ...page,

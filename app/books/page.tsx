@@ -53,7 +53,7 @@ import ViewCountText from "@/components/shared/ViewCountText";
  *
  * RENDERING: statically regenerated every 10 minutes.
  */
-export const revalidate = 600;
+export const revalidate = 3600;
 
 /** Chapters linked per book on the index. Enough to prove depth and to seed a
  *  crawl; the rest are one click away in the book's own contents. */

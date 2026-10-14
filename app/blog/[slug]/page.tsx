@@ -6,7 +6,7 @@ import {
   IconArrowLeft, IconArrowRight, IconArrowNarrowRight, IconChevronDown,
   IconBrandGithub, IconBrandLinkedin, IconBrandX,
 } from "@tabler/icons-react";
-import { getPost as apiGetPost, getSeoConfig } from "@/components/utils/portfolio-api";
+import { BLOG_POST_REVALIDATE, getPost as apiGetPost, getSeoConfig } from "@/components/utils/portfolio-api";
 import AdSlot from "@/components/blog/AdSlot";
 import BookPromo from "@/components/books/BookPromo";
 import ReadingProgress from "@/components/blog/ReadingProgress";
@@ -26,10 +26,13 @@ import {
  * page is per-request (no cookies, no session, no personalisation), so the
  * only thing that bought was freshness, and it cost a full upstream round trip
  * of TTFB on the exact request Google measures. ISR gives the same freshness
- * within five minutes and serves the cached HTML instantly in between; an edit
- * in the admin appears on the next revalidation rather than the next reload.
+ * within a day and serves the cached HTML instantly in between. An admin edit
+ * still appears at once: the admin routes purge it (lib/revalidate-blog.ts).
+ * Raised from 300 on 2026-10-14 to cut Vercel ISR writes — see
+ * BLOG_POST_REVALIDATE in portfolio-api.ts. Must be a literal (Next reads it
+ * statically) and must match that constant.
  */
-export const revalidate = 300;
+export const revalidate = 86400;
 
 const SLOT_TOP     = process.env.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE_TOP    ?? "";
 const SLOT_MID     = process.env.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE_MID    ?? "";
@@ -129,7 +132,7 @@ async function getPost(slug: string) {
 }
 
 async function getDefaults() {
-  return getSeoConfig("blog-defaults");
+  return getSeoConfig("blog-defaults", BLOG_POST_REVALIDATE);
 }
 
 // `apiRelated` is what the single-post endpoint already returned alongside the
