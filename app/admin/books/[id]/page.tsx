@@ -15,7 +15,7 @@ import Link from "next/link";
 import {
   IconLoader2, IconAlertTriangle, IconListNumbers, IconWand, IconWorld,
   IconTrash, IconCheck, IconCode, IconPencil, IconChevronDown, IconArrowLeft,
-  IconDownload, IconPhotoUp,
+  IconDownload, IconPhotoUp, IconPlayerPause, IconPlayerPlay, IconRefresh,
 } from "@tabler/icons-react";
 import PageHeader from "@/components/admin/PageHeader";
 import BookForm, { type BookBriefValues } from "@/components/books/BookForm";
@@ -45,6 +45,7 @@ type Chapter = {
 type Book = {
   id: number; slug: string; title: string; subtitle: string; status: string;
   errorText: string; runStale: boolean; staleAfterMinutes: number;
+  runStopReason: "" | "restart" | "timeout"; pauseRequested: boolean;
   chapters: number; targetChapters: number; targetWords: number;
   wordCount: number; pages: number; coverEmoji: string; publishedAt: string | null;
   outline: { ordinal: number; heading: string; summary: string; sections: string[];
@@ -129,10 +130,26 @@ export default function AdminBookDetail({ params }: { params: { id: string } }) 
     if (r?.ok) { setNotice(`Outline built — ${r.chapters} chapters. Read it before generating.`); setTab("outline"); }
   }
 
-  async function generate() {
-    const r = await call("generate", `/api/admin/books/${id}/generate`);
+  /** continue = Resume (write only what is missing); fix = also rewrite
+   *  chapters with defects; chapter = rewrite just that one. */
+  async function generate(mode: "continue" | "fix" = "continue", chapter?: number) {
+    const q = new URLSearchParams({ mode });
+    if (chapter) q.set("chapter", String(chapter));
+    const r = await call(chapter ? `rewrite-${chapter}` : mode === "fix" ? "fix" : "generate",
+                         `/api/admin/books/${id}/generate?${q}`);
     // "started", never "done" — the run outlives this request by a long way.
-    if (r?.triggered) { setNotice("Generation started. This takes a while; progress updates below."); setTab("chapters"); }
+    if (r?.triggered) {
+      setNotice(chapter
+        ? `Rewriting chapter ${chapter}. The current text stays until the new one is finished.`
+        : "Generation started. This takes a while; progress updates below.");
+      setTab("chapters");
+    }
+  }
+
+  async function pause() {
+    const r = await call("pause", `/api/admin/books/${id}/pause`);
+    if (r?.paused) setNotice("Paused. Resume continues from where it stopped.");
+    else if (r?.pauseRequested) setNotice("Pausing — it stops after the section being written, usually within a minute. Nothing written is lost.");
   }
 
   async function publish(allowFlagged = false) {
@@ -195,14 +212,14 @@ export default function AdminBookDetail({ params }: { params: { id: string } }) 
 
   if (loading) {
     return (
-      <div className="flex items-center gap-2 py-16 text-sm text-slate-500">
+      <div className="flex items-center gap-2 p-4 py-16 text-sm text-slate-500 sm:px-6 lg:px-8">
         <IconLoader2 size={18} className="animate-spin" /> Loading…
       </div>
     );
   }
   if (!book) {
     return (
-      <div className="py-16 text-center">
+      <div className="p-4 py-16 text-center">
         <p className="text-sm text-red-600">{error || "Book not found"}</p>
         <Link href="/admin/books" className="mt-3 inline-block text-sm text-blue-600 hover:underline">
           Back to books
@@ -214,10 +231,13 @@ export default function AdminBookDetail({ params }: { params: { id: string } }) 
   const chapters = book.chapterDetail || [];
   const flagged = chapters.filter((c) => c.status === "flagged").length;
   const hasOutline = (book.outline || []).length > 0;
+  const hasChapters = chapters.some((c) => c.wordCount > 0);
+  // A run that ended without finishing: paused on request, or killed.
+  const stopped = book.status === "paused" || !!book.runStale;
   const estCost = estimateCost(book.targetWords, book.targetChapters);
 
   return (
-    <div>
+    <div className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
       <Link href="/admin/books"
             className="mb-3 inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-900">
         <IconArrowLeft size={16} /> Books
@@ -299,26 +319,55 @@ export default function AdminBookDetail({ params }: { params: { id: string } }) 
           {hasOutline ? "Rebuild outline" : "1. Build outline"}
         </button>
 
-        <button onClick={generate}
-                disabled={!!busy || !hasOutline || (book.status === "generating" && !book.runStale)}
+        <button onClick={() => generate("continue")}
+                disabled={!!busy || !hasOutline || running || book.status === "published"}
                 className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60">
           {busy === "generate" || running
-            ? <IconLoader2 size={16} className="animate-spin" /> : <IconWand size={16} />}
-          {running ? "Generating…"
-            : book.runStale ? "Resume generation"
+            ? <IconLoader2 size={16} className="animate-spin" />
+            : stopped ? <IconPlayerPlay size={16} /> : <IconWand size={16} />}
+          {running ? (book.pauseRequested ? "Pausing…" : "Generating…")
+            : stopped ? "Resume generation"
+            : hasChapters ? "Continue generation"
             : "2. Generate book"}
         </button>
+
+        {running && (
+          <button onClick={pause} disabled={!!busy || book.pauseRequested}
+                  className="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-medium hover:bg-slate-50 disabled:opacity-60">
+            {busy === "pause" ? <IconLoader2 size={16} className="animate-spin" /> : <IconPlayerPause size={16} />}
+            Pause
+          </button>
+        )}
+
+        {!running && flagged > 0 && book.status !== "published" && (
+          <button onClick={() => {
+                    if (confirm(`Rewrite every flagged chapter that has a measurable defect (wrong facts, failing code, too short, too thin)? Chapters you marked reviewed are kept. This costs roughly one chapter's price per rewrite.`)) generate("fix");
+                  }}
+                  disabled={!!busy}
+                  className="inline-flex items-center gap-2 rounded-lg border border-amber-300 px-4 py-2.5 text-sm font-medium text-amber-800 hover:bg-amber-50 disabled:opacity-60">
+            {busy === "fix" ? <IconLoader2 size={16} className="animate-spin" /> : <IconRefresh size={16} />}
+            Rewrite flagged chapters
+          </button>
+        )}
 
         <p className="text-xs text-slate-500">
           {!hasOutline
             ? "Build the outline first — it is cheap, and it is where a wrong brief gets caught."
             : running
-              ? "Running in the background. Safe to leave this page; progress is saved after every chapter."
+              ? book.pauseRequested
+                ? "Stopping after the section being written. Nothing written is lost."
+                : "Running in the background. Safe to leave this page; progress is saved after every section."
+              : book.status === "paused"
+                ? "Paused. Resume writes only what is missing, continuing the unfinished chapter from its last saved section."
               : book.runStale
-                ? <>This run stopped without finishing — nothing has been written for over{" "}
-                   {book.staleAfterMinutes} minutes, which usually means the service restarted
-                   mid-run. Finished chapters are kept; resuming picks up from the last one.</>
-                : <>Resumes from the last finished chapter. Roughly <strong>${estCost.lo}–${estCost.hi}</strong> and <strong>{estCost.mins} min</strong> for a full run.</>}
+                ? book.runStopReason === "restart"
+                  ? "Stopped by a service restart (deploy). Finished chapters and saved sections are kept; Resume continues from there."
+                  : <>This run stopped without finishing — nothing has been written for over{" "}
+                     {book.staleAfterMinutes} minutes. Finished chapters and saved sections are
+                     kept; Resume continues from there.</>
+                : book.status === "published"
+                  ? "Published — unpublish before regenerating anything."
+                  : <>Writes only missing chapters; finished ones are kept. Roughly <strong>${estCost.lo}–${estCost.hi}</strong> and <strong>{estCost.mins} min</strong> for a full run.</>}
         </p>
       </div>
 
@@ -416,7 +465,10 @@ export default function AdminBookDetail({ params }: { params: { id: string } }) 
               <ChapterCard key={c.ordinal} bookId={id} chapter={c}
                            open={open === c.ordinal}
                            onToggle={() => setOpen(open === c.ordinal ? null : c.ordinal)}
-                           onSaved={load} />
+                           onSaved={load}
+                           canRewrite={!running && !busy && book.status !== "published"}
+                           rewriting={busy === `rewrite-${c.ordinal}`}
+                           onRewrite={() => generate("continue", c.ordinal)} />
             ))}
           </div>
         )
@@ -436,10 +488,11 @@ export default function AdminBookDetail({ params }: { params: { id: string } }) 
 /* ── Chapter review card ────────────────────────────────────────────────── */
 
 function ChapterCard({
-  bookId, chapter: c, open, onToggle, onSaved,
+  bookId, chapter: c, open, onToggle, onSaved, canRewrite, rewriting, onRewrite,
 }: {
   bookId: number; chapter: Chapter; open: boolean;
   onToggle: () => void; onSaved: () => void;
+  canRewrite: boolean; rewriting: boolean; onRewrite: () => void;
 }) {
   const [editing, setEditing] = useState(false);
   const [body, setBody] = useState(c.bodyHtml);
@@ -612,10 +665,21 @@ function ChapterCard({
             <>
               <div className="prose prose-sm max-w-none prose-pre:bg-slate-900 prose-pre:text-slate-100"
                    dangerouslySetInnerHTML={{ __html: c.bodyHtml }} />
-              <button onClick={() => setEditing(true)}
-                      className="mt-4 inline-flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm hover:bg-slate-50">
-                <IconPencil size={14} /> Edit this chapter
-              </button>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <button onClick={() => setEditing(true)}
+                        className="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm hover:bg-slate-50">
+                  <IconPencil size={14} /> Edit this chapter
+                </button>
+                <button onClick={() => {
+                          if (confirm(`Rewrite chapter ${c.ordinal} from scratch? Its current text — including any hand edits — is replaced when the new version finishes. Costs roughly one chapter.`)) onRewrite();
+                        }}
+                        disabled={!canRewrite}
+                        title={canRewrite ? "" : "Not while a run is in progress or the book is published"}
+                        className="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm hover:bg-slate-50 disabled:opacity-50">
+                  {rewriting ? <IconLoader2 size={14} className="animate-spin" /> : <IconRefresh size={14} />}
+                  Rewrite this chapter
+                </button>
+              </div>
             </>
           )}
         </div>

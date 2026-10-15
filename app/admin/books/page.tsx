@@ -24,6 +24,7 @@ type BookRow = {
   coverEmoji: string;
   errorText: string;
   runStale: boolean;
+  isActive: boolean;
   publishedAt: string | null;
   createdAt: string | null;
 };
@@ -33,6 +34,7 @@ const STATUS: Record<string, { label: string; cls: string }> = {
   draft:      { label: "Draft",      cls: "bg-slate-100 text-slate-700" },
   outlining:  { label: "Outlining",  cls: "bg-blue-100 text-blue-700" },
   generating: { label: "Generating", cls: "bg-amber-100 text-amber-800" },
+  paused:     { label: "Paused",     cls: "bg-slate-200 text-slate-700" },
   ready:      { label: "Ready",      cls: "bg-emerald-100 text-emerald-700" },
   published:  { label: "Published",  cls: "bg-blue-600 text-white" },
   failed:     { label: "Failed",     cls: "bg-red-100 text-red-700" },
@@ -42,6 +44,24 @@ export default function AdminBooksList() {
   const [books, setBooks] = useState<BookRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [toggling, setToggling] = useState<number | null>(null);
+
+  /** Live / inactive. Optimistic: the switch moves at once, and snaps back
+   *  with an error if the server refuses. */
+  async function setActive(b: BookRow, active: boolean) {
+    setToggling(b.id); setError("");
+    setBooks((all) => all.map((x) => (x.id === b.id ? { ...x, isActive: active } : x)));
+    try {
+      const res = await fetch(`/api/admin/books/${b.id}/active?active=${active}`, { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Could not change visibility");
+    } catch (err: any) {
+      setBooks((all) => all.map((x) => (x.id === b.id ? { ...x, isActive: !active } : x)));
+      setError(err.message);
+    } finally {
+      setToggling(null);
+    }
+  }
 
   async function load() {
     try {
@@ -69,7 +89,7 @@ export default function AdminBooksList() {
   usePolling(load, active, 8000);
 
   return (
-    <div>
+    <div className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
       <PageHeader
         title="Books"
         description="Long-form books written by the book_author agent."
@@ -122,8 +142,12 @@ export default function AdminBooksList() {
                         {b.title}
                       </Link>
                       <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${
-                        b.runStale ? "bg-red-100 text-red-700" : s.cls}`}>
-                        {b.runStale ? "Run stopped" : s.label}
+                        b.runStale ? "bg-red-100 text-red-700"
+                        : b.status === "published" && !b.isActive ? "bg-slate-200 text-slate-600"
+                        : s.cls}`}>
+                        {b.runStale ? "Run stopped"
+                          : b.status === "published" && !b.isActive ? "Inactive — hidden from site"
+                          : s.label}
                       </span>
                     </div>
                     {b.subtitle && (
@@ -151,6 +175,23 @@ export default function AdminBooksList() {
 
                   <div className="flex shrink-0 items-center gap-1">
                     {b.status === "published" && (
+                      <label className="mr-2 flex cursor-pointer items-center gap-2 text-xs font-medium text-slate-600"
+                             title={b.isActive ? "Live on the site — click to hide it" : "Hidden from the site — click to show it"}>
+                        <span className={b.isActive ? "text-emerald-700" : "text-slate-500"}>
+                          {b.isActive ? "Live" : "Inactive"}
+                        </span>
+                        <button type="button" role="switch" aria-checked={b.isActive}
+                                aria-label={`${b.title}: ${b.isActive ? "live" : "inactive"}`}
+                                disabled={toggling === b.id}
+                                onClick={() => setActive(b, !b.isActive)}
+                                className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors disabled:opacity-60 ${
+                                  b.isActive ? "bg-emerald-500" : "bg-slate-300"}`}>
+                          <span className={`inline-block h-4 w-4 rounded-full bg-white shadow transition-transform ${
+                            b.isActive ? "translate-x-4" : "translate-x-0.5"}`} />
+                        </button>
+                      </label>
+                    )}
+                    {b.status === "published" && b.isActive && (
                       <Link href={`/books/${b.slug}`} target="_blank"
                             title="View public page"
                             className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-900">

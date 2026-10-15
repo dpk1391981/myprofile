@@ -9,7 +9,8 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/require-admin";
 import { adminPublishBook } from "@/components/utils/books-api";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { BOOKS_CACHE_TAG } from "@/components/utils/books-api";
 
 export async function POST(req: Request, { params }: { params: { id: string } }) {
   const authError = requireAdmin();
@@ -28,6 +29,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     const book = await adminPublishBook(id, publish, allowFlagged);
     // The public listing and the book page are statically revalidated; without
     // this, a just-published book stays invisible for up to five minutes.
+    revalidateTag(BOOKS_CACHE_TAG);   // home page promo + sitemap read the list too
     revalidatePath("/books");
     if (book?.slug) revalidatePath(`/books/${book.slug}`);
     return NextResponse.json({ book });

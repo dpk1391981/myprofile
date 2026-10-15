@@ -22,10 +22,17 @@ export async function POST(req: Request, { params }: { params: { id: string } })
 
   // resume=false rewrites chapters that already passed — it costs the full
   // book again, so it is opt-in rather than the default.
-  const resume = new URL(req.url).searchParams.get("resume") !== "false";
+  const q = new URL(req.url).searchParams;
+  const resume = q.get("resume") !== "false";
+  const modeParam = q.get("mode");
+  const mode = modeParam === "fix" || modeParam === "all" ? modeParam : "continue";
+  const chapter = Number(q.get("chapter")) || undefined;
+  if (chapter !== undefined && (!Number.isInteger(chapter) || chapter <= 0)) {
+    return NextResponse.json({ error: "Bad chapter" }, { status: 400 });
+  }
 
   try {
-    return NextResponse.json(await adminGenerateBook(id, resume));
+    return NextResponse.json(await adminGenerateBook(id, resume, mode, chapter));
   } catch (err: any) {
     const msg = String(err.message || "");
     const status = msg.includes("409") ? 409 : msg.includes("400") ? 400 : 502;

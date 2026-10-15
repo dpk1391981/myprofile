@@ -153,6 +153,12 @@ export type AdminBook = Book & {
   /** status says "generating" but nothing has been written for a while — the
    *  run did not survive a restart. The UI must offer resume, not a spinner. */
   runStale: boolean;
+  /** "restart" (the owning process is gone), "timeout" (no progress), or "". */
+  runStopReason: "" | "restart" | "timeout";
+  /** Live/inactive switch: false hides a published book from the public site. */
+  isActive: boolean;
+  /** Pause was clicked; the run stops after its current section. */
+  pauseRequested: boolean;
   staleAfterMinutes: number;
   outline: {
     ordinal: number;
@@ -172,6 +178,9 @@ export type AdminBook = Book & {
   chapterDetail?: BookChapter[];
   flaggedChapters?: number;
 };
+
+/** Cache tag on every public book read; see revalidateBooks in the admin routes. */
+export const BOOKS_CACHE_TAG = "books";
 
 type FetchOpts = {
   method?: string;
@@ -243,7 +252,10 @@ async function apiFetchRaw<T>(
       // Authenticated and mutating calls must never be served from a cache.
       ...(method !== "GET" || auth
         ? { cache: "no-store" as const }
-        : { next: { revalidate: revalidate === false ? 0 : revalidate } }),
+        // Tagged so a publish or live/inactive switch can purge every cached
+        // book read at once — home page, /books, chapters, sitemap — instead of
+        // each page showing the old state until its own hour runs out.
+        : { next: { revalidate: revalidate === false ? 0 : revalidate, tags: [BOOKS_CACHE_TAG] } }),
     });
 
 
@@ -500,12 +512,32 @@ export async function adminBuildOutline(
  */
 export async function adminGenerateBook(
   id: number,
-  resume = true
+  resume = true,
+  /** continue = write only what is missing (Resume); fix = also rewrite
+   *  chapters with defects; all = everything. */
+  mode: "continue" | "fix" | "all" = "continue",
+  /** Rewrite exactly this chapter. */
+  chapter?: number
 ): Promise<{ ok: boolean; triggered: boolean; note: string }> {
-  return apiFetch(`/books/admin/books/${id}/generate?resume=${resume}`, {
+  const q = new URLSearchParams({ resume: String(resume), mode });
+  if (chapter) q.set("chapter", String(chapter));
+  return apiFetch(`/books/admin/books/${id}/generate?${q}`, {
     method: "POST",
     auth: true,
   });
+}
+
+/** Live / inactive. Only published AND active books appear on the site. */
+export async function adminSetBookActive(id: number, active: boolean): Promise<AdminBook> {
+  return apiFetch(`/books/admin/books/${id}/active?active=${active}`, { method: "POST", auth: true });
+}
+
+/** Stop a running generation after its current section. Also clears a run
+ *  that a restart already killed. */
+export async function adminPauseBook(
+  id: number
+): Promise<{ ok: boolean; paused?: boolean; pauseRequested?: boolean; note?: string }> {
+  return apiFetch(`/books/admin/books/${id}/pause`, { method: "POST", auth: true });
 }
 
 export async function adminUpdateChapter(

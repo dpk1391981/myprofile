@@ -61,7 +61,7 @@ export default function SubscribersPage() {
   }
 
   return (
-    <div>
+    <div className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
       <PageHeader
         title="Subscribers"
         description={`${confirmed.length} confirmed of ${rows.length} signups`}
