@@ -4,6 +4,7 @@ import { IconArrowRight } from "@tabler/icons-react";
 import { listBooks, getBook, type Book, type BookToc } from "@/components/utils/books-api";
 import { pageMeta, breadcrumbLd, faqLd } from "@/components/utils/seo";
 import PriceTag from "@/components/books/PriceTag";
+import { descriptionPlain } from "@/components/books/description";
 import { SITE_URL } from "@/components/utils/site-data";
 import { PERSONAL_INFO } from "@/components/utils/portfolio-data";
 import { ShelfFigure } from "@/components/bs/HeadFigure";
@@ -323,7 +324,7 @@ export default async function BooksIndex() {
                 url: `${SITE_URL}/books/${b.slug}`,
                 name: b.title,
                 ...(b.subtitle ? { alternateName: b.subtitle } : {}),
-                description: b.description || b.seoDescription || "",
+                description: descriptionPlain(b.description, b) || b.seoDescription || "",
                 author: { "@id": `${SITE_URL}/#person` },
                 inLanguage: b.language || "en",
                 ...(b.pages ? { numberOfPages: b.pages } : {}),
@@ -499,7 +500,7 @@ export default async function BooksIndex() {
                           treats the two as interchangeable, so the card must too, or
                           a perfectly good blurb goes unrendered. */}
                       {(b.description || b.seoDescription) && (
-                        <p className="bkx-desc">{b.description || b.seoDescription}</p>
+                        <p className="bkx-desc">{descriptionPlain(b.description, b) || b.seoDescription}</p>
                       )}
 
                       {b.outcomes?.length > 0 && (

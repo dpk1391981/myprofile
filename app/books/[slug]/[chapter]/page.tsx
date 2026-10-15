@@ -10,6 +10,8 @@ import ReadingProgress from "@/components/books/ReadingProgress";
 import ChapterTracker from "@/components/books/ChapterTracker";
 import PriceTag from "@/components/books/PriceTag";
 import BookOfferModal, { BookOfferButton } from "@/components/books/BookOfferModal";
+import ReaderControls, { TimeLeft } from "@/components/books/ReaderControls";
+import { READER_INIT_SCRIPT } from "@/components/books/reader-prefs";
 
 /**
  * One chapter, one URL — the page that does the ranking.
@@ -94,17 +96,24 @@ export default async function ChapterPage(
   const { html, headings } = prepareChapter(chapter.html);
   const sections = headings.filter((h) => h.level === 2);
 
+  const minutes = Math.max(1, Math.round(chapter.wordCount / 230));
+
   return (
     /*
-      The column and its rail. The reading measure is unchanged — 38rem is what
-      makes a 4,000-word chapter readable — but the page around it no longer
-      leaves ~450px of empty paper on either side of it on a desktop: the rail
-      puts the book's contents, the chapter's own sections and the one offer in
-      that space. Below 1080px the rail is removed and the column has the page
-      to itself, exactly as before. See .bk-readgrid in broadsheet.css.
+      THE PAPER READER. The chapter sits on a sheet on a desk — the way a PDF
+      viewer shows a page — because that one change does most of what "easy to
+      read" means: a clear edge to the reading area, wide inner margins, and a
+      measure of ~70 characters instead of a 38rem strip with empty space on
+      both sides. Contents and reading settings live in the left rail on a
+      desktop; below 1100px the sheet has the width to itself, and below 720px
+      it goes edge to edge like an e-reader. See .bkp-* in broadsheet.css.
+
+      #bk-desk carries the reader's settings (data-size, data-paper). The inline
+      script applies the saved ones before paint; suppressHydrationWarning is
+      for exactly those two attributes.
     */
-    <div className="bk-readgrid" style={{ paddingTop: 44, paddingBottom: 80 }}>
-      <main className="bk-shell bk-readcol">
+    <div id="bk-desk" className="bkp-desk" data-size="2" suppressHydrationWarning>
+      <script dangerouslySetInnerHTML={{ __html: READER_INIT_SCRIPT }} />
       <ReadingProgress />
       <ChapterTracker
         slug={book.slug}
@@ -125,183 +134,172 @@ export default async function ChapterPage(
           ])),
         }} />
 
-      <nav aria-label="Breadcrumb" className="bs-small bs-quiet" style={{ marginBottom: 30 }}>
-        <Link href="/books" className="bs-link-plain">Books</Link>
-        <span style={{ margin: "0 8px" }}>/</span>
-        <Link href={`/books/${book.slug}`} className="bs-link-plain">{book.title}</Link>
-      </nav>
+      <div className="bkp-layout">
+        {/* ── The rail (desktop) ──────────────────────────────────────────
+            Everything here is also on the sheet below for the widths where
+            the rail is not drawn, so nothing is lost when it is hidden. */}
+        <aside className="bkp-rail" aria-label={`${book.title} — contents`}>
+          <div className="bk-rail-book">
+            <span className="bk-rail-emoji" aria-hidden="true">{book.coverEmoji || "📘"}</span>
+            <div style={{ minWidth: 0 }}>
+              <p className="bk-rail-title">
+                <Link href={`/books/${book.slug}`} className="bs-link-plain">{book.title}</Link>
+              </p>
+              <p className="bk-rail-sub">
+                {book.pages} pages · {toc.length} chapters · free
+              </p>
+            </div>
+          </div>
 
-      {/* ── Chapter opener ────────────────────────────────────────────────── */}
-      <header>
-        <p className="bk-chapter-num">
-          Chapter {chapter.ordinal} of {toc.length}
-        </p>
-        <h1 className="bk-chapter-title">{chapter.heading}</h1>
-        {chapter.summary && <p className="bk-chapter-standfirst">{chapter.summary}</p>}
-        <p className="bk-chapter-meta">
-          From{" "}
-          <Link href={`/books/${book.slug}`} className="bs-link">{book.title}</Link>
-          {" "}by {book.authorName || "Deepak Kumar"} · {chapter.wordCount.toLocaleString()} words · free to read
-        </p>
-      </header>
+          <TimeLeft words={chapter.wordCount} />
 
-      <div className="bs-rail-thin" style={{ margin: "30px 0 38px" }} />
+          {sections.length >= 2 && (
+            <nav className="bk-rail-group" aria-label="Sections in this chapter">
+              <p className="bs-eyebrow">In this chapter</p>
+              <ul className="bk-rail-list">
+                {sections.map((h) => (
+                  <li key={h.id}>
+                    <a href={`#${h.id}`} className="bk-rail-link" title={h.text}>{h.text}</a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          )}
 
-      {/* ── In this chapter ───────────────────────────────────────────────
-          Only when there is enough structure for it to help. A rail listing two
-          headings is furniture, not navigation. */}
-      {headings.length >= 3 && (
-        <nav aria-label="In this chapter" className="bk-inline-toc"
-             style={{ marginBottom: 40, padding: "18px 20px", background: "var(--surface)", borderRadius: 2 }}>
-          <p className="bs-eyebrow" style={{ marginBottom: 10 }}>In this chapter</p>
-          <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
-            {headings.map((h) => (
-              <li key={h.id} style={{ padding: "4px 0", paddingLeft: h.level === 3 ? 16 : 0 }}>
-                <a href={`#${h.id}`} className="bs-link-plain" style={{ fontSize: 15.5 }}>
-                  {h.text}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      )}
-
-      <article className="bk-prose" dangerouslySetInnerHTML={{ __html: html }} />
-
-      {/* ── Previous / next ───────────────────────────────────────────────── */}
-      <nav aria-label="Chapter navigation" className="bk-pager" style={{ marginTop: 56 }}>
-        {prev && (
-          <Link href={`/books/${book.slug}/${prev.ordinal}`} className="bk-pager-link">
-            <span className="bk-pager-kicker">← Chapter {prev.ordinal}</span>
-            <p className="bk-pager-title">{prev.heading}</p>
-          </Link>
-        )}
-        {next && (
-          <Link href={`/books/${book.slug}/${next.ordinal}`} className="bk-pager-link bk-pager-link--next">
-            <span className="bk-pager-kicker">Chapter {next.ordinal} →</span>
-            <p className="bk-pager-title">{next.heading}</p>
-          </Link>
-        )}
-      </nav>
-
-      {/* ── The gate, at the end of the chapter ───────────────────────────
-          Placed here because this is the moment the reader has just been given
-          something. An email asked for before that is a toll; asked for after,
-          it is a fair trade. */}
-      <aside style={{ marginTop: 48, padding: "24px 26px", border: "1px solid var(--rule)", borderRadius: 2 }}>
-        <p className="bs-eyebrow">Free book</p>
-        <p className="bs-h4" style={{ margin: "8px 0 6px", fontSize: 19 }}>
-          Want all {toc.length} chapters in one file?
-        </p>
-        <p style={{ margin: "0 0 10px" }}>
-          <PriceTag listPricePaise={book.listPricePaise} priceLabel={book.priceLabel}
-                    currency={book.currency} size="md" />
-        </p>
-        <p className="bs-small bs-quiet" style={{ margin: "0 0 16px" }}>
-          {book.pages} pages, printable and yours to keep. One confirmed email, no payment.
-        </p>
-        <Link href={`/books/${book.slug}#get`} className="bs-btn bs-btn--solid bs-btn--sm">
-          Get the full book
-        </Link>
-      </aside>
-
-      {/* ── All chapters ──────────────────────────────────────────────────
-          Flat internal linking: any chapter a crawler or a reader lands on
-          exposes the whole book in one hop. */}
-      <section aria-labelledby="contents" style={{ marginTop: 56 }}>
-        <div className="bs-rail-thin" style={{ marginBottom: 20 }} />
-        <p className="bs-eyebrow" id="contents" style={{ marginBottom: 12 }}>All chapters</p>
-        <ol className="bk-toc">
-          {toc.map((c) => (
-            <li key={c.ordinal}
-                className={`bk-toc-item${c.ordinal === chapter.ordinal ? " bk-toc-item--current" : ""}`}>
-              <span className="bk-toc-num">{c.ordinal}</span>
-              <div style={{ minWidth: 0 }}>
-                {c.ordinal === chapter.ordinal ? (
-                  <span className="bk-toc-link">{c.heading}</span>
-                ) : (
-                  <Link href={`/books/${book.slug}/${c.ordinal}`} className="bk-toc-link">
+          <nav className="bk-rail-group bkp-rail-chapters" aria-label="All chapters">
+            <p className="bs-eyebrow">All {toc.length} chapters</p>
+            <ul className="bk-rail-list">
+              {toc.map((c) => (
+                <li key={c.ordinal}>
+                  <Link
+                    href={`/books/${book.slug}/${c.ordinal}`}
+                    aria-current={c.ordinal === chapter.ordinal ? "page" : undefined}
+                    title={c.heading}
+                    className={`bk-rail-link${c.ordinal === chapter.ordinal ? " bk-rail-link--current" : ""}`}
+                  >
+                    <span className="bk-rail-num">{String(c.ordinal).padStart(2, "0")}</span>
                     {c.heading}
                   </Link>
-                )}
-              </div>
-            </li>
-          ))}
-        </ol>
-      </section>
-      </main>
-
-      {/* ── The rail ─────────────────────────────────────────────────────
-          Desktop only, and everything in it is already on the page below —
-          it is a second, always-visible route to the same links rather than
-          content that exists nowhere else, so nothing is lost when it is not
-          drawn. */}
-      <aside className="bk-rail" aria-label={`${book.title} — contents`}>
-        <div className="bk-rail-book">
-          <span className="bk-rail-emoji" aria-hidden="true">{book.coverEmoji || "📘"}</span>
-          <div style={{ minWidth: 0 }}>
-            <p className="bk-rail-title">
-              <Link href={`/books/${book.slug}`} className="bs-link-plain">{book.title}</Link>
-            </p>
-            <p className="bk-rail-sub">
-              Chapter {chapter.ordinal} of {toc.length} · {book.pages} pages · free
-            </p>
-          </div>
-        </div>
-
-        {/* Top-level sections only. A chapter like this one has ~28 headings
-            once the h3s are counted, and a rail that long buries the chapter
-            list and the offer under a scroll of its own. The full outline,
-            sub-headings included, is still in the in-flow box for the widths
-            where that box is the one being shown. */}
-        {sections.length >= 2 && (
-          <nav className="bk-rail-group" aria-label="Sections in this chapter">
-            <p className="bs-eyebrow">In this chapter</p>
-            <ul className="bk-rail-list">
-              {sections.map((h) => (
-                <li key={h.id}>
-                  <a href={`#${h.id}`} className="bk-rail-link">{h.text}</a>
                 </li>
               ))}
             </ul>
           </nav>
-        )}
 
-        <nav className="bk-rail-group" aria-label="All chapters">
-          <p className="bs-eyebrow">All {toc.length} chapters</p>
-          <ul className="bk-rail-list">
-            {toc.map((c) => (
-              <li key={c.ordinal}>
-                <Link
-                  href={`/books/${book.slug}/${c.ordinal}`}
-                  aria-current={c.ordinal === chapter.ordinal ? "page" : undefined}
-                  className={`bk-rail-link${c.ordinal === chapter.ordinal ? " bk-rail-link--current" : ""}`}
-                >
-                  <span className="bk-rail-num">{String(c.ordinal).padStart(2, "0")}</span>
-                  {c.heading}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        </aside>
 
-        {/* The offer, always in view but never in the way — the same dialog the
-            modal opens, asked for rather than sprung. */}
-        <div className="bk-rail-cta">
-          <p className="bs-eyebrow">Printable copy</p>
-          <p className="bs-small" style={{ margin: "7px 0 0", lineHeight: 1.5 }}>
-            Keep all {book.pages} pages as one file. Free — one confirmed email.
-          </p>
-          <div style={{ marginTop: 12 }}>
-            <BookOfferButton>Get the copy</BookOfferButton>
+        {/* ── The sheet ─────────────────────────────────────────────────── */}
+        <main className="bkp-sheet">
+          {/* The toolbar: running head + reading settings + Save as PDF. Pinned
+              under the site header while the chapter scrolls, so the PDF and
+              the settings are one click away from any paragraph. */}
+          <div className="bkp-toolbar">
+            <div className="bkp-runninghead" aria-hidden="true">
+              <span className="bkp-runninghead-book">{book.title}</span>
+              <span>Chapter {chapter.ordinal} / {toc.length}</span>
+            </div>
+            <ReaderControls />
           </div>
-        </div>
-      </aside>
 
-      {/* The offer dialog itself. Never on arrival — it waits for the reader to
-          scroll, dwell or leave, which keeps it clear of Google's intrusive-
-          interstitial rule on the pages that do the site's ranking. See the
-          component for the full timing argument. */}
+          <nav aria-label="Breadcrumb" className="bkp-crumbs">
+            <Link href="/books" className="bs-link-plain">Books</Link>
+            <span aria-hidden="true">/</span>
+            <Link href={`/books/${book.slug}`} className="bs-link-plain">{book.title}</Link>
+          </nav>
+
+          <header className="bkp-opener">
+            <p className="bk-chapter-num">Chapter {chapter.ordinal}</p>
+            <h1 className="bk-chapter-title">{chapter.heading}</h1>
+            <div className="bkp-opener-rule" aria-hidden="true" />
+            {chapter.summary && <p className="bk-chapter-standfirst">{chapter.summary}</p>}
+            <p className="bk-chapter-meta">
+              By {book.authorName || "Deepak Kumar"} · {minutes} min read ·{" "}
+              {chapter.wordCount.toLocaleString()} words
+            </p>
+          </header>
+
+          {/* In-flow contents, for the widths with no rail. */}
+          {headings.length >= 3 && (
+            <nav aria-label="In this chapter" className="bk-inline-toc bkp-inline-toc">
+              <p className="bs-eyebrow" style={{ marginBottom: 10 }}>In this chapter</p>
+              <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
+                {headings.map((h) => (
+                  <li key={h.id} style={{ padding: "4px 0", paddingLeft: h.level === 3 ? 16 : 0 }}>
+                    <a href={`#${h.id}`} className="bs-link-plain" style={{ fontSize: 15.5 }}>
+                      {h.text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          )}
+
+          <article className="bk-prose" dangerouslySetInnerHTML={{ __html: html }} />
+
+          {/* Folio — the end of the page, where a book puts its number. */}
+          <p className="bkp-folio" aria-hidden="true">— {chapter.ordinal} —</p>
+
+          {/* ── Page turn ────────────────────────────────────────────────── */}
+          <nav aria-label="Chapter navigation" className="bk-pager bkp-pager">
+            {prev && (
+              <Link href={`/books/${book.slug}/${prev.ordinal}`} className="bk-pager-link">
+                <span className="bk-pager-kicker">← Chapter {prev.ordinal}</span>
+                <p className="bk-pager-title">{prev.heading}</p>
+              </Link>
+            )}
+            {next && (
+              <Link href={`/books/${book.slug}/${next.ordinal}`} className="bk-pager-link bk-pager-link--next">
+                <span className="bk-pager-kicker">Chapter {next.ordinal} →</span>
+                <p className="bk-pager-title">{next.heading}</p>
+              </Link>
+            )}
+          </nav>
+
+          {/* ── The offer, at the end of the chapter ─────────────────────
+              Asked for after the reader has been given something — a fair
+              trade rather than a toll. */}
+          <aside className="bkp-offer">
+            <p className="bs-eyebrow">Free book</p>
+            <p className="bs-h4" style={{ margin: "8px 0 6px", fontSize: 19 }}>
+              Want all {toc.length} chapters as one PDF?
+            </p>
+            <p style={{ margin: "0 0 10px" }}>
+              <PriceTag listPricePaise={book.listPricePaise} priceLabel={book.priceLabel}
+                        currency={book.currency} size="md" />
+            </p>
+            <p className="bs-small bs-quiet" style={{ margin: "0 0 16px" }}>
+              {book.pages} pages, printable and yours to keep. No payment.
+            </p>
+            <BookOfferButton>Get the full book</BookOfferButton>
+          </aside>
+
+          {/* ── All chapters ───────────────────────────────────────────────
+              Flat internal linking for readers and crawlers; on a desktop the
+              rail already shows this list, so it is drawn below 1100px only. */}
+          <section aria-labelledby="contents" className="bkp-alltoc">
+            <p className="bs-eyebrow" id="contents" style={{ marginBottom: 12 }}>All chapters</p>
+            <ol className="bk-toc">
+              {toc.map((c) => (
+                <li key={c.ordinal}
+                    className={`bk-toc-item${c.ordinal === chapter.ordinal ? " bk-toc-item--current" : ""}`}>
+                  <span className="bk-toc-num">{c.ordinal}</span>
+                  <div style={{ minWidth: 0 }}>
+                    {c.ordinal === chapter.ordinal ? (
+                      <span className="bk-toc-link">{c.heading}</span>
+                    ) : (
+                      <Link href={`/books/${book.slug}/${c.ordinal}`} className="bk-toc-link">
+                        {c.heading}
+                      </Link>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </section>
+        </main>
+      </div>
+
+      {/* The offer dialog. Never on arrival — see the component. Also opened
+          by "Save as PDF" in the reading settings. */}
       <BookOfferModal
         slug={book.slug}
         bookTitle={book.title}

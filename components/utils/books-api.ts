@@ -437,7 +437,7 @@ export async function downloadBook(slug: string, token: string): Promise<Book> {
 
 export async function subscribeToBook(
   slug: string,
-  payload: { email: string; name?: string }
+  payload: { email: string; name?: string; phone?: string }
 ): Promise<{ ok: boolean; message: string; emailSent: boolean }> {
   return apiFetch(`/books/${encodeURIComponent(slug)}/subscribe`, {
     method: "POST",

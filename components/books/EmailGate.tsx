@@ -15,6 +15,7 @@
  * which is correct either way.
  */
 
+import PhoneField from "@/components/books/PhoneField";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { IconLoader2, IconMailCheck, IconAlertTriangle, IconLock, IconBookmark } from "@tabler/icons-react";
@@ -52,13 +53,18 @@ export default function EmailGate({
   slug,
   bookTitle,
   pages,
+  idPrefix = "gate",
 }: {
   slug: string;
   bookTitle: string;
   pages: number;
+  /** The book page renders this form twice (side panel on wide screens, in
+   *  the sheet otherwise), so each copy needs its own field ids. */
+  idPrefix?: string;
 }) {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [message, setMessage] = useState("");
   // Read after mount, never during render: localStorage does not exist on the
@@ -75,7 +81,7 @@ export default function EmailGate({
       const res = await fetch(`/api/books/${encodeURIComponent(slug)}/subscribe`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), name: name.trim() }),
+        body: JSON.stringify({ email: email.trim(), name: name.trim(), phone: phone.trim() }),
       });
       const data = await res.json();
       if (!res.ok || data?.ok === false) {
@@ -142,21 +148,22 @@ export default function EmailGate({
 
       <form onSubmit={submit} style={{ marginTop: 18, display: "grid", gap: 12 }}>
         <div>
-          <label htmlFor="gate-name" className="sr-only">Your name</label>
+          <label htmlFor={`${idPrefix}-name`} className="sr-only">Your name</label>
           <input
-            id="gate-name"
+            id={`${idPrefix}-name`}
             type="text"
+            required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Your name (optional)"
+            placeholder="Your name"
             autoComplete="name"
             style={{ width: "100%", padding: "12px 14px", fontSize: 15, border: "1px solid var(--rule)", borderRadius: 2, background: "var(--paper)", color: "var(--ink)", fontFamily: "inherit" }}
           />
         </div>
         <div>
-          <label htmlFor="gate-email" className="sr-only">Email address</label>
+          <label htmlFor={`${idPrefix}-email`} className="sr-only">Email address</label>
           <input
-            id="gate-email"
+            id={`${idPrefix}-email`}
             type="email"
             required
             value={email}
@@ -164,6 +171,13 @@ export default function EmailGate({
             placeholder="you@example.com"
             autoComplete="email"
             style={{ width: "100%", padding: "12px 14px", fontSize: 15, border: "1px solid var(--rule)", borderRadius: 2, background: "var(--paper)", color: "var(--ink)", fontFamily: "inherit" }}
+          />
+        </div>
+        <div>
+          <PhoneField
+            id={`${idPrefix}-phone`}
+            onChange={setPhone}
+            style={{ width: "100%", padding: "0 14px", fontSize: 15, border: "1px solid var(--rule)", borderRadius: 2, background: "var(--paper)", color: "var(--ink)" }}
           />
         </div>
 
@@ -185,7 +199,7 @@ export default function EmailGate({
       </form>
 
       <p className="bs-small bs-quiet" style={{ marginTop: 14, textAlign: "center", fontSize: 13 }}>
-        Double opt-in. Your address is never sold, shared, or used for anything else.
+        Double opt-in. Your details are never sold, shared, or used for anything else.
       </p>
     </div>
   );

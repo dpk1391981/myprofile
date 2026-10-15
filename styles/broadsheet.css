@@ -3252,3 +3252,479 @@ body:has(.blog-search[data-pending]) #blog-results { opacity: .55; transition: o
   .bs-includes__item { animation: none; transition: none; }
   .bs-includes__item:hover { transform: none; }
 }
+
+/* ============================================================================
+   PAPER READER — chapter pages (.bkp-*)
+   ============================================================================
+   The chapter on a sheet on a desk, the way a PDF viewer shows a page. The
+   previous layout was a 38rem column with a rail beside it, which on a wide
+   screen read as a narrow strip with empty paper either side. A sheet gives the
+   reading area a clear edge, wide INNER margins and a ~70-character measure,
+   which is most of what makes a PDF feel easy to read.
+
+   Reader settings are data attributes on #bk-desk, written by ReaderControls
+   and applied before paint by READER_INIT_SCRIPT:
+     data-size  0..4  text size (2 = default)
+     data-paper ""|paper|sepia|dark — the page colour; "" follows the site.
+   Each paper REDEFINES the site tokens inside the desk, so every existing .bk-*
+   rule (prose, code, rail, pager) follows without a second set of styles.
+   ========================================================================== */
+.bkp-desk {
+  --sheet: #fffefb;
+  --desk: #e7e5e2;
+  --bk-fs: 19px;
+  background: var(--desk);
+  color: var(--ink);
+  min-height: 100vh;
+}
+:root[data-ink="dark"] .bkp-desk { --sheet: #1f1d1c; --desk: #0f0e0e; }
+
+.bkp-desk[data-size="0"] { --bk-fs: 16px; }
+.bkp-desk[data-size="1"] { --bk-fs: 17.5px; }
+.bkp-desk[data-size="3"] { --bk-fs: 21px; }
+.bkp-desk[data-size="4"] { --bk-fs: 23px; }
+
+/* Forced papers. Each one is a complete token set, so a reader's choice wins
+   over the site's light/dark setting in both directions. */
+.bkp-desk[data-paper="paper"] {
+  --paper: #f3f2f2; --ink: #201e1d; --surface: #eeedec;
+  --rule: color-mix(in srgb, #201e1d 16%, transparent);
+  --hair: color-mix(in srgb, #201e1d 9%, transparent);
+  --quiet: color-mix(in srgb, #201e1d 58%, transparent);
+  --spot: #0088b0; --spot-deep: #006786; --spot-tint: #e9f8ff;
+  --sheet: #fffefb; --desk: #e7e5e2;
+  color-scheme: light;
+}
+.bkp-desk[data-paper="sepia"] {
+  --paper: #f4ecd8; --ink: #3b2f22; --surface: #ebe0c8;
+  --rule: color-mix(in srgb, #3b2f22 18%, transparent);
+  --hair: color-mix(in srgb, #3b2f22 11%, transparent);
+  --quiet: color-mix(in srgb, #3b2f22 62%, transparent);
+  --spot: #8a4f12; --spot-deep: #6b3c0b; --spot-tint: #efe1c4;
+  --sheet: #f7efdc; --desk: #ded2b8;
+  color-scheme: light;
+}
+.bkp-desk[data-paper="dark"] {
+  --paper: #171615; --ink: #e9e6e3; --surface: #262422;
+  --rule: color-mix(in srgb, #e9e6e3 20%, transparent);
+  --hair: color-mix(in srgb, #e9e6e3 11%, transparent);
+  --quiet: color-mix(in srgb, #e9e6e3 60%, transparent);
+  --spot: #62c5ee; --spot-deep: #99e0ff;
+  --spot-tint: color-mix(in srgb, #62c5ee 14%, transparent);
+  --sheet: #1f1d1c; --desk: #0f0e0e;
+  color-scheme: dark;
+}
+
+.bkp-layout {
+  display: grid;
+  grid-template-columns: 252px minmax(0, 54rem);
+  justify-content: center;
+  align-items: start;
+  gap: 36px;
+  max-width: 1260px;
+  margin: 0 auto;
+  padding: 36px 32px 88px;
+}
+
+/* ---------- the sheet ---------- */
+.bkp-sheet {
+  min-width: 0;
+  background: var(--sheet);
+  border: 1px solid var(--hair);
+  border-radius: 2px;
+  /* Paper lifted off a desk: a hairline edge plus a broad soft shadow. A tight
+     shadow reads as a UI card instead. */
+  box-shadow: 0 1px 2px color-mix(in srgb, #000 8%, transparent),
+              0 14px 44px color-mix(in srgb, #000 10%, transparent);
+  padding: 28px clamp(28px, 6.5vw, 92px) 56px;
+}
+.bkp-desk[data-paper="dark"] .bkp-sheet,
+:root[data-ink="dark"] .bkp-desk:not([data-paper="paper"]):not([data-paper="sepia"]) .bkp-sheet {
+  box-shadow: 0 0 0 1px color-mix(in srgb, #fff 5%, transparent), 0 18px 50px rgba(0, 0, 0, .55);
+}
+
+.bkp-runninghead {
+  display: flex; justify-content: space-between; gap: 16px;
+  padding-bottom: 12px; margin-bottom: 18px;
+  border-bottom: 1px solid var(--hair);
+  font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--quiet);
+}
+.bkp-runninghead-book { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bkp-runninghead > span:last-child { flex: none; white-space: nowrap; }
+
+.bkp-crumbs {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  font-size: 13px; color: var(--quiet); margin: 22px 0 0;
+}
+
+/* ---------- chapter opener ---------- */
+.bkp-opener { margin: 40px 0 0; }
+.bkp-opener .bk-chapter-num { margin-bottom: 12px; }
+.bkp-opener-rule { width: 56px; height: 3px; background: var(--spot); margin: 24px 0 0; }
+.bkp-opener .bk-chapter-standfirst { margin-top: 22px; }
+.bkp-opener + * { margin-top: 36px; }
+.bkp-opener ~ .bk-prose { margin-top: 40px; }
+
+/* ---------- the prose on paper ---------- */
+.bkp-sheet .bk-prose {
+  font-size: var(--bk-fs);
+  line-height: 1.72;
+  /* Justified with hyphenation, as a printed page is. The two only work
+     together: justification alone opens rivers of white space. */
+  /* Ragged right, not justified. Justification needs working hyphenation to
+     close the gaps, and browsers only hyphenate where they have a dictionary
+     — checked in Chrome: without one, justified lines opened visible rivers
+     ("performance   often   becomes"). text-wrap: pretty evens the rag. */
+  text-align: left;
+  text-wrap: pretty;
+}
+.bkp-sheet .bk-prose h2 { font-size: calc(var(--bk-fs) * 1.38); }
+.bkp-sheet .bk-prose h3 { font-size: calc(var(--bk-fs) * 1.12); }
+.bkp-sheet .bk-prose pre { font-size: calc(var(--bk-fs) * .72); }
+/* Drop cap: the strongest single signal that a chapter is starting. */
+.bkp-sheet .bk-prose > p:first-of-type::first-letter {
+  float: left;
+  font-family: var(--serif);
+  font-size: 3.3em;
+  line-height: .84;
+  padding: .06em .09em 0 0;
+  color: var(--spot);
+}
+
+.bkp-inline-toc { margin: 36px 0 0; padding: 18px 20px; background: var(--surface); border-radius: 2px; }
+.bkp-folio {
+  text-align: center; margin: 52px 0 0;
+  font-size: 13px; letter-spacing: .2em; color: var(--quiet);
+  font-variant-numeric: oldstyle-nums;
+}
+.bkp-pager { margin-top: 36px; }
+.bkp-offer { margin-top: 44px; padding: 24px 26px; border: 1px solid var(--rule); border-radius: 2px; background: color-mix(in srgb, var(--spot-tint) 55%, transparent); }
+.bkp-alltoc { margin-top: 52px; padding-top: 20px; border-top: 1px solid var(--rule); }
+
+/* ---------- reading settings ---------- */
+.bkp-tools {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px;
+}
+.bkp-tool-group {
+  display: inline-flex; align-items: center;
+  border: 1px solid var(--rule); border-radius: 999px; padding: 2px;
+}
+.bkp-tool, .bkp-swatch {
+  display: inline-flex; align-items: center; gap: 4px;
+  min-height: 30px; padding: 4px 10px;
+  border: 0; border-radius: 999px; background: transparent;
+  color: var(--quiet); font: inherit; font-size: 12.5px; cursor: pointer;
+  transition: background .15s ease, color .15s ease;
+}
+.bkp-tool:hover:not(:disabled), .bkp-swatch:hover { background: var(--surface); color: var(--ink); }
+.bkp-tool:disabled { opacity: .4; cursor: default; }
+.bkp-tool--pdf {
+  margin-left: auto;
+  border: 1px solid var(--spot); color: var(--spot); font-weight: 600;
+}
+.bkp-tool--pdf:hover { background: var(--spot-tint); color: var(--spot-deep); }
+.bkp-swatch.is-on { background: var(--ink); color: var(--sheet); }
+.bkp-swatch-dot {
+  width: 11px; height: 11px; border-radius: 50%;
+  border: 1px solid color-mix(in srgb, #000 22%, transparent);
+}
+.bkp-swatch--auto .bkp-swatch-dot { background: linear-gradient(135deg, #fffefb 50%, #1f1d1c 50%); }
+.bkp-swatch--paper .bkp-swatch-dot { background: #fffefb; }
+.bkp-swatch--sepia .bkp-swatch-dot { background: #f1e4c6; }
+.bkp-swatch--dark .bkp-swatch-dot { background: #1f1d1c; }
+.bkp-tool:focus-visible, .bkp-swatch:focus-visible { outline: 2px solid var(--spot); outline-offset: 1px; }
+
+/* ---------- the rail ---------- */
+.bkp-rail {
+  position: sticky; top: 88px;
+  max-height: calc(100dvh - 112px);
+  overflow-y: auto; overscroll-behavior: contain;
+  padding: 2px 6px 24px 0;
+  font-size: 14px;
+  scrollbar-width: thin; scrollbar-color: transparent transparent;
+}
+.bkp-rail:hover { scrollbar-color: var(--hair) transparent; }
+.bkp-rail .bk-rail-emoji { background: var(--sheet); }
+.bkp-timeleft { margin-top: 18px; }
+.bkp-timeleft-bar { height: 3px; background: var(--hair); border-radius: 2px; overflow: hidden; }
+.bkp-timeleft-bar span {
+  display: block; height: 100%; background: var(--spot);
+  transform-origin: 0 50%; transition: transform .2s linear;
+}
+.bkp-timeleft p { margin: 7px 0 0; font-size: 12.5px; color: var(--quiet); font-variant-numeric: tabular-nums; }
+
+/* Desktop shows the rail's lists; the sheet's copies are for narrower widths. */
+@media (min-width: 1101px) {
+  .bkp-inline-toc, .bkp-alltoc { display: none; }
+}
+@media (max-width: 1100px) {
+  .bkp-layout { grid-template-columns: minmax(0, 1fr); max-width: 58rem; gap: 0; }
+  .bkp-rail { display: none; }
+}
+
+/* ---------- phone: the page IS the screen ----------
+   A shadowed sheet with margins on a 375px screen spends the measure on
+   decoration, so the page goes edge to edge and keeps the paper colour — what
+   every e-reader does at this width. */
+@media (max-width: 720px) {
+  .bkp-desk { background: var(--sheet); }
+  .bkp-layout { padding: 0 0 56px; }
+  .bkp-sheet {
+    border: 0; border-radius: 0; box-shadow: none !important;
+    padding: 18px max(20px, env(safe-area-inset-right)) 40px max(20px, env(safe-area-inset-left));
+  }
+  .bkp-sheet .bk-prose { font-size: calc(var(--bk-fs) - 2px); }
+  .bkp-sheet .bk-prose > p:first-of-type::first-letter { font-size: 2.7em; }
+  .bkp-swatch-label { display: none; }
+  .bkp-swatch { padding: 4px 8px; }
+  .bkp-tool--pdf { margin-left: 0; }
+  .bkp-tool, .bkp-swatch { min-height: 38px; }
+  .bkp-opener { margin-top: 28px; }
+}
+
+/* ---------- print / Save as PDF ----------
+   Everything that is a screen affordance goes; the sheet becomes the paper.
+   Ink is forced to black on white whatever paper the reader chose, because a
+   sepia or dark page is not what anyone wants out of a printer. */
+@media print {
+  @page { margin: 18mm 17mm 20mm; }
+  .bs-masthead, .bs-footer, .bkp-rail, .bkp-tools, .bkp-crumbs, .bkp-pager,
+  .bkp-offer, .bkp-alltoc, .bkp-inline-toc, .bk-progress, .bkm-backdrop, .wa-cta,
+  .bk-anchor { display: none !important; }
+  .bkp-desk {
+    --paper: #fff; --sheet: #fff; --desk: #fff; --ink: #111; --surface: #f4f4f4;
+    --quiet: #555; --spot: #111; --hair: #ddd; --rule: #ccc;
+    background: #fff; min-height: 0;
+  }
+  .bkp-layout { display: block; padding: 0; max-width: none; }
+  .bkp-sheet { border: 0; box-shadow: none !important; padding: 0; background: #fff; }
+  .bkp-sheet .bk-prose { font-size: 11pt; line-height: 1.55; color: #111; }
+  .bkp-sheet .bk-prose h2, .bkp-sheet .bk-prose h3 { break-after: avoid; }
+  .bkp-sheet .bk-prose pre, .bkp-sheet .bk-prose table, .bkp-sheet .bk-prose blockquote { break-inside: avoid; }
+  .bkp-sheet .bk-prose pre { font-size: 8.5pt; white-space: pre-wrap; }
+  .bkp-sheet .bk-prose pre code { white-space: pre-wrap; }
+  .bkp-folio { margin-top: 24pt; }
+}
+
+/* The book's landing page on the same sheet, one column, no rail. Its sections
+   were sized for the old 38rem column, so the sheet keeps the reading measure
+   a little narrower than a chapter's. */
+.bkp-layout--single { grid-template-columns: minmax(0, 50rem); }
+.bkp-sheet--landing { padding-top: clamp(28px, 5vw, 56px); }
+@media (max-width: 1100px) { .bkp-layout--single { max-width: 52rem; } }
+
+/* ---------- book page: contents panel ---------- */
+.bkp-layout--landing { grid-template-columns: minmax(0, 48rem) 320px; gap: 32px; }
+.bkp-contents {
+  position: sticky; top: 88px;
+  max-height: calc(100dvh - 112px);
+  display: flex; flex-direction: column;
+  background: var(--sheet);
+  border: 1px solid var(--hair);
+  border-top: 3px solid var(--spot);
+  border-radius: 2px;
+  box-shadow: 0 10px 34px color-mix(in srgb, #000 8%, transparent);
+  padding: 20px 18px 18px;
+}
+.bkp-contents-facts { margin: 6px 0 0; font-size: 13px; color: var(--quiet); }
+.bkp-contents-list {
+  list-style: none; margin: 12px -8px 0; padding: 0;
+  /* Only a very long book scrolls here, and then without a visible track. */
+  overflow-y: auto; overscroll-behavior: contain; min-height: 0;
+  scrollbar-width: none;
+}
+.bkp-contents-list::-webkit-scrollbar { display: none; }
+.bkp-contents-link {
+  display: flex; gap: 10px; align-items: baseline;
+  padding: 5px 8px; border-radius: 2px;
+  color: var(--ink); text-decoration: none;
+  border-bottom: 1px solid var(--hair);
+  transition: background .15s ease;
+}
+.bkp-contents-list li:last-child .bkp-contents-link { border-bottom: 0; }
+.bkp-contents-link:hover { background: var(--surface); text-decoration: none; }
+.bkp-contents-link:hover .bkp-contents-title { color: var(--spot); }
+.bkp-contents-num {
+  flex: none; width: 20px;
+  font-size: 11.5px; font-variant-numeric: tabular-nums; color: var(--spot); font-weight: 600;
+}
+/* At most two lines per chapter (full title on hover), tight rows, so
+   twelve chapters fit the panel without a scrollbar of their own. */
+.bkp-contents-title {
+  flex: 1; min-width: 0;
+  font-family: var(--serif); font-size: 13.5px; line-height: 1.35;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.bkp-contents-meta { flex: none; font-size: 11.5px; color: var(--quiet); font-variant-numeric: tabular-nums; }
+.bkp-contents-cta { margin-top: 14px; justify-content: center; width: 100%; }
+@media (max-width: 1100px) {
+  .bkp-layout--landing { grid-template-columns: minmax(0, 1fr); max-width: 52rem; }
+  .bkp-contents { display: none; }
+}
+@media print { .bkp-contents { display: none !important; } }
+
+/* ---------- book page: three columns on wide screens ----------
+   Left: the way in (price, start reading, the printable-copy form).
+   Middle: the book's own page. Right: the contents. Each narrower step drops
+   a side column and its content returns to the sheet:
+     >= 1380px  get | sheet | contents
+     1101-1379  sheet | contents      (get block inline in the sheet)
+     <= 1100    sheet                 (both inline in the sheet)            */
+.bkp-getpanel { display: none; }
+@media (min-width: 1380px) {
+  .bkp-layout--landing {
+    grid-template-columns: 300px minmax(0, 46rem) 300px;
+    max-width: 1480px;
+    gap: 28px;
+  }
+  .bkp-getpanel {
+    display: block;
+    position: sticky; top: 88px;
+    max-height: calc(100dvh - 112px); overflow-y: auto; overscroll-behavior: contain;
+    scrollbar-width: thin; scrollbar-color: transparent transparent;
+    background: var(--sheet);
+    border: 1px solid var(--hair);
+    border-top: 3px solid var(--spot);
+    border-radius: 2px;
+    box-shadow: 0 10px 34px color-mix(in srgb, #000 8%, transparent);
+    padding: 20px 18px;
+  }
+  .bkp-getpanel:hover { scrollbar-color: var(--hair) transparent; }
+  .bkp-getpanel .bs-body-text { font-size: 14.5px; line-height: 1.55; }
+  .bkp-getpanel .mt-8 { margin-top: 18px; }
+  .bkp-getpanel .mt-8 > div { padding: 18px 16px !important; }
+  .bkp-get-inline { display: none; }
+}
+@media print { .bkp-getpanel { display: none !important; } }
+
+/* ---------- book page: get panel (card, no form) ---------- */
+.bkp-getpanel-title { font-family: var(--serif); font-size: 19px; line-height: 1.3; font-weight: 600; margin: 8px 0 0; }
+.bkp-getpanel-price {
+  margin-top: 16px; padding: 14px 16px; border-radius: 2px;
+  background: var(--spot-tint); border: 1px solid var(--rule);
+}
+.bkp-getpanel-price p { margin: 6px 0 0; font-size: 13px; color: var(--quiet); }
+.bkp-getpanel-btn { width: 100%; justify-content: center; margin-top: 12px; gap: 8px; }
+.bkp-getpanel-points { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 7px; }
+.bkp-getpanel-points li { display: flex; gap: 7px; align-items: flex-start; font-size: 13px; line-height: 1.45; color: var(--quiet); }
+.bkp-getpanel-points svg { flex: none; margin-top: 2px; color: var(--spot); }
+@media (min-width: 1380px) {
+  .bkp-getpanel { overflow: visible; max-height: none; padding: 20px 18px 18px; }
+}
+
+/* ---------- chapter page: pinned toolbar ----------
+   Running head, reading settings and Save as PDF stay in view under the site
+   header (70px) for the whole chapter. It is the sheet's own colour with a
+   hairline, so it reads as the top margin of the page rather than a new bar. */
+.bkp-toolbar {
+  position: sticky; top: 70px; z-index: 30;
+  background: var(--sheet);
+  margin: -28px calc(-1 * clamp(28px, 6.5vw, 92px)) 0;
+  padding: 16px clamp(28px, 6.5vw, 92px) 12px;
+  border-bottom: 1px solid var(--hair);
+}
+.bkp-toolbar .bkp-runninghead { margin-bottom: 10px; padding-bottom: 0; border-bottom: 0; }
+@media (max-width: 720px) {
+  .bkp-toolbar {
+    margin: -18px calc(-1 * max(20px, env(safe-area-inset-left))) 0;
+    padding: 10px max(20px, env(safe-area-inset-left)) 8px;
+  }
+  /* On a phone the running head is the first thing to give up its line. */
+  .bkp-toolbar .bkp-runninghead { display: none; }
+}
+@media print { .bkp-toolbar { position: static; border: 0; margin: 0; padding: 0; } }
+
+/* The rail's chapter list: one line per chapter (the current one in full), so
+   the rail fits the screen without a scrollbar of its own. */
+.bkp-rail-chapters .bk-rail-link {
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  padding-top: 4px; padding-bottom: 4px;
+}
+.bkp-rail-chapters .bk-rail-link--current { white-space: normal; }
+.bkp-rail { scrollbar-width: none; }
+.bkp-rail::-webkit-scrollbar { display: none; }
+
+/* Short screens: the book page's contents go to one line per chapter. */
+@media (max-height: 900px) {
+  .bkp-contents-title { display: block; white-space: nowrap; text-overflow: ellipsis; }
+}
+/* Rail spacing tightened so a 12-chapter book fits a 960px-tall window whole. */
+.bkp-rail { top: 84px; max-height: calc(100dvh - 92px); }
+.bkp-rail .bk-rail-group { margin-top: 14px; padding-top: 12px; }
+.bkp-rail .bk-rail-link { padding-top: 4px; padding-bottom: 4px; }
+.bkp-rail .bk-rail-list { margin-top: 6px; }
+.bkp-timeleft { margin-top: 12px; }
+/* Phone masthead is 67px; tuck the pinned bar just under it (the masthead
+   paints above), so no strip of text shows between the two. */
+@media (max-width: 720px) { .bkp-toolbar { top: 66px; } }
+@media (max-height: 900px) {
+  .bkp-rail .bk-rail-link { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bkp-rail .bk-rail-link--current { white-space: normal; }
+}
+
+/* ---------- reading settings: one row on a phone ----------
+   Desktop: size + colour + PDF inline. Phone: [Aa Text & colour] .... [Save
+   as PDF] in a single ~44px row; the settings open as a small panel under the
+   bar and close on outside tap, Esc, or the next scroll. Most readers are on
+   a phone, so the pinned bar must cost one line of screen, not two. */
+.bkp-tools-panel { display: contents; }
+.bkp-tools-toggle { display: none; }
+@media (max-width: 720px) {
+  .bkp-tools { position: relative; flex-wrap: nowrap; justify-content: space-between; }
+  .bkp-tools-toggle {
+    display: inline-flex; gap: 7px;
+    border: 1px solid var(--rule); color: var(--ink);
+  }
+  .bkp-tools-toggle-aa { font-family: var(--serif); font-size: 15px; font-weight: 600; letter-spacing: -.02em; }
+  .bkp-tools-toggle[aria-expanded="true"] { background: var(--surface); }
+  .bkp-tools-panel {
+    display: none;
+    position: absolute; top: calc(100% + 8px); left: 0; z-index: 35;
+    width: min(320px, calc(100vw - 40px));
+    flex-direction: column; align-items: stretch; gap: 10px;
+    padding: 12px;
+    background: var(--sheet);
+    border: 1px solid var(--rule); border-radius: 6px;
+    box-shadow: 0 12px 32px color-mix(in srgb, #000 18%, transparent);
+  }
+  .bkp-tools-panel.is-open { display: flex; }
+  .bkp-tools-panel .bkp-tool-group { justify-content: space-between; }
+  .bkp-tools-panel .bkp-tool-group > * { flex: 1; justify-content: center; }
+  /* Room in the panel for the colour names again. */
+  .bkp-tools-panel .bkp-swatch-label { display: inline; }
+  .bkp-tools-panel .bkp-swatch { padding: 4px 6px; }
+  .bkp-tool--pdf { margin-left: auto; }
+}
+
+/* ---------- optional WhatsApp / mobile field (PhoneField.tsx) ----------
+   The outer box carries the form's own input styling (.bkm-input in the
+   popup, inline styles in EmailGate); the select and input inside are
+   borderless so the three read as one field. */
+.bk-phone {
+  display: flex; align-items: center; gap: 8px;
+  padding-top: 0 !important; padding-bottom: 0 !important;
+  min-height: 46px;
+}
+.bk-phone:focus-within { outline: 2px solid var(--spot); outline-offset: 1px; border-color: var(--spot) !important; }
+.bk-phone-icon { flex: none; color: #25a244; }
+/* The browser's own select arrow sat jammed against the divider; a drawn
+   chevron with fixed spacing replaces it (grey reads on every paper colour). */
+.bk-phone-cc {
+  flex: none; border: 0; color: var(--ink); cursor: pointer;
+  font: inherit; font-size: 14px;
+  -webkit-appearance: none; appearance: none;
+  padding: 10px 26px 10px 2px;
+  background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 9px center;
+  border-right: 1px solid var(--rule);
+}
+.bk-phone-cc option { color: #201e1d; background: #fff; }
+.bk-phone-cc:focus { outline: none; }
+.bk-phone-input {
+  flex: 1; min-width: 0; border: 0; background: transparent; color: var(--ink);
+  font: inherit; font-size: 15px; padding: 12px 0;
+  font-variant-numeric: tabular-nums; letter-spacing: .02em;
+}
+.bk-phone-input:focus { outline: none; }
+.bk-phone-input::placeholder { color: var(--quiet); letter-spacing: 0; }
+/* The browser's invalid-state hint, once the reader has typed something. */
+.bk-phone:has(.bk-phone-input:not(:placeholder-shown):invalid) { border-color: var(--mag) !important; }

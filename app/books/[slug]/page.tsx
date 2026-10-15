@@ -5,7 +5,8 @@ import { getBook, listBooks } from "@/components/utils/books-api";
 import { pageMeta, breadcrumbLd, faqLd } from "@/components/utils/seo";
 import { SITE_URL } from "@/components/utils/site-data";
 import EmailGate from "@/components/books/EmailGate";
-import BookOfferModal from "@/components/books/BookOfferModal";
+import BookOfferModal, { BookOfferButton } from "@/components/books/BookOfferModal";
+import { IconCheck, IconDownload } from "@tabler/icons-react";
 import PriceTag from "@/components/books/PriceTag";
 import ShareRow from "@/components/shared/ShareRow";
 import ViewTracker from "@/components/shared/ViewTracker";
@@ -13,6 +14,7 @@ import ViewCountText from "@/components/shared/ViewCountText";
 import { belowFloorClass } from "@/components/utils/engagement-config";
 import { bookLd, bookFaq } from "@/components/books/book-seo";
 import { prepareBody } from "@/components/books/chapter-html";
+import { parseDescription, descriptionPlain } from "@/components/books/description";
 
 /**
  * The book landing page — the one that has to rank.
@@ -58,7 +60,7 @@ export async function generateMetadata(
   // the snippet as literal whitespace.
   const description = (
     book.seoDescription ||
-    book.description ||
+    descriptionPlain(book.description, book) ||
     `A free ${book.pages}-page book on ${book.topic || book.title} for ${book.audience || "developers"}.`
   ).replace(/\s+/g, " ").trim();
 
@@ -105,9 +107,55 @@ export default async function BookPage({ params }: { params: { slug: string } })
 
   const faq = bookFaq(book);
   const toc = book.toc || [];
+  const totalWords = toc.reduce((n, c) => n + (c.words || 0), 0);
+  const mins = Math.round(totalWords / 230);
+  const readHours = mins >= 90 ? `${Math.round(mins / 60)} hours of reading` : `${mins} min of reading`;
 
   return (
-    <main className="bk-shell" style={{ paddingTop: 44, paddingBottom: 80 }}>
+    /* Same paper sheet as the chapter pages (.bkp-* in broadsheet.css), so the
+       book's front page and its chapters read as one object. One column: the
+       landing page has no rail. */
+    <div className="bkp-desk">
+    <div className={`bkp-layout ${toc.length ? "bkp-layout--landing" : "bkp-layout--single"}`}>
+    {/* ── Get panel (wide screens) ─────────────────────────────────────────
+        The price, the way in, and the printable-copy form, beside the book
+        instead of half a page down it. Narrower screens show the same block
+        in the sheet (.bkp-get-inline), so nothing is lost when this is hidden;
+        the two never show together. */}
+    {toc.length > 0 && (
+      <aside className="bkp-getpanel" aria-labelledby="get-side">
+        {/* A short card, never a form: the side panel has to fit the screen
+            with no scrollbar of its own. The signup lives in the popup
+            ("Get the free PDF") and in the sheet on narrower screens. */}
+        <p className="bs-eyebrow" style={{ margin: 0 }}>Free book</p>
+        <h2 id="get-side" className="bkp-getpanel-title">Read it now — free, no signup</h2>
+
+        <div className="bkp-getpanel-price">
+          <PriceTag listPricePaise={book.listPricePaise} priceLabel={book.priceLabel}
+                    currency={book.currency} size="lg" />
+          <p>{book.pages} pages · {toc.length || book.chapters} chapters</p>
+        </div>
+
+        {toc.length > 0 && (
+          <Link href={`/books/${book.slug}/${toc[0].ordinal}`}
+                className="bs-btn bs-btn--solid bkp-getpanel-btn">
+            Start reading — chapter 1
+          </Link>
+        )}
+        {book.access !== "public" && (
+          <BookOfferButton className="bs-btn bs-btn--outline bkp-getpanel-btn">
+            <IconDownload size={16} aria-hidden="true" /> Get the free PDF
+          </BookOfferButton>
+        )}
+
+        <ul className="bkp-getpanel-points">
+          <li><IconCheck size={14} aria-hidden="true" /> Every chapter free to read online</li>
+          <li><IconCheck size={14} aria-hidden="true" /> PDF copy to keep — print or read offline</li>
+          <li><IconCheck size={14} aria-hidden="true" /> No payment, no account</li>
+        </ul>
+      </aside>
+    )}
+    <main className="bkp-sheet bkp-sheet--landing">
       {/* Structured data. Three separate blocks rather than one @graph so a
           single malformed node cannot cost the page all three. */}
       <script type="application/ld+json"
@@ -202,11 +250,28 @@ export default async function BookPage({ params }: { params: { slug: string } })
               shape to read at lede size, and this is the first prose on the
               page. Split, so the paragraphs the author wrote are the paragraphs
               the reader gets. */}
-          {book.description.split(/\n\s*\n+/).map((para, i) => (
-            <p key={i} className="bs-lede" style={{ margin: i ? "14px 0 0" : 0 }}>
-              {para.trim()}
-            </p>
-          ))}
+          {/* Authors write this field in Markdown, so it is parsed rather than
+              printed — see components/books/description.ts. A leading line that
+              restates the title/subtitle shown just above is dropped. */}
+          {parseDescription(book.description, book).map((b, i) =>
+            b.kind === "h" ? (
+              <h2 key={i} className="bs-lede"
+                  style={{ margin: i ? "26px 0 0" : 0, fontWeight: 600 }}>
+                {b.text}
+              </h2>
+            ) : b.kind === "p" ? (
+              <p key={i} className="bs-lede" style={{ margin: i ? "14px 0 0" : 0 }}>
+                {b.text}
+              </p>
+            ) : b.kind === "ul" ? (
+              <ul key={i} className="bs-lede" style={{ margin: i ? "14px 0 0" : 0, paddingLeft: "1.2em", listStyle: "disc" }}>
+                {b.items.map((it, j) => <li key={j} style={{ marginTop: j ? 6 : 0 }}>{it}</li>)}
+              </ul>
+            ) : (
+              <ol key={i} className="bs-lede" style={{ margin: i ? "14px 0 0" : 0, paddingLeft: "1.4em", listStyle: "decimal" }}>
+                {b.items.map((it, j) => <li key={j} style={{ marginTop: j ? 6 : 0 }}>{it}</li>)}
+              </ol>
+            ))}
         </section>
       )}
 
@@ -246,7 +311,7 @@ export default async function BookPage({ params }: { params: { slug: string } })
           public URL, so asking for an address before the first page would cost
           the ranking those pages exist to earn — and cost the reader a reason
           to trust the book. */}
-      <section style={{ marginTop: 48 }} aria-labelledby="get">
+      <section style={{ marginTop: 48 }} aria-labelledby="get" className="bkp-get-inline">
         <h2 id="get" className="bs-h3" style={{ fontSize: 22 }}>
           Read it now — free, no signup
         </h2>
@@ -364,5 +429,40 @@ export default async function BookPage({ params }: { params: { slug: string } })
         </p>
       </footer>
     </main>
+
+    {/* ── Contents panel (desktop) ───────────────────────────────────────
+        The book's substance, in view from the first screen: a reader sees
+        twelve real chapters before deciding to read, instead of finding them
+        below the description. Every entry is a link, so it is also the fastest
+        way in. Below 1100px it is not drawn — the full list with summaries is
+        on the sheet. */}
+    {toc.length > 0 && (
+      <aside className="bkp-contents" aria-label={`${book.title} — contents`}>
+        <p className="bs-eyebrow" style={{ margin: 0 }}>Contents</p>
+        <p className="bkp-contents-facts">
+          {toc.length} chapters · {book.pages} pages
+          {totalWords > 0 && <> · about {readHours}</>}
+        </p>
+        <ol className="bkp-contents-list">
+          {toc.map((c) => (
+            <li key={c.ordinal}>
+              <Link href={`/books/${book.slug}/${c.ordinal}`} className="bkp-contents-link">
+                <span className="bkp-contents-num">{String(c.ordinal).padStart(2, "0")}</span>
+                <span className="bkp-contents-title" title={c.heading}>{c.heading}</span>
+                <span className="bkp-contents-meta">
+                  {Math.max(1, Math.round((c.words || 0) / 230))}m
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ol>
+        <Link href={`/books/${book.slug}/${toc[0].ordinal}`}
+              className="bs-btn bs-btn--solid bkp-contents-cta">
+          Start reading — free
+        </Link>
+      </aside>
+    )}
+    </div>
+    </div>
   );
 }

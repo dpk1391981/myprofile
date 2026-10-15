@@ -22,6 +22,7 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
         "Content-Disposition":
           upstream.headers.get("Content-Disposition") || `attachment; filename="book-${id}.epub"`,
         "Cache-Control": "no-store",
+        "X-Book-Soft-Flags": upstream.headers.get("X-Book-Soft-Flags") || "",
       },
     });
   } catch (err: any) {

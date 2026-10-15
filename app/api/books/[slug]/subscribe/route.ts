@@ -34,6 +34,7 @@ export async function POST(req: Request, { params }: { params: { slug: string } 
     const result = await subscribeToBook(params.slug, {
       email: String(body?.email || ""),
       name: String(body?.name || ""),
+      phone: String(body?.phone || "").slice(0, 32),
     });
     return NextResponse.json(result);
   } catch (err: any) {

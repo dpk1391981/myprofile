@@ -1,5 +1,6 @@
 import { SITE_URL } from "@/components/utils/site-data";
 import type { Book } from "@/components/utils/books-api";
+import { descriptionPlain } from "@/components/books/description";
 
 /**
  * Structured data for a book page.
@@ -29,7 +30,7 @@ export function bookLd(book: Book) {
     url,
     name: book.title,
     ...(book.subtitle ? { alternateName: book.subtitle } : {}),
-    description: book.description || book.seoDescription || "",
+    description: descriptionPlain(book.description, book) || book.seoDescription || "",
     // Reference the Person node the root layout already ships rather than
     // restating it — two Person nodes with the same name and no shared @id read
     // as two different people.

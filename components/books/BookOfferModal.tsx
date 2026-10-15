@@ -36,6 +36,7 @@
  * scroll. A modal that traps a keyboard user is worse than no modal.
  */
 
+import PhoneField from "@/components/books/PhoneField";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   IconAlertTriangle, IconCheck, IconLoader2, IconMailCheck, IconX,
@@ -98,6 +99,17 @@ function snooze(days: number) {
   }
 }
 
+/** Open the dialog from anywhere. `trigger` is reported to analytics and tunes
+ *  the heading ("pdf" -> the reader asked to save a PDF). */
+export function openBookOffer(trigger = "requested") {
+  window.dispatchEvent(new CustomEvent(OPEN_EVENT, { detail: { trigger } }));
+}
+
+/** This browser has confirmed an email for a book (see RememberToken). */
+export function hasBookAccess(): boolean {
+  return alreadySubscribed();
+}
+
 function alreadySubscribed(): boolean {
   try {
     return Boolean(window.localStorage.getItem(TOKEN_KEY));
@@ -121,6 +133,7 @@ export default function BookOfferModal({
   const [trigger, setTrigger] = useState("");
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [message, setMessage] = useState("");
 
@@ -141,10 +154,11 @@ export default function BookOfferModal({
      entirely — refusing to open a dialog someone just requested because they
      closed an unrelated one last week would be a bug, not restraint. */
   useEffect(() => {
-    const onRequest = () => {
-      setTrigger("requested");
+    const onRequest = (e: Event) => {
+      const why = (e as CustomEvent<{ trigger?: string }>).detail?.trigger || "requested";
+      setTrigger(why);
       setOpen(true);
-      gaBookOffer("shown", slug, "requested");
+      gaBookOffer("shown", slug, why);
     };
     window.addEventListener(OPEN_EVENT, onRequest);
     return () => window.removeEventListener(OPEN_EVENT, onRequest);
@@ -268,7 +282,7 @@ export default function BookOfferModal({
       const res = await fetch(`/api/books/${encodeURIComponent(slug)}/subscribe`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), name: name.trim() }),
+        body: JSON.stringify({ email: email.trim(), name: name.trim(), phone: phone.trim() }),
       });
       const data = await res.json();
       if (!res.ok || data?.ok === false) {
@@ -320,9 +334,11 @@ export default function BookOfferModal({
           </div>
         ) : (
           <>
-            <p className="bs-kicker">Free book · Printable copy</p>
+            <p className="bs-kicker">{trigger === "pdf" ? "Save as PDF" : "Free book · Printable copy"}</p>
             <h2 id="bkm-title" className="bkm-title">
-              Keep a copy of all {pages} pages
+              {trigger === "pdf"
+                ? `Get all ${pages} pages as one PDF`
+                : `Keep a copy of all ${pages} pages`}
             </h2>
             <p id="bkm-desc" className="bkm-sub">
               {bookTitle} stays free to read here — every one of the {chapters} chapters.
@@ -334,7 +350,7 @@ export default function BookOfferModal({
               {[
                 `All ${chapters} chapters in one file — print it or read it offline`,
                 "No payment, no account — one confirmed email address",
-                "One-click unsubscribe, and the address is never sold or shared",
+                "One-click unsubscribe; your details are never sold or shared",
               ].map((line) => (
                 <li key={line}>
                   <IconCheck size={15} aria-hidden="true" />
@@ -346,9 +362,9 @@ export default function BookOfferModal({
             <form onSubmit={submit} className="bkm-form">
               <label htmlFor="bkm-name" className="sr-only">Your name</label>
               <input
-                id="bkm-name" type="text" value={name} autoComplete="name"
+                id="bkm-name" type="text" required value={name} autoComplete="name"
                 onChange={(ev) => setName(ev.target.value)}
-                placeholder="Your name (optional)" className="bkm-input"
+                placeholder="Your name" className="bkm-input"
               />
               <label htmlFor="bkm-email" className="sr-only">Email address</label>
               <input
@@ -356,6 +372,7 @@ export default function BookOfferModal({
                 onChange={(ev) => setEmail(ev.target.value)}
                 placeholder="you@example.com" className="bkm-input"
               />
+              <PhoneField id="bkm-phone" onChange={setPhone} className="bkm-input" />
 
               {state === "error" && (
                 <p className="bs-small" style={{ display: "flex", gap: 8, color: "var(--mag)" }}>

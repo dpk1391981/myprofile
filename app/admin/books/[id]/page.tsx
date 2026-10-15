@@ -175,6 +175,7 @@ export default function AdminBookDetail({ params }: { params: { id: string } }) 
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || "Export failed");
       }
+      const soft = (res.headers.get("X-Book-Soft-Flags") || "").split(",").filter(Boolean);
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -182,7 +183,11 @@ export default function AdminBookDetail({ params }: { params: { id: string } }) 
       a.download = `${book?.slug || "book"}.epub`;
       a.click();
       URL.revokeObjectURL(url);
-      setNotice("EPUB downloaded. Run it through epubcheck before uploading — Google Play rejects anything it flags.");
+      setNotice(
+        "EPUB downloaded. Run it through epubcheck before uploading — Google Play rejects anything it flags." +
+        (soft.length
+          ? ` Not yet read by you: chapter${soft.length > 1 ? "s" : ""} ${soft.join(", ")} (editor score or wording only) — worth a read before you sell it.`
+          : ""));
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -530,6 +535,20 @@ function ChapterCard({
     }
   }
 
+  /** Accept the chapter as it is — same as saving it unedited. Resume and
+   *  "rewrite flagged" never touch a reviewed chapter, and EPUB export trusts it. */
+  async function markReviewed() {
+    const hard = (c.editorNotes?.fact_check?.length || 0) + (c.codeErrors?.length || 0);
+    if (hard && !confirm(`Chapter ${c.ordinal} still has ${hard} open problem(s) (wrong facts or failing code). Mark it reviewed anyway? It will go into the EPUB as it is.`)) return;
+    setSaving(true);
+    await fetch(`/api/admin/books/${bookId}/chapters/${c.ordinal}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "ok" }),
+    });
+    setSaving(false); onSaved();
+  }
+
   async function save() {
     setSaving(true);
     await fetch(`/api/admin/books/${bookId}/chapters/${c.ordinal}`, {
@@ -726,6 +745,14 @@ function ChapterCard({
                         className="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm hover:bg-slate-50">
                   <IconPencil size={14} /> Edit this chapter
                 </button>
+                {c.status === "flagged" && (
+                  <button onClick={markReviewed} disabled={saving}
+                          title="You have read this chapter and accept it as it is"
+                          className="inline-flex items-center gap-2 rounded-lg border border-emerald-300 px-3 py-2 text-sm text-emerald-800 hover:bg-emerald-50 disabled:opacity-50">
+                    {saving ? <IconLoader2 size={14} className="animate-spin" /> : <IconCheck size={14} />}
+                    Mark as reviewed
+                  </button>
+                )}
                 <button onClick={() => {
                           if (confirm(`Rewrite chapter ${c.ordinal} from scratch? Its current text — including any hand edits — is replaced when the new version finishes. Costs roughly one chapter.`)) onRewrite();
                         }}

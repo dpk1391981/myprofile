@@ -14,7 +14,7 @@ import PageHeader from "@/components/admin/PageHeader";
 import { formatISTDate } from "@/components/utils/date";
 
 type Row = {
-  id: number; email: string; name: string; bookTitle: string;
+  id: number; email: string; name: string; phone: string; bookTitle: string;
   confirmedAt: string | null; unsubscribedAt: string | null; createdAt: string | null;
 };
 
@@ -45,9 +45,9 @@ export default function SubscribersPage() {
     // you a file whose obvious use — pasting into a mail tool — is the one
     // thing that must not happen with unconfirmed addresses.
     const csv = [
-      "email,name,book,confirmed_at",
+      "email,name,phone,book,confirmed_at",
       ...confirmed.map((r) =>
-        [r.email, r.name, r.bookTitle, r.confirmedAt ?? ""]
+        [r.email, r.name, r.phone ?? "", r.bookTitle, r.confirmedAt ?? ""]
           .map((f) => `"${String(f).replace(/"/g, '""')}"`)
           .join(",")
       ),
@@ -105,7 +105,11 @@ export default function SubscribersPage() {
                 <tr key={r.id}>
                   <td className="px-4 py-3">
                     <p className="font-medium text-slate-900">{r.email}</p>
-                    {r.name && <p className="text-xs text-slate-500">{r.name}</p>}
+                    {(r.name || r.phone) && (
+                      <p className="text-xs text-slate-500">
+                        {[r.name, r.phone].filter(Boolean).join(" · ")}
+                      </p>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-slate-600">{r.bookTitle || "—"}</td>
                   <td className="px-4 py-3">
