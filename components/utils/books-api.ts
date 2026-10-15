@@ -127,6 +127,25 @@ export type AdminBook = Book & {
   tone: string;
   mustCover: string;
   avoid: string;
+  referenceUrls: string;
+  techVersion: string;
+  angle: string;
+  runningExample: string;
+  authorExperience: string;
+  comparableTitles: string;
+  authorBio: string;
+  seriesName: string;
+  seriesNumber: number;
+  edition: string;
+  publisher: string;
+  publicationDate: string;
+  copyrightHolder: string;
+  trimSize: string;
+  coverMeta: { file?: string; width?: number; height?: number; bytes?: number; checks?: string[] };
+  /** Fetch status per reference URL — the text itself stays server-side. */
+  references: {
+    url: string; title: string; ok: boolean; error: string; chars: number; fetchedAt: string;
+  }[];
   targetChapters: number;
   targetWords: number;
   status: string;
@@ -555,4 +574,61 @@ export async function adminListSubscribers(
 
 export async function booksHealth(): Promise<Record<string, unknown>> {
   return apiFetch("/books/health", { auth: true });
+}
+
+/* ── Files: cover upload, EPUB export, cover serving ─────────────────────────
+ *
+ * Binary and multipart, so these bypass apiFetchRaw (which is JSON both ways).
+ * Server-only in practice: INTERNAL_KEY is empty in the browser bundle. */
+
+async function rawUpstream(path: string, init: RequestInit & { timeoutMs?: number; auth?: boolean }) {
+  const { timeoutMs = 60000, auth = true, ...rest } = init;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  const headers = new Headers(rest.headers);
+  if (auth && INTERNAL_KEY) headers.set("X-Internal-Key", INTERNAL_KEY);
+  try {
+    return await fetch(`${API_BASE}${path}`, {
+      ...rest, headers, signal: controller.signal, cache: "no-store",
+    });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function upstreamError(res: Response): Promise<Error> {
+  const raw = await res.text().catch(() => "");
+  let detail = raw.slice(0, 300);
+  try {
+    const parsed = JSON.parse(raw);
+    detail = describeDetail(parsed?.detail ?? parsed?.error) || detail;
+  } catch { /* keep raw */ }
+  return new Error(`Books API ${res.status}: ${detail}`);
+}
+
+export async function adminUploadCover(id: number, file: Blob, filename: string): Promise<AdminBook> {
+  const fd = new FormData();
+  fd.append("file", file, filename);
+  const res = await rawUpstream(`/books/admin/books/${id}/cover`, { method: "POST", body: fd });
+  if (!res.ok) throw await upstreamError(res);
+  return res.json();
+}
+
+export async function adminDeleteCover(id: number): Promise<AdminBook> {
+  const res = await rawUpstream(`/books/admin/books/${id}/cover`, { method: "DELETE" });
+  if (!res.ok) throw await upstreamError(res);
+  return res.json();
+}
+
+/** The upstream Response itself, so the route can stream the bytes through. */
+export async function adminExportEpub(id: number): Promise<Response> {
+  const res = await rawUpstream(`/books/admin/books/${id}/epub`, { method: "GET", timeoutMs: 120000 });
+  if (!res.ok) throw await upstreamError(res);
+  return res;
+}
+
+export async function fetchBookMedia(name: string): Promise<Response> {
+  return rawUpstream(`/books/media/${encodeURIComponent(name)}`, {
+    method: "GET", auth: false, timeoutMs: READ_TIMEOUT_MS,
+  });
 }

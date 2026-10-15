@@ -21,7 +21,7 @@ export default function NewBookPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="mx-auto max-w-6xl">
       <PageHeader
         title="New book"
         description="Write the brief. The agent reads these fields and nothing else."

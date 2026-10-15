@@ -15,6 +15,7 @@ import Link from "next/link";
 import {
   IconLoader2, IconAlertTriangle, IconListNumbers, IconWand, IconWorld,
   IconTrash, IconCheck, IconCode, IconPencil, IconChevronDown, IconArrowLeft,
+  IconDownload, IconPhotoUp,
 } from "@tabler/icons-react";
 import PageHeader from "@/components/admin/PageHeader";
 import BookForm, { type BookBriefValues } from "@/components/books/BookForm";
@@ -29,6 +30,7 @@ type Chapter = {
   codeErrors: string[]; editorScore: number;
   editorNotes: {
     fixes?: string[]; suspect_claims?: string[]; scores?: Record<string, number>;
+    fact_check?: { claim: string; source: string; fix: string }[];
     specificity?: { score: number; numbers: number; identifiers: number;
                     contingency: number; failure: number; judgement: number };
     sections?: { heading: string; words: number; specificity: number; repetition: number }[];
@@ -50,6 +52,9 @@ type Book = {
   chapterDetail?: Chapter[];
   kdpDescription: string; kdpKeywords: string[]; kdpCategories: string[];
   introHtml: string; prefaceHtml: string;
+  references?: { url: string; title: string; ok: boolean; error: string; chars: number }[];
+  coverImage?: string; trimSize?: string;
+  coverMeta?: { file?: string; width?: number; height?: number; bytes?: number; checks?: string[] };
 };
 
 export default function AdminBookDetail({ params }: { params: { id: string } }) {
@@ -142,6 +147,32 @@ export default function AdminBookDetail({ params }: { params: { id: string } }) 
     if (r?.book) setNotice("Unpublished — back to ready.");
   }
 
+  // Fetched rather than followed, so a refusal (flagged chapters) shows its
+  // reason in the error box instead of downloading a JSON file named .epub.
+  async function downloadEpub(e: React.MouseEvent) {
+    e.preventDefault();
+    setBusy("epub"); setError(""); setNotice("");
+    try {
+      const res = await fetch(`/api/admin/books/${id}/epub`, { cache: "no-store" });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Export failed");
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${book?.slug || "book"}.epub`;
+      a.click();
+      URL.revokeObjectURL(url);
+      setNotice("EPUB downloaded. Run it through epubcheck before uploading — Google Play rejects anything it flags.");
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setBusy("");
+    }
+  }
+
   async function remove() {
     if (!confirm(`Delete “${book?.title}” and every chapter? Subscribers are kept.`)) return;
     setBusy("delete");
@@ -221,6 +252,14 @@ export default function AdminBookDetail({ params }: { params: { id: string } }) 
                 {busy === "publish" ? <IconLoader2 size={16} className="animate-spin" /> : <IconCheck size={16} />}
                 Publish
               </button>
+            )}
+            {chapters.length > 0 && (
+              <a href={`/api/admin/books/${id}/epub`} onClick={downloadEpub}
+                 title="EPUB for KDP, Google Play Books and Gumroad"
+                 className="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2.5 text-sm hover:bg-slate-50">
+                {busy === "epub" ? <IconLoader2 size={16} className="animate-spin" /> : <IconDownload size={16} />}
+                EPUB
+              </a>
             )}
             <button onClick={remove} disabled={!!busy} title="Delete"
                     className="rounded-lg border border-slate-300 p-2.5 text-red-600 hover:bg-red-50 disabled:opacity-60">
@@ -304,6 +343,31 @@ export default function AdminBookDetail({ params }: { params: { id: string } }) 
         ))}
       </div>
 
+      {tab === "outline" && (book.references?.length ?? 0) > 0 && (
+        // Fetched when the outline is built. A failed source is silently absent
+        // from every prompt, so it has to be visible here, before generating.
+        <div className="mb-3 rounded-xl border border-slate-200 bg-white p-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Reference sources</p>
+          <ul className="mt-2 space-y-1 text-sm">
+            {book.references!.map((r) => (
+              <li key={r.url} className="flex items-start gap-2">
+                {r.ok
+                  ? <IconCheck size={16} className="mt-0.5 shrink-0 text-emerald-600" />
+                  : <IconAlertTriangle size={16} className="mt-0.5 shrink-0 text-red-600" />}
+                <span className="min-w-0 break-words">
+                  <a href={r.url} target="_blank" rel="noreferrer" className="text-slate-900 hover:underline">
+                    {r.ok ? r.title : r.url}
+                  </a>{" "}
+                  <span className={r.ok ? "text-xs text-slate-400" : "text-xs text-red-600"}>
+                    {r.ok ? `${r.chars.toLocaleString()} chars` : r.error}
+                  </span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {tab === "outline" && (
         hasOutline ? (
           <ol className="space-y-2">
@@ -361,7 +425,9 @@ export default function AdminBookDetail({ params }: { params: { id: string } }) 
       {tab === "kdp" && <KdpPanel book={book} />}
 
       {tab === "brief" && (
-        <BookForm initial={toBriefValues(book)} submitLabel="Save brief" onSubmit={saveBrief} />
+        <BookForm initial={toBriefValues(book)} submitLabel="Save brief" onSubmit={saveBrief}
+                  hasCover={!!book.coverMeta?.file}
+                  coverSlot={<CoverUploader book={book} onChange={setBook} />} />
       )}
     </div>
   );
@@ -477,7 +543,27 @@ function ChapterCard({
             </div>
           )}
 
-          {(c.editorNotes?.fixes?.length || c.editorNotes?.suspect_claims?.length) && (
+          {!!c.editorNotes?.fact_check?.length && (
+            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm">
+              <p className="font-medium text-red-800">
+                Contradicts your reference sources — fix before publishing
+              </p>
+              <p className="text-xs text-red-700">
+                The repair pass could not resolve these. Edit the chapter, then save to mark it reviewed.
+              </p>
+              <ul className="mt-2 space-y-2 text-xs">
+                {c.editorNotes.fact_check.map((f, i) => (
+                  <li key={i} className="rounded bg-white p-2">
+                    <p className="text-slate-800"><span className="font-semibold text-red-700">Book says:</span> {f.claim}</p>
+                    <p className="mt-0.5 text-slate-600"><span className="font-semibold">Source:</span> {f.source}</p>
+                    {f.fix && <p className="mt-0.5 text-emerald-800"><span className="font-semibold">Should read:</span> {f.fix}</p>}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {!!(c.editorNotes?.fixes?.length || c.editorNotes?.suspect_claims?.length) && (
             <div className="mb-4 space-y-3 rounded-lg bg-slate-50 p-3 text-sm">
               {!!c.editorNotes.suspect_claims?.length && (
                 <div>
@@ -592,6 +678,128 @@ function Panel({ title, hint, children }: { title: string; hint?: string; childr
   );
 }
 
+/* ── Cover ──────────────────────────────────────────────────────────────── */
+
+/** Paperback full-wrap cover size for KDP: two covers + spine, 0.125in bleed
+ *  on each outside edge. Spine = pages × paper thickness (KDP's published
+ *  figures: white 0.002252 in/page, cream 0.0025). Shown, not generated — the
+ *  wrap is designed in Canva/Photoshop from these numbers or KDP's template. */
+function wrapSize(trim: string, pages: number) {
+  const [w, h] = trim.split("x").map(Number);
+  if (!w || !h) return null;
+  const spine = pages * 0.002252;
+  return {
+    spine: spine.toFixed(3),
+    width: (w * 2 + spine + 0.25).toFixed(3),
+    height: (h + 0.25).toFixed(3),
+    spineText: pages >= 79, // KDP allows spine text from 79 pages
+  };
+}
+
+function CoverUploader({ book, onChange }: { book: Book; onChange: (b: Book) => void }) {
+  const [uploading, setUploading] = useState(false);
+  const [err, setErr] = useState("");
+  const meta = book.coverMeta || {};
+  const wrap = wrapSize(book.trimSize || "6x9", book.pages || 0);
+
+  async function upload(file: File) {
+    setErr("");
+    if (!/^image\/(jpeg|png|webp|tiff)$/.test(file.type)) {
+      setErr("Use a JPEG or PNG image.");
+      return;
+    }
+    if (file.size > 25 * 1024 * 1024) {
+      setErr("That file is over 25 MB.");
+      return;
+    }
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch(`/api/admin/books/${book.id}/cover`, { method: "POST", body: fd });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Upload failed");
+      onChange(data.book);
+    } catch (e: any) {
+      setErr(e.message);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function removeCover() {
+    if (!confirm("Remove the cover image?")) return;
+    setUploading(true);
+    try {
+      const res = await fetch(`/api/admin/books/${book.id}/cover`, { method: "DELETE" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed");
+      onChange(data.book);
+    } catch (e: any) {
+      setErr(e.message);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  return (
+    <div className="rounded-lg border border-slate-200 p-4">
+      <p className="text-sm font-medium text-slate-700">eBook cover</p>
+      <div className="mt-3 flex flex-col gap-4 sm:flex-row">
+        <div className="flex aspect-[1/1.6] w-28 shrink-0 items-center justify-center overflow-hidden rounded-md border border-slate-200 bg-slate-50">
+          {book.coverImage
+            // eslint-disable-next-line @next/next/no-img-element
+            ? <img src={book.coverImage} alt="Cover" className="h-full w-full object-cover" />
+            : <span className="text-3xl">{book.coverEmoji || "📘"}</span>}
+        </div>
+        <div className="min-w-0 flex-1 space-y-2 text-xs text-slate-600">
+          <p>
+            JPEG or PNG, <strong>1600 × 2560 px</strong> (1 : 1.6), RGB. Minimum 625 × 1000.
+            Re-encoded to JPEG on upload — KDP refuses PNG covers. The title and author name on
+            the image must match the listing exactly, or KDP rejects it.
+          </p>
+          {meta.width && (
+            <p className="text-slate-500">
+              Current: {meta.width} × {meta.height}
+              {meta.bytes ? ` · ${(meta.bytes / 1024 / 1024).toFixed(1)} MB` : ""}
+            </p>
+          )}
+          {!!meta.checks?.length && (
+            <ul className="space-y-0.5 text-amber-700">
+              {meta.checks.map((c) => <li key={c}>⚠ {c}</li>)}
+            </ul>
+          )}
+          {err && <p className="text-red-600">{err}</p>}
+          <div className="flex flex-wrap gap-2 pt-1">
+            <label className={`inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-800 hover:bg-slate-50 ${uploading ? "pointer-events-none opacity-60" : ""}`}>
+              {uploading ? <IconLoader2 size={16} className="animate-spin" /> : <IconPhotoUp size={16} />}
+              {book.coverImage ? "Replace cover" : "Upload cover"}
+              <input type="file" accept="image/jpeg,image/png" className="sr-only"
+                     onChange={(e) => { const f = e.target.files?.[0]; if (f) upload(f); e.target.value = ""; }} />
+            </label>
+            {book.coverImage && (
+              <button type="button" onClick={removeCover} disabled={uploading}
+                      className="rounded-lg px-3 py-2 text-sm text-red-600 hover:bg-red-50 disabled:opacity-60">
+                Remove
+              </button>
+            )}
+          </div>
+          {wrap && book.pages > 0 && (
+            <p className="border-t border-slate-100 pt-2 text-slate-500">
+              <strong className="text-slate-700">Paperback</strong> needs a separate full-wrap cover PDF:{" "}
+              <strong>{wrap.width} × {wrap.height} in</strong> at ≈{book.pages} pages
+              (spine {wrap.spine} in, white paper, incl. bleed)
+              {wrap.spineText ? "." : " — too thin for spine text under 79 pages."}{" "}
+              Final page count comes from the print PDF, so check KDP's cover calculator before
+              exporting the wrap.
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ── helpers ────────────────────────────────────────────────────────────── */
 
 function toBriefValues(b: any): BookBriefValues {
@@ -600,7 +808,19 @@ function toBriefValues(b: any): BookBriefValues {
     topic: b.topic ?? "", audience: b.audience ?? "", level: b.level || "intermediate",
     language: b.language || "en", tone: b.tone ?? "", code_language: b.codeLanguage ?? "",
     outcomes: b.outcomes ?? [], prerequisites: b.prerequisites ?? "",
-    must_cover: b.mustCover ?? "", avoid: b.avoid ?? "", author_name: b.authorName ?? "",
+    must_cover: b.mustCover ?? "", avoid: b.avoid ?? "", reference_urls: b.referenceUrls ?? "",
+    author_name: b.authorName ?? "",
+    tech_version: b.techVersion ?? "", angle: b.angle ?? "",
+    running_example: b.runningExample ?? "", author_experience: b.authorExperience ?? "",
+    comparable_titles: b.comparableTitles ?? "", author_bio: b.authorBio ?? "",
+    // Store fields MUST round-trip: the PUT replaces every brief column, so a
+    // field missing here is a field the next "Save brief" blanks.
+    kdp_description: b.kdpDescription ?? "", kdp_keywords: b.kdpKeywords ?? [],
+    kdp_categories: b.kdpCategories ?? [], isbn: b.isbn ?? "",
+    series_name: b.seriesName ?? "", series_number: b.seriesNumber ?? 0,
+    edition: b.edition ?? "", publisher: b.publisher ?? "",
+    publication_date: b.publicationDate ?? "", copyright_holder: b.copyrightHolder ?? "",
+    trim_size: b.trimSize || "6x9",
     target_chapters: b.targetChapters || 12, target_words: b.targetWords || 35000,
     cover_emoji: b.coverEmoji ?? "", access: b.access || "email",
     list_price_paise: b.listPricePaise ?? 0,
