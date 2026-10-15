@@ -4,6 +4,7 @@ import { IconArrowRight } from "@tabler/icons-react";
 import { listBooks, getBook, type Book, type BookToc } from "@/components/utils/books-api";
 import { pageMeta, breadcrumbLd, faqLd } from "@/components/utils/seo";
 import PriceTag from "@/components/books/PriceTag";
+import BookCover from "@/components/books/BookCover";
 import { descriptionPlain } from "@/components/books/description";
 import { SITE_URL } from "@/components/utils/site-data";
 import { PERSONAL_INFO } from "@/components/utils/portfolio-data";
@@ -482,7 +483,9 @@ export default async function BooksIndex() {
                         title link beside it says the same thing — two links to
                         one destination read as two items to a screen reader. */}
                     <Link href={href} className="bkx-cover" tabIndex={-1} aria-hidden="true">
-                      <span className="bkx-cover-emoji">{b.coverEmoji || "📘"}</span>
+                      <BookCover src={b.coverImage} emoji={b.coverEmoji} title={b.title}
+                                 width={150} sizes="(max-width: 640px) 96px, 150px"
+                                 className="bkx-cover-emoji" />
                       {b.level && <span className="bkx-cover-tag">{b.level}</span>}
                     </Link>
 

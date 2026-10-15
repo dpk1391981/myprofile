@@ -9,6 +9,7 @@ import {
 import { PERSONAL_INFO } from "@/components/utils/portfolio-data";
 import { listBooks } from "@/components/utils/books-api";
 import { listPosts } from "@/components/utils/portfolio-api";
+import BookCover from "@/components/books/BookCover";
 
 /**
  * 404.
@@ -102,7 +103,9 @@ export default async function NotFound() {
           <ol className="bk-toc">
             {books.slice(0, 3).map((b) => (
               <li key={b.id} className="bk-toc-item">
-                <span className="bk-toc-num">{b.coverEmoji || "📘"}</span>
+                <span className="bk-toc-num">
+                  <BookCover src={b.coverImage} emoji={b.coverEmoji} title={b.title} width={28} />
+                </span>
                 <div style={{ minWidth: 0 }}>
                   <Link href={`/books/${b.slug}`} className="bk-toc-link">
                     {b.title}

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { prepareBody } from "@/components/books/chapter-html";
 import { downloadBook, type Book } from "@/components/utils/books-api";
 import ReaderChrome from "@/components/books/ReaderChrome";
+import BookCover from "@/components/books/BookCover";
 
 /**
  * The printable copy — every chapter in one document.
@@ -75,7 +76,10 @@ export default async function ReadBookPage({
 
         {/* ── Title page ────────────────────────────────────────────────── */}
         <header className="bk-titlepage">
-          <div className="bk-titlepage-mark">{book.coverEmoji || "📘"}</div>
+          <div className="bk-titlepage-mark">
+            <BookCover src={book.coverImage} emoji={book.coverEmoji} title={book.title}
+                       width={220} sizes="(max-width: 640px) 180px, 220px" priority />
+          </div>
           <h1 className="bk-chapter-title" style={{ marginTop: 22 }}>{book.title}</h1>
           {book.subtitle && <p className="bk-chapter-standfirst">{book.subtitle}</p>}
           <div className="bk-titlepage-rule" aria-hidden="true" />

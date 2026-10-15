@@ -99,6 +99,9 @@ export function descriptionPlain(
   return parseDescription(text, context)
     .filter((b) => b.kind !== "h")
     .map((b) => ("items" in b ? b.items.join("; ") : b.text))
+    // A heading-like line with no full stop would run into the next sentence
+    // ("…Production Engineering Building modern…") once joined into one line.
+    .map((t) => (/[.!?:;…]["')\]]?$/.test(t) ? t : `${t}.`))
     .join(" ")
     .replace(/\s+/g, " ")
     .trim();

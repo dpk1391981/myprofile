@@ -13,6 +13,7 @@ import { DATELINE, HERO, PROOF } from "../utils/site-data";
 import { EXPERIENCES, FOOTER, PERSONAL_INFO } from "../utils/portfolio-data";
 import { listPosts } from "../utils/portfolio-api";
 import { listBooks } from "../utils/books-api";
+import BookCover from "@/components/books/BookCover";
 import { formatISTDate } from "../utils/date";
 import { getHomePosts } from "./TechBlogs";
 
@@ -86,7 +87,9 @@ async function HeroRail() {
         <div className="bs-side-block">
           <p className="bs-eyebrow">Latest book</p>
           <Link href={`/books/${book.slug}`} className="bs-side-book">
-            <span className="bs-side-book-cover" aria-hidden="true">{book.coverEmoji || "📘"}</span>
+            <span className="bs-side-book-cover" aria-hidden="true">
+              <BookCover src={book.coverImage} emoji={book.coverEmoji} title={book.title} width={44} />
+            </span>
             <span>
               <span className="bs-side-link">{book.title}</span>
               <span className="bs-side-meta">

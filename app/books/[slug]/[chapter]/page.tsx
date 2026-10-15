@@ -9,6 +9,7 @@ import { prepareChapter } from "@/components/books/chapter-html";
 import ReadingProgress from "@/components/books/ReadingProgress";
 import ChapterTracker from "@/components/books/ChapterTracker";
 import PriceTag from "@/components/books/PriceTag";
+import BookCover from "@/components/books/BookCover";
 import BookOfferModal, { BookOfferButton } from "@/components/books/BookOfferModal";
 import ReaderControls, { TimeLeft } from "@/components/books/ReaderControls";
 import { READER_INIT_SCRIPT } from "@/components/books/reader-prefs";
@@ -140,7 +141,9 @@ export default async function ChapterPage(
             the rail is not drawn, so nothing is lost when it is hidden. */}
         <aside className="bkp-rail" aria-label={`${book.title} — contents`}>
           <div className="bk-rail-book">
-            <span className="bk-rail-emoji" aria-hidden="true">{book.coverEmoji || "📘"}</span>
+            <span className="bk-rail-emoji" aria-hidden="true">
+              <BookCover src={book.coverImage} emoji={book.coverEmoji} title={book.title} width={46} />
+            </span>
             <div style={{ minWidth: 0 }}>
               <p className="bk-rail-title">
                 <Link href={`/books/${book.slug}`} className="bs-link-plain">{book.title}</Link>

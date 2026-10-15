@@ -8,6 +8,7 @@ import EmailGate from "@/components/books/EmailGate";
 import BookOfferModal, { BookOfferButton } from "@/components/books/BookOfferModal";
 import { IconCheck, IconDownload } from "@tabler/icons-react";
 import PriceTag from "@/components/books/PriceTag";
+import BookCover from "@/components/books/BookCover";
 import ShareRow from "@/components/shared/ShareRow";
 import ViewTracker from "@/components/shared/ViewTracker";
 import ViewCountText from "@/components/shared/ViewCountText";
@@ -179,7 +180,12 @@ export default async function BookPage({ params }: { params: { slug: string } })
 
       {/* ── Header ──────────────────────────────────────────────────────── */}
       <header>
-        <div style={{ fontSize: 52, lineHeight: 1 }}>{book.coverEmoji || "📘"}</div>
+        {/* The cover leads when there is one: it is the thing a reader
+            recognises again in a store listing or a shared link. */}
+        <div className="bkp-hero-cover" style={{ fontSize: 52, lineHeight: 1 }}>
+          <BookCover src={book.coverImage} emoji={book.coverEmoji} title={book.title}
+                     width={168} sizes="(max-width: 640px) 132px, 168px" priority />
+        </div>
         <h1 className="bk-chapter-title" style={{ marginTop: 20 }}>
           {book.title}
         </h1>

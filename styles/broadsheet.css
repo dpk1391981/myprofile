@@ -3728,3 +3728,37 @@ body:has(.blog-search[data-pending]) #blog-results { opacity: .55; transition: o
 .bk-phone-input::placeholder { color: var(--quiet); letter-spacing: 0; }
 /* The browser's invalid-state hint, once the reader has typed something. */
 .bk-phone:has(.bk-phone-input:not(:placeholder-shown):invalid) { border-color: var(--mag) !important; }
+
+/* ---------- uploaded book covers (BookCover.tsx) ----------
+   Every slot that drew the emoji takes the real cover when there is one. The
+   cover is 1:1.6 and carries its own artwork, so the emoji furniture around a
+   slot (tinted box, hinge line, level tag) steps aside for it. */
+.bk-cover-img {
+  display: block; height: auto; max-width: 100%;
+  border-radius: 2px;
+  background: var(--surface);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .12), 0 6px 18px rgba(0, 0, 0, .14);
+}
+.bk-cover-emoji { line-height: 1; }
+
+.bkx-cover:has(.bk-cover-img) {
+  aspect-ratio: 5 / 8; padding: 0; border-left-width: 1px; background: transparent;
+}
+.bkx-cover:has(.bk-cover-img)::before,
+.bkx-cover:has(.bk-cover-img) .bkx-cover-tag { display: none; }
+.bkx-cover .bk-cover-img { width: 100%; height: 100%; object-fit: cover; box-shadow: none; border-radius: 0; }
+
+.bkp-hero-cover .bk-cover-img { width: 168px; }
+@media (max-width: 640px) { .bkp-hero-cover .bk-cover-img { width: 132px; } }
+
+.bk-rail-emoji:has(.bk-cover-img) { padding: 0; border: 0; background: none; }
+.bk-rail-emoji .bk-cover-img { width: 46px; box-shadow: 0 1px 2px rgba(0,0,0,.15), 0 3px 8px rgba(0,0,0,.12); }
+
+.bs-side-book-cover:has(.bk-cover-img) { height: auto; background: none; border: 0; }
+.bs-side-book-cover .bk-cover-img { width: 44px; }
+
+.bk-titlepage-mark .bk-cover-img { width: 220px; margin: 0 auto; }
+@media (max-width: 640px) { .bk-titlepage-mark .bk-cover-img { width: 180px; } }
+
+.bk-toc-num .bk-cover-img { width: 28px; box-shadow: none; }
+@media print { .bk-cover-img { box-shadow: none; } }
