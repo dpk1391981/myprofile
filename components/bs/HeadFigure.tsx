@@ -755,11 +755,15 @@ export function ShelfFigure({
       <div className="bs-headfig-box">
         <p className="bs-eyebrow">On the shelf</p>
 
-        <ul style={{ listStyle: "none", margin: "16px 0 0", padding: 0, display: "grid", gap: 13 }}>
+        {/* minmax(0, 1fr): a grid track defaults to its content's width, so one
+            long title ("Next.js 16.4: Embracing Cache Components and More")
+            widened the whole list past a phone screen and the ellipsis below
+            never applied. The track must be allowed to shrink. */}
+        <ul style={{ listStyle: "none", margin: "16px 0 0", padding: 0, display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: 13 }}>
           {rows.map((b) => (
-            <li key={b.title}>
+            <li key={b.title} style={{ minWidth: 0 }}>
               <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12 }}>
-                <span style={{ fontSize: 15, fontWeight: 600, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                <span title={b.title} style={{ fontSize: 15, fontWeight: 600, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {b.title}
                 </span>
                 <span className="bs-small bs-quiet" style={{ whiteSpace: "nowrap" }}>

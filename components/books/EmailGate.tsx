@@ -146,7 +146,7 @@ export default function EmailGate({
         other mail, and one-click unsubscribe in every message.
       </p>
 
-      <form onSubmit={submit} style={{ marginTop: 18, display: "grid", gap: 12 }}>
+      <form onSubmit={submit} style={{ marginTop: 18, display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: 12 }}>
         <div>
           <label htmlFor={`${idPrefix}-name`} className="sr-only">Your name</label>
           <input

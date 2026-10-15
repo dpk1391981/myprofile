@@ -294,9 +294,11 @@ a:hover { color: var(--spot-deep); text-decoration: underline; text-underline-of
 .bs-split--even { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .bs-split--wide { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 56px; }
 .bs-split--cta { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 60px; }
-.bs-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 44px 48px; }
-.bs-cols--wide { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 48px; }
-.bs-cols--quotes { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 56px; }
+.bs-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 44px 48px; }
+.bs-cols--wide { grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 48px; }
+/* min(…, 100%): a fixed column minimum wider than the screen (320px on a
+   320px phone, ~280px inside the margins) pushed the page sideways. */
+.bs-cols--quotes { grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); gap: 56px; }
 
 /* The inner-page head (components/bs/PageHeader.tsx). Slightly wider left
    track than .bs-split: the headline is set at up to 4.1rem and needs the
@@ -2809,7 +2811,7 @@ body:has(.blog-search[data-pending]) #blog-results { opacity: .55; transition: o
 .bkm-list li { display: flex; gap: 10px; font-size: 14.5px; line-height: 1.5; }
 .bkm-list svg { color: var(--spot); flex: 0 0 auto; margin-top: 3px; }
 
-.bkm-form { display: grid; gap: 11px; margin-top: 20px; }
+.bkm-form { display: grid; grid-template-columns: minmax(0, 1fr); gap: 11px; margin-top: 20px; }
 .bkm-input {
   width: 100%;
   padding: 12px 14px;
@@ -3762,3 +3764,23 @@ body:has(.blog-search[data-pending]) #blog-results { opacity: .55; transition: o
 
 .bk-toc-num .bk-cover-img { width: 28px; box-shadow: none; }
 @media print { .bk-cover-img { box-shadow: none; } }
+
+/* ---------- smallest phones (320–360px) ----------
+   Found by a sweep at 320px: the masthead's brand + two 38px buttons are
+   ~9px wider than the screen, so the menu button was cut off on every page. */
+@media (max-width: 360px) {
+  .bs-masthead-inner { padding-left: 14px; padding-right: 14px; gap: 8px; }
+  .bs-brand { gap: 8px; font-size: 18px; }
+  .bs-brand-avatar { width: 34px; height: 34px; }
+  .bs-brand-role { font-size: 8.5px; letter-spacing: .08em; }
+  .bs-masthead-actions { gap: 6px; }
+  .bs-icon-btn { width: 34px; height: 34px; }
+}
+/* The phone field must be allowed to shrink inside a form grid; its icon +
+   country picker + input otherwise set a minimum wider than a 320px form. */
+.bk-phone { min-width: 0; max-width: 100%; box-sizing: border-box; }
+.bk-phone-input { width: 100%; }
+/* A product name like "TrendMeToday.com" is one unbreakable word; at 320px
+   it ran 6px past the screen. Smaller there, and allowed to break if it must. */
+.bs-product-head .bs-h3 { overflow-wrap: anywhere; }
+@media (max-width: 360px) { .bs-product-head .bs-h3 { font-size: 21px; } }
