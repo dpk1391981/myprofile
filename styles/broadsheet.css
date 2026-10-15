@@ -103,7 +103,7 @@ body {
   sat below the fold on a 6" screen. Same rhythm on a desktop, about half of it
   on a phone.
 */
-.bs-head-top { padding-top: 26px; }
+.bs-head-top { padding-top: 6px; }
 .bs-head-body { padding-top: 56px; }
 
 /* ---------- press furniture: the one place rules print ---------- */
@@ -583,11 +583,11 @@ a:hover .bs-side-link, .bs-side-link:hover { color: var(--spot); }
 }
 
 /*
-  The brand is a name and a title, set as a masthead sets one: the name in the
-  page's own weight, then a hairline, then the role in the spot colour and the
-  same uppercase micro-setting the kickers use. It read as one grey run of text
-  before, at 13px, which made the title look like an afterthought rather than
-  the thing a recruiter is scanning for.
+  The brand is a name with the role set under it as a subtitle: the name in
+  the page's own weight, the role in the spot colour and the same uppercase
+  micro-setting the kickers use. Stacked rather than side by side so the
+  brand takes half the width and the nav has room; the two lines together
+  sit the height of the avatar beside them.
 */
 .bs-brand {
   display: flex;
@@ -601,7 +601,10 @@ a:hover .bs-side-link, .bs-side-link:hover { color: var(--spot); }
   text-decoration: none;
   white-space: nowrap;
 }
-.bs-brand-text { display: flex; align-items: baseline; gap: 11px; }
+.bs-brand-text {
+  display: flex; flex-direction: column; align-items: flex-start;
+  gap: 4px; line-height: 1.05;
+}
 .bs-brand-avatar {
   width: 40px; height: 40px; flex-shrink: 0;
   border-radius: 50%;
@@ -611,12 +614,11 @@ a:hover .bs-side-link, .bs-side-link:hover { color: var(--spot); }
 .bs-brand:hover { color: var(--ink); text-decoration: none; }
 .bs-brand:hover .bs-brand-role { color: var(--spot-deep); }
 .bs-brand-role {
-  padding-left: 11px;
-  border-left: 1px solid var(--rule);
   color: var(--spot);
-  font-size: 11.5px;
+  font-size: 10.5px;
   font-weight: 600;
-  letter-spacing: .11em;
+  line-height: 1;
+  letter-spacing: .14em;
   text-transform: uppercase;
   transition: color .18s ease;
 }
@@ -813,12 +815,10 @@ a:hover .bs-side-link, .bs-side-link:hover { color: var(--spot); }
   .bs-nav { display: none; }
   .bs-desktop-only { display: none; }
   .bs-burger { display: inline-flex; }
-  /* Name over role rather than side by side: on a 390px screen the two on one
-     line either wrap mid-title or push the burger off the edge. */
-  .bs-brand { gap: 10px; font-size: 19px; line-height: 1.15; white-space: normal; }
-  .bs-brand-text { flex-direction: column; align-items: flex-start; gap: 3px; }
+  .bs-brand { gap: 10px; font-size: 19px; }
+  .bs-brand-text { gap: 3px; }
   .bs-brand-avatar { width: 36px; height: 36px; }
-  .bs-brand-role { padding-left: 0; border-left: none; font-size: 10.5px; }
+  .bs-brand-role { font-size: 9.5px; letter-spacing: .12em; }
   .bs-masthead-inner { gap: 16px; padding: 12px var(--gutter); }
   .bs-icon-btn { width: 42px; height: 42px; }
   .bs-drawer-link { padding: 17px 0; font-size: 18px; }
@@ -836,7 +836,7 @@ a:hover .bs-side-link, .bs-side-link:hover { color: var(--spot); }
 
 @media (max-width: 640px) {
   :root { --gutter: 20px; }
-  .bs-head-top { padding-top: 14px; }
+  .bs-head-top { padding-top: 4px; }
   .bs-head-body { padding-top: 26px; }
   /* The headline is the tallest thing above the fold; a slightly tighter
      leading buys back most of a line without changing its size. */
@@ -1777,7 +1777,7 @@ body:has(.blog-search[data-pending]) #blog-results { opacity: .55; transition: o
      was a bare text node plus one span for the role. The brand is now two
      spans, so that rule blanked the masthead entirely below 520px — no name,
      no title, just the two icon buttons. The role is worth its one line on a
-     phone; only the hairline before it goes. */
+     phone. */
   .bs-brand { font-size: 18px; }
   .bs-inline-meta { gap: 12px 20px; }
   .bs-dl-row dd { font-size: 20px; }

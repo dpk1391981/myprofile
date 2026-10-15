@@ -39,10 +39,10 @@ const Nav = () => {
     <>
       <header className={`bs-masthead ${scrolled ? "bs-masthead--scrolled" : ""}`} role="banner">
         <div className="bs-masthead-inner">
-          {/* Name, hairline, role — the role in spot colour rather than in the
-              grey it used to share with the nav links. It is the line that
-              says what this site is, and it stays visible on mobile now
-              (stacked under the name) instead of being hidden below 860px. */}
+          {/* Name with the role stacked under it as a subtitle, at every width
+              — the role in spot colour rather than in the grey it used to
+              share with the nav links. It is the line that says what this
+              site is, so it stays visible on mobile too. */}
           {/* The portrait lives here now rather than in the home hero: a small
               face beside the name on every page, phones included. That puts
               the image (same file, same name) on every crawled page instead
