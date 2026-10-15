@@ -497,6 +497,38 @@ function ChapterCard({
   const [editing, setEditing] = useState(false);
   const [body, setBody] = useState(c.bodyHtml);
   const [saving, setSaving] = useState(false);
+  // Fact-check suggestions: ticked = act on it. Default all ticked — the
+  // usual case is "the source is right"; untick the ones it got wrong.
+  const facts = c.editorNotes?.fact_check || [];
+  const [picked, setPicked] = useState<boolean[]>(() => facts.map(() => true));
+  const [factBusy, setFactBusy] = useState("");
+  const [factMsg, setFactMsg] = useState("");
+  useEffect(() => { setPicked(facts.map(() => true)); }, [facts.length]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function actOnFacts(kind: "apply" | "dismiss") {
+    const idx = picked.flatMap((on, i) => (on ? [i] : []));
+    if (!idx.length) return;
+    setFactBusy(kind); setFactMsg("");
+    try {
+      const res = await fetch(`/api/admin/books/${bookId}/chapters/${c.ordinal}/fact-fixes`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(kind === "apply" ? { apply: idx } : { dismiss: idx }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Could not update the chapter");
+      const parts = [];
+      if (data.applied) parts.push(`${data.applied} fixed in the text`);
+      if (data.dismissed) parts.push(`${data.dismissed} dismissed`);
+      if (data.notFound) parts.push(`${data.notFound} could not be found exactly — edit ${data.notFound > 1 ? "those" : "that one"} by hand`);
+      setFactMsg(parts.join(" · "));
+      onSaved();
+    } catch (err: any) {
+      setFactMsg(err.message);
+    } finally {
+      setFactBusy("");
+    }
+  }
 
   async function save() {
     setSaving(true);
@@ -602,17 +634,41 @@ function ChapterCard({
                 Contradicts your reference sources — fix before publishing
               </p>
               <p className="text-xs text-red-700">
-                The repair pass could not resolve these. Edit the chapter, then save to mark it reviewed.
+                Tick the suggestions that are right and apply them — each replaces the
+                &ldquo;Book says&rdquo; sentence with &ldquo;Should read&rdquo;. Untick any the
+                checker got wrong and dismiss those instead.
               </p>
               <ul className="mt-2 space-y-2 text-xs">
                 {c.editorNotes.fact_check.map((f, i) => (
-                  <li key={i} className="rounded bg-white p-2">
-                    <p className="text-slate-800"><span className="font-semibold text-red-700">Book says:</span> {f.claim}</p>
-                    <p className="mt-0.5 text-slate-600"><span className="font-semibold">Source:</span> {f.source}</p>
-                    {f.fix && <p className="mt-0.5 text-emerald-800"><span className="font-semibold">Should read:</span> {f.fix}</p>}
+                  <li key={i} className="flex gap-2 rounded bg-white p-2">
+                    <input type="checkbox" className="mt-0.5 h-4 w-4 shrink-0 accent-emerald-600"
+                           aria-label={`Suggestion ${i + 1}`}
+                           checked={!!picked[i]}
+                           onChange={(e) => setPicked((p) => p.map((v, j) => (j === i ? e.target.checked : v)))} />
+                    <div className="min-w-0">
+                      <p className="text-slate-800"><span className="font-semibold text-red-700">Book says:</span> {f.claim}</p>
+                      <p className="mt-0.5 text-slate-600"><span className="font-semibold">Source:</span> {f.source}</p>
+                      {f.fix
+                        ? <p className="mt-0.5 text-emerald-800"><span className="font-semibold">Should read:</span> {f.fix}</p>
+                        : <p className="mt-0.5 text-slate-500">No suggested wording — edit this one by hand.</p>}
+                    </div>
                   </li>
                 ))}
               </ul>
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <button type="button" onClick={() => actOnFacts("apply")}
+                        disabled={!!factBusy || !picked.some(Boolean) || c.status === "writing"}
+                        className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-700 disabled:opacity-50">
+                  {factBusy === "apply" ? <IconLoader2 size={13} className="animate-spin" /> : <IconCheck size={13} />}
+                  Apply selected fixes
+                </button>
+                <button type="button" onClick={() => actOnFacts("dismiss")}
+                        disabled={!!factBusy || !picked.some(Boolean) || c.status === "writing"}
+                        className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50">
+                  {factBusy === "dismiss" ? "Dismissing…" : "Dismiss selected (checker was wrong)"}
+                </button>
+                {factMsg && <span className="text-xs text-slate-700">{factMsg}</span>}
+              </div>
             </div>
           )}
 

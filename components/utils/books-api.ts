@@ -527,6 +527,17 @@ export async function adminGenerateBook(
   });
 }
 
+/** Apply (replace the claim with its suggested fix) or dismiss fact-check
+ *  items by their index in editorNotes.fact_check. */
+export async function adminFactFixes(
+  id: number, ordinal: number, apply: number[], dismiss: number[]
+): Promise<{ ok: boolean; applied: number; dismissed: number; notFound: number;
+             remaining: number; status: string }> {
+  return apiFetch(`/books/admin/books/${id}/chapters/${ordinal}/fact-fixes`, {
+    method: "POST", auth: true, body: { apply, dismiss },
+  });
+}
+
 /** Live / inactive. Only published AND active books appear on the site. */
 export async function adminSetBookActive(id: number, active: boolean): Promise<AdminBook> {
   return apiFetch(`/books/admin/books/${id}/active?active=${active}`, { method: "POST", auth: true });
